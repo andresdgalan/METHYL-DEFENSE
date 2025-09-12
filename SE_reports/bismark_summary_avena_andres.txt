@@ -1,0 +1,33 @@
+Final Alignment report
+======================
+Sequences analysed in total:    14956206,1 ± 1802629,2
+Number of alignments with a unique best hit from the different alignments:      2947879,2 ± 308535,4
+Mapping efficiency:     24,5 ± 1,9%
+Sequences with no alignments under any condition:       11040169,2 ± 1414586,1
+Sequences did not map uniquely: 968157,8 ± 98805,3
+Sequences which were discarded because genomic sequence could not be extracted: 0,0 ± 0,0
+
+Number of sequences with unique best (first) alignment came from the bowtie output:
+CT/CT:  337834,1 ± 36345,7    ((converted) top strand)
+CT/GA:  26162,4 ± 3017,2    ((converted) bottom strand)
+GA/CT:  262133,9 ± 26970,0   (complementary to (converted) top strand)
+GA/GA:  2321748,7 ± 244218,9   (complementary to (converted) bottom strand)
+
+Final Cytosine Methylation Report
+=================================
+Total number of C's analysed:   33043097,2 ± 3243783,5
+
+Total methylated C's in CpG context:    10417172,2 ± 992943,2
+Total methylated C's in CHG context:    4750095,8 ± 461221,6
+Total methylated C's in CHH context:    10259559,3 ± 1086518,6
+Total methylated C's in Unknown context:        13177,8 ± 1176,3
+
+Total unmethylated C's in CpG context:  1244640,3 ± 119369,4
+Total unmethylated C's in CHG context:  2022817,5 ± 196582,9
+Total unmethylated C's in CHH context:  4348812,1 ± 483525,2
+Total unmethylated C's in Unknown context:      17657,4 ± 1753,2
+
+C methylated in CpG context:    89,4 ± 0,4%
+C methylated in CHG context:    72,5 ± 1,2%
+C methylated in CHH context:    73,0 ± 1,4%
+C methylated in Unknown context (CN or CHN):    44,0 ± 1,7%

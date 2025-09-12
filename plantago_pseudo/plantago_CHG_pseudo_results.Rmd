@@ -1,0 +1,1191 @@
+---
+title: "P.lagopus CHG pseudo"
+author: "Andrés Delgado"
+date: "2025-09-12"
+output: html_document
+---
+
+En este documento presento algunos resultados sobre los patrones de metilación de P.lagopus bajo distintos tratamientos de herbivoría. 
+
+
+## PREPROCESSING
+
+#### Brevemente resumo los pasos previos al análisis:
+
+1.  Construcción de un pseudogenoma de referencia usando muestras sin tratar (sin la conversión de bisulfto) y el programa STACKS en Linux.
+
+2.  Alineamiento de las lecturas de bisulfito de mis muestras tratadas con el genoma de referencia usando BISMARK en linux.
+
+3.  Generación de informes de metilación de las muestras asociados a sus posiciones en el genoma de referencia. BISMARK genera estos informes en forma de archivos .bam
+
+4.  Importación de los archivos .bam a methylkit para el análisis
+
+## CLUSTERING METHYLATION PROFILES
+
+El primer paso en el análisis ha sido explorar visualmente las diferencias en los perfiles de metilación entre tratamientos. Para ello hemos utilizado los porcentajes de metilación de cada una de las posiciones CHG (3764 posiciones del genoma con una Citosina seguida de una Guanina) y los hemos comparado entre muestras para ver cuáles se parecen más entre sí y cuáles son más diferentes.Aquí muestro un Correlograma, un Dendograma y un DAPC (Discriminant Analysis of Principal Components), que es un análisis multivariante usado en genética de poblaciones para describir y visualizar la estructura genética entre grupos.Utiliza el PCA y luego maximiza la separación entre grupos predefinidos (los tratamientos).
+
+```{r setup LOADING DATA AND PACKAGES, include=FALSE}
+# Here I paste the path to the original files which is not inside the project due to their great size
+bam_dir <- "C:/Users/iglorena.IRNASE/Documents/andres/INTERTROPHIC/EPIGENETICA/NOVOGENE_DOWNLOAD/methylation_report_plantago/andres_genome"
+
+bam.list <- as.list(list.files(
+  path   = bam_dir,
+  pattern = "_bismark_bt2.sorted\\.bam$",
+  full.names = FALSE
+))
+
+
+library("methylKit")
+library(ggplot2)
+library(dplyr)      # tidy
+library(tidyr)      # tidy 
+library(pheatmap)   # Correlogram
+library(dendextend) # Dendrogram
+library(reshape2)   # melt function (tidy)
+library(adegenet)   # DAPC
+library(stringr)    # str_detect (tidy)
+library(kableExtra) # Tables
+library(emmeans)    # Post-hoc
+library(glmmTMB)    # Beta-Binomial modelling
+library(gridExtra)  # Plotting many plots together
+library(grid)       # Plotting many plots together
+library(here)       # Reproducibility of working directory
+```
+
+```{r EXTRACTING COMMON INFORMATION FOR ALL CONTEXT, include=FALSE}
+# sample.id assigns a unique ID to each sample (we remove the suffix and have the id)
+sample.id <- as.list(gsub(".1_bismark_bt2.sorted\\.bam$", "", bam.list))
+
+# treatment vector specifies experimental group
+# Usually methylKit is designed for binary treatment designs
+# so i will need to encode both factors into a single one
+treatment_table <- read.table(file = here("plantago_treatment.csv"), header = T, sep = ";")
+
+# # CHECKING THAT TREATMENT TABLE AND SAMPLE LIST ARE THE SAME
+# GET THE VECTORS
+sample_id_vec <- unlist(sample.id)
+table_ids <- treatment_table$id
+
+ # Find ids in sample.id that are NOT in treatment_table$id
+ ids_in_sample_not_in_table <- setdiff(sample_id_vec, table_ids)
+
+ # Find ids in treatment_table$id that are NOT in sample.id
+ ids_in_table_not_in_sample <- setdiff(table_ids, sample_id_vec)
+
+ # Print results
+ cat("IDs in sample.id but not in treatment_table$id:\n")
+ print(ids_in_sample_not_in_table)
+
+ cat("IDs in treatment_table$id but not in sample.id:\n")
+ print(ids_in_table_not_in_sample)
+
+
+# Reorder treatment_table so its ids follow the order in sample.id
+treatment_table <- treatment_table[match(sample_id_vec, treatment_table$id), ]
+
+# Convert columns to factors
+treatment_table$maternal <- factor(treatment_table$maternal, levels = c("graz", "ungraz"))
+treatment_table$simulation <- factor(treatment_table$simulation, levels = c("clip", "unclip"))
+
+# Combine into a single factor
+treatment_table$combined <- interaction(treatment_table$maternal, treatment_table$simulation, sep = "-")
+levels(treatment_table$combined)
+# [1] "graz-clip" "ungraz-clip" "graz-unclip" "ungraz-unclip"
+
+# encode this as numeric for methylKit (e.g., 0, 1, 2, 3)
+treatment_multi <- as.numeric(treatment_table$combined) - 1
+# Now treatment has values: 0, 1, 2, 3 (corresponding to the 4 groups)
+```
+
+```{r CHG CREATING and SAVING METHYLKIT OBJECT, include=FALSE}
+# THIS STEP TAKES TOO LONG SO I WILL ONLY RUN IT WHEN I NEED TO CHANGE IT
+  # full paths → required by processBismarkAln
+  bam.path <- file.path(bam_dir, bam.list)
+  bam.path  <- as.character(bam.path)
+  sample.id <- as.character(sample.id)
+  
+  
+  # process each BAM individually
+  # We use this loop because we can't change directory in Rmarkdown, and processBismarkAln doesn't accept a vector of bam files, it needs them one at a time
+  objs <- mapply(
+    function(file, id, tr) {
+      processBismarkAln(
+        location   = file,
+        sample.id  = id,
+        assembly   = "mock",
+        treatment  = tr,
+        mincov     = 5,
+        read.context = "CHG"
+      )
+    },
+    file = bam.path,
+    id   = sample.id,
+    tr   = treatment_multi,
+    SIMPLIFY = FALSE
+  )
+  
+  # merge them into one methylRawList
+  plantago_CHG_obj <- new("methylRawList", objs)
+  
+  # set treatment vector explicitly
+  # even though we already specified when creating the object, using the loop didn't work for treatment
+  plantago_CHG_obj@treatment <- treatment_multi
+   
+   # Save the result for later use
+   saveRDS(plantago_CHG_obj, file = "plantago_pseudo_CHG.rds")
+```
+
+```{r CHG LOADING METHYLOBJECT AND UNITING, include=FALSE}
+plantago_CHG_obj <- readRDS(here("plantago_pseudo", "plantago_pseudo_CHG.rds"))
+
+# Unite all samples into one object to compare methylation across samples at common CHG sites
+CHG_meth <- methylKit::unite(plantago_CHG_obj)
+```
+
+```{r CHG METHYLATION % MATRIX, include=FALSE}
+CHG_meth_matrix <- as.matrix(percMethylation(CHG_meth))
+# extract genomic positions
+coords <- getData(CHG_meth)$start
+
+# assign them as rownames to meth_matrix
+rownames(CHG_meth_matrix) <- coords
+```
+
+```{r CHG CORRELOGRAM, echo=FALSE, results='hold', warning=FALSE, message=FALSE}
+# Correlation matrix
+corr_matrix <- cor(CHG_meth_matrix, use = "pairwise.complete.obs")
+
+# Visualization
+pheatmap(corr_matrix,
+         color = colorRampPalette(c("navy", "white", "firebrick3"))(50),
+         main = "Methylation profile Correlations",
+         clustering_distance_rows = "correlation",
+         clustering_distance_cols = "correlation")
+```
+
+```{r CHG CLUSTERING, echo=FALSE, results='hold', warning=FALSE, message=FALSE}
+# Perform hierarchical clustering of samples based on methylation profiles using correlation distance and Ward's method, then plot
+
+# Run clusterSamples without plotting
+hc <- clusterSamples(CHG_meth, dist = "correlation", method = "ward.D2", plot = FALSE)
+
+
+# Sample IDs
+sample_ids <- CHG_meth@sample.ids   # correct names of your samples
+
+# Treatments
+treatments <- getTreatment(CHG_meth)  # same as CHG_meth@treatment
+
+# Map colors
+treatment_colors <- c("0" = "#FF69B4", "1" = "#00FF7F", "2" = "#8B3A62", "3" = "#008B45")
+
+# Convert hclust to dendrogram
+dend <- as.dendrogram(hc)
+
+# Reorder colors according to dendrogram tip labels
+tip_order <- labels(dend)  # these should be sample_ids if clusterSamples worked correctly
+tip_colors <- treatment_colors[as.character(treatments[match(tip_order, sample_ids)])]
+
+# Assign colors
+labels_colors(dend) <- tip_colors
+
+# Plot
+plot(dend, main = "Methylation profile clustering")
+```
+
+```{r CHG PREPARING DAPC, echo=FALSE, fig.show='hide'}
+# extract genomic positions
+coords <- getData(CHG_meth)$start
+
+# assign them as rownames to meth_matrix
+rownames(CHG_meth_matrix) <- coords
+
+grp <- as.factor(treatments)
+
+
+# Run DAPC keeping 14 principal components (and all possible discriminant functions). I used 14 because it's a safe maximum: 42/3
+dapc_res <- dapc(t(CHG_meth_matrix), grp, n.pca = 14, n.da = length(levels(grp)) - 1)
+
+# Optimize the number of PCs using the alpha-score method (balances discrimination vs overfitting).
+optim_a <- optim.a.score(dapc_res)
+
+# Print the optimal number of PCs suggested by optim.a.score
+cat("Optimal number of PCs (alpha-score):", optim_a$best, "\n")
+
+# Re-run DAPC using the optimal number of PCs suggested automatically
+dapc_res <- dapc(t(CHG_meth_matrix), grp, 
+                 n.pca = optim_a$best,
+                 n.da = length(levels(grp)) - 1)
+
+# Extract full loadings matrix (all CHGs × LDs)
+loadings <- dapc_res$var.contr  
+
+# Convert to tidy data frame: CHG, LD, Loading
+loadings_df <- melt(loadings,
+                    varnames = c("CHG", "LD"),
+                    value.name = "Loading")
+
+# Save to tab-delimited text file
+write.table(loadings_df, "plantago_pseudo_CHG_loadings_with_positions.csv",
+            sep = ";", quote = FALSE, row.names = FALSE)
+
+```
+
+```{r CHG PLOTTING DAPC, echo=FALSE, message=FALSE, warning=FALSE, results='hold'}
+# cREATING A DATAFRAME WITH DAPC, TREATMENT AND SAMPLE ID
+dapc_scores <- as.data.frame(dapc_res$ind.coord)
+dapc_scores$id <- sample_ids
+dapc_scores$combined <- grp
+
+# Correct factor levels and labels (matching your desired order and names)
+dapc_scores$combined <- factor(dapc_scores$combined,
+                               levels = c("0", "2", "1", "3"),
+                               labels = c("Grazed + Clipped",
+                                          "Grazed + Unclipped",
+                                          "Ungrazed + Clipped",
+                                          "Ungrazed + Unclipped"))
+
+# Compute group centroids
+centroids <- dapc_scores %>%
+  group_by(combined) %>%
+  summarise(LD1 = mean(LD1), LD2 = mean(LD2))
+
+# Plot
+ggplot(dapc_scores, aes(x = LD1, y = LD2, color = combined)) +
+  # Vectors from centroid to each point
+  geom_segment(data = dapc_scores %>%
+                 left_join(centroids, by = "combined"),
+               aes(x = LD1.y, y = LD2.y, xend = LD1.x, yend = LD2.x, color = combined),
+               alpha = 0.4, size = 0.6, inherit.aes = FALSE) +
+  # Points
+  geom_point(size = 1.8) +
+  # Open inertia/confidence ellipses
+  stat_ellipse(type = "norm", level = 0.67, size = 0.6) +
+  # Colors for each group
+  scale_color_manual(values = c(
+    "Grazed + Clipped" = "#FF69B4",
+    "Grazed + Unclipped" = "#8B3A62",
+    "Ungrazed + Clipped" = "#00FF7F",
+    "Ungrazed + Unclipped" = "#008B45"
+  )) +
+  # Legend title
+  labs(title = "DAPC of CHG Methylation in P.lagopus",
+       x = "LD1", y = "LD2",
+       color = "Herbivory treatment") +
+  # Theme adjustments
+  theme_minimal(base_size = 14) +
+  theme(
+    legend.position = "right",
+    panel.grid = element_blank(),   # remove grid
+    panel.background = element_blank(),
+    panel.border = element_rect(color = "black", fill = NA, size = 1), # box around plot
+    aspect.ratio = 1  # make the plot square
+  )
+
+```
+
+## IDENTIFYING IMPORTANT CHG SITES
+
+Utilizando un Loading plot podemos visualizar cuáles son las posiciones CHG más importantes en la separación entre grupos en el eje LD1.
+
+```{r CHG LOADING PLOT, echo=FALSE, results='hold', warning=FALSE, message=FALSE}
+# Which CHGs contribute most to separation?
+loadings <- loadingplot(dapc_res$var.contr, axis = 1, thres = 0.003, lab.jitter = 1)
+```
+
+```{r CHG Top CHG Sites contributing to LD1 separation, echo=FALSE, results='hold', warning=FALSE, message=FALSE}
+# Extraer loadings solo para LD1
+loading_ld1 <- dapc_res$var.contr[,1]  
+
+# Crear dataframe ordenado por magnitud
+loading_df <- data.frame(
+  CHG = names(loading_ld1),
+  Contribution = loading_ld1
+)
+
+loading_df <- loading_df[order(abs(loading_df$Contribution), decreasing = TRUE), ]
+
+# PLOT
+top_plot <- 
+  ggplot(loading_df[1:50, ], aes(x = reorder(CHG, Contribution), y = Contribution)) +
+  geom_bar(stat = "identity") +
+  coord_flip() +
+  theme_minimal() +
+  labs(title = "Top CHGs contributing to LD1",
+       x = "CHG site", y = "Contribution")
+
+top_plot
+```
+
+```{r CHG1 Preparing data for modeling with GLM BETAbinomial, include=FALSE}
+# Get top 9 CHGs
+top_CHGs <- loading_df$CHG[1:9]
+
+# Matriz de metilación
+CHG_meth_top <- CHG_meth_matrix[top_CHGs, ]
+
+# Transponer para que filas = muestras, columnas = CHGs
+CHG_meth_top_t <- as.data.frame(t(CHG_meth_top))
+
+# Create a matrix to relate positions to rankings
+position_to_ranking <- data.frame(
+  position = top_CHGs,
+  ranking = paste0("CHG", seq_along(top_CHGs))
+)
+
+# Add 3 new columns based on ranking
+position_to_ranking$percent <- paste0(position_to_ranking$ranking, "_%")
+position_to_ranking$Cs      <- paste0(position_to_ranking$ranking, "_Cs")
+position_to_ranking$Ts      <- paste0(position_to_ranking$ranking, "_Ts")
+
+
+# Rename column names using rankings instead of positions to make easier for modeling
+CHG_meth_top_t <- CHG_meth_top_t %>%
+  rename_with(
+    ~ position_to_ranking$percent[match(., position_to_ranking$position)],
+    .cols = position_to_ranking$position
+  )
+
+# Añadir información de grupo
+treatment_table <- treatment_table[match(colnames(CHG_meth_matrix), treatment_table$id), ]
+CHG_meth_top_t$sample_id <- rownames(CHG_meth_top_t)
+CHG_meth_top_t <- merge(CHG_meth_top_t, treatment_table[, c("id","combined")], by.x="sample_id", by.y="id")
+
+# Add the treatment variables
+CHG_meth_top_t <- CHG_meth_top_t %>%
+  mutate(
+    maternal = if_else(str_detect(combined, "ungraz"), "ungraz", "graz"),
+    simulation = if_else(str_detect(combined, "unclip"), "unclip", "clip")
+  )
+
+# ADDING METHYLATED AND UNMETHYLATED COUNTS TO %METHYLATION MATRIX FOR BETABINOMIAL MODELLING
+
+# Extract a matrix with the number of methylated cytosines for each position
+numCs_matrix <- as.matrix(getData(CHG_meth)[ , CHG_meth@numCs.index])
+
+# Sample ids as column names
+colnames(numCs_matrix) <- CHG_meth@sample.ids
+
+# extract genomic positions
+coords <- getData(CHG_meth)$start
+
+# assign them as rownames to meth_matrix
+rownames(numCs_matrix) <- coords
+
+# Matriz de metilación 
+numCs_top <- numCs_matrix[top_CHGs, ] 
+
+# Transponer para que filas = muestras, columnas = CHGs 
+numCs_top_t <- as.data.frame(t(numCs_top))
+
+# Rename column names using rankings instead of positions to make easier for modeling
+numCs_top_t <- numCs_top_t %>%
+  rename_with(
+    ~ position_to_ranking$Cs[match(., position_to_ranking$position)],
+    .cols = position_to_ranking$position
+  )
+
+
+
+# Extract a matrix with the number of methylated cytosines for each position
+numTs_matrix <- as.matrix(getData(CHG_meth)[ , CHG_meth@numTs.index])
+
+# Sample ids as column names
+colnames(numTs_matrix) <- CHG_meth@sample.ids
+
+# extract genomic positions
+coords <- getData(CHG_meth)$start
+
+# assign them as rownames to meth_matrix
+rownames(numTs_matrix) <- coords
+
+# Matriz de metilación 
+numTs_top <- numTs_matrix[top_CHGs, ] 
+
+# Transponer para que filas = muestras, columnas = CHGs 
+numTs_top_t <- as.data.frame(t(numTs_top))
+
+# Rename column names using rankings instead of positions to make easier for modeling
+numTs_top_t <- numTs_top_t %>%
+  rename_with(
+    ~ position_to_ranking$Ts[match(., position_to_ranking$position)],
+    .cols = position_to_ranking$position
+  )
+
+# MAKING SURE ROWNAMES ARE IDENTICAL IN CONTENT AND ORDER BEFORE BINDING ALL DATAFRAMES
+identical(rownames(numTs_top_t), rownames(numCs_top_t)) &&
+  identical(rownames(numTs_top_t), rownames(CHG_meth_top_t))
+
+CHG_model_data <- cbind(CHG_meth_top_t, numCs_top_t, numTs_top_t)
+
+
+
+```
+
+## HERBIVORY AND METHYLATION
+
+Una vez hemos identificado los sitios de interés, podemos visualizar los porcentajes de metilación según tratamiento y ajustar modelos de regresión.
+
+```{r CHG BOXPLOTS METHYLATION percent IN 9 TOP CHGs FOR LD1 SEPARATION, echo=FALSE, results='hold', warning=FALSE, message=FALSE}
+ggplot(
+  CHG_meth_top_t %>% 
+    pivot_longer(cols = starts_with("CHG"), names_to = "CHG", values_to = "methylation")%>%
+    mutate(CHG = sub("_%", "", CHG)),
+  aes(x = combined, y = methylation, fill = combined)
+) +
+  geom_boxplot() +
+  facet_wrap(~CHG, scales = "free_y") +
+  scale_fill_manual(values = c(
+    "graz-unclip" = "#8B3A62",
+    "graz-clip" = "#FF69B4",
+    "ungraz-unclip" = "#008B45",
+    "ungraz-clip" = "#00FF7F"
+  )) +
+  theme_minimal() +
+  theme(axis.text.x = element_blank()) +  # <-- esto quita los labels
+  labs(
+    title = "Methylation of the 9 top CHGs separating LD1",
+    x = "Treatment", 
+    y = "% Methylation"
+  )
+```
+
+```{r CHG OUTLIERS IN BOXPLOTS METHYLATION percent IN 9 TOP CHGs FOR LD1 SEPARATION, echo=FALSE, results='hold', warning=FALSE, message=FALSE}
+# library(ggrepel)
+# 
+# # Reshape data
+# df_long <- CHG_meth_top_t %>%
+#   pivot_longer(cols = starts_with("CHG"),
+#                names_to = "CHG",
+#                values_to = "methylation") %>%
+#   mutate(CHG = sub("_%", "", CHG))
+# 
+# # Function to flag outliers per CHG x treatment group
+# find_outliers <- function(x) {
+#   q1 <- quantile(x, 0.25, na.rm = TRUE)
+#   q3 <- quantile(x, 0.75, na.rm = TRUE)
+#   iqr <- q3 - q1
+#   lower <- q1 - 1.5 * iqr
+#   upper <- q3 + 1.5 * iqr
+#   x < lower | x > upper
+# }
+# 
+# df_long <- df_long %>%
+#   group_by(CHG, combined) %>%
+#   mutate(outlier = find_outliers(methylation)) %>%
+#   ungroup()
+# 
+# # Plot
+# ggplot(df_long, aes(x = combined, y = methylation, fill = combined)) +
+#   geom_boxplot(outlier.shape = NA) + # don't draw default outliers
+#   geom_point(data = df_long %>% filter(outlier),
+#              aes(x = combined, y = methylation),
+#              shape = 21, fill = "black", color = "black", size = 2) +
+#   geom_text_repel(
+#     data = df_long %>% filter(outlier),
+#     aes(label = sample_id),
+#     size = 3,
+#     max.overlaps = 10
+#   ) +
+#   facet_wrap(~CHG, scales = "free_y") +
+#   scale_fill_manual(values = c(
+#     "graz-unclip" = "#8B3A62",
+#     "graz-clip"   = "#FF69B4",
+#     "ungraz-unclip" = "#008B45",
+#     "ungraz-clip" = "#00FF7F"
+#   )) +
+#   theme_minimal() +
+#   theme(axis.text.x = element_blank()) +
+#   labs(
+#     title = "Methylation of the 9 top CHGs separating LD1",
+#     x = "Treatment",
+#     y = "% Methylation"
+#   )
+
+```
+
+## BETA-BINOMIAL REGRESSION MODEL
+
+Para evaluar el efecto individual e interactivo de los dos tratamientos sobre el porcentaje de metilación de cada CHG, utilizamos modelos de regresión con distribución beta-binomial.
+
+Los porcentajes de metilación de cada CHG para cada muestra se calculan en base al conteo de citosinas metiladas y el conteo de citosinas sin metilar en ese sitio CHG.
+
+Por ello, la distribución de nuestra variable respuesta tiene una distribución binomial. No obstante, las proporciones obtenidas tienen una variabilidad enorme y muchos 0s. Esto genera sobredispersión y los modelos con distribución binomial o quasibinomial no son buenos.
+
+En cambio, la familia beta-binomial del paquete glmmTMB es la más adecuada para hacer regresiones con este tipo de datos.
+
+Aquí doy una idea de cómo son los modelos que estoy haciendo. CHG1 es el nombre que le he puesto al principal CHG causando la separación entre tratamientos en el eje LD1. Abajo indico la posición que ocupa ese CHG en el pseudogenoma que he creado.
+
+```{r CHG1 Modeling linear regression with BETAbinomial family, include=FALSE}
+# Model
+CHG1model_bb <- glmmTMB(
+  cbind(CHG1_Cs, CHG1_Ts) 
+  ~ simulation + maternal + simulation:maternal,
+  family = betabinomial, 
+  data = CHG_model_data)
+
+# extract N
+sample_size <- nrow(CHG_model_data)
+
+# Extract formula
+model_formula <- formula(CHG1model_bb)
+model_formula_clean <- deparse(model_formula)
+
+
+# Get position from lookup table
+CHG1_position <- position_to_ranking$position[position_to_ranking$ranking == "CHG1"]
+
+```
+
+**`r model_formula_clean`**\
+CHG1 position = **`r CHG1_position`**\
+n = **`r sample_size`**
+
+```{r CHG1 Post-hoc Comparisons with Tukeys HSD, echo=FALSE, include=FALSE}
+# This will compare maternal levels within each level of simulation
+posthoc_maternal <- emmeans(CHG1model_bb, pairwise ~ maternal | simulation, adjust = "tukey")
+print(posthoc_maternal)
+
+# This will compare simulation levels within each maternal
+posthoc_simulation <- emmeans(CHG1model_bb, pairwise ~ simulation | maternal, adjust = "tukey")
+print(posthoc_simulation)
+
+# Visualizing results
+
+# Plot treatment differences within each grazer
+plot(posthoc_maternal$emmeans)  
+
+# Plot grazer differences within each treatment
+plot(posthoc_simulation$emmeans)
+
+```
+
+### [CHG1 Post-hoc Comparisons with Tukeys HSD]{.underline}
+
+```{r Post-hoc CHG1, echo=FALSE, results='hold', warning=FALSE, message=FALSE}
+# Format simulation contrasts
+sim_contrasts <- as.data.frame(posthoc_simulation$contrasts) %>%
+  mutate(p.value = ifelse(p.value < 0.001, "<0.001",
+                          sprintf("%.3f", p.value)))
+
+kable(sim_contrasts, digits = 2, escape = FALSE)
+
+# Format maternal contrasts
+maternal_contrasts <- as.data.frame(posthoc_maternal$contrasts) %>%
+  mutate(p.value = ifelse(p.value < 0.001, "<0.001",
+                          sprintf("%.3f", p.value)))
+
+kable(maternal_contrasts, digits = 2, escape = FALSE)
+```
+
+```{r CHG2 Modeling linear regression with BETAbinomial family, include=FALSE}
+# Model
+CHG2model_bb <- glmmTMB(
+  cbind(CHG2_Cs, CHG2_Ts) 
+  ~ simulation + maternal + simulation:maternal,
+  family = betabinomial, 
+  data = CHG_model_data)
+
+# extract N
+sample_size <- nrow(CHG_model_data)
+
+# Extract formula
+model_formula <- formula(CHG2model_bb)
+model_formula_clean <- deparse(model_formula)
+
+
+# Get position from lookup table
+CHG2_position <- position_to_ranking$position[position_to_ranking$ranking == "CHG2"]
+
+```
+
+**`r model_formula_clean`**\
+CHG2 position = **`r CHG2_position`**\
+n = **`r sample_size`**
+
+```{r CHG2 Post-hoc Comparisons with Tukeys HSD, echo=FALSE, include=FALSE}
+# This will compare maternal levels within each level of simulation
+posthoc_maternal <- emmeans(CHG2model_bb, pairwise ~ maternal | simulation, adjust = "tukey")
+print(posthoc_maternal)
+
+# This will compare simulation levels within each maternal
+posthoc_simulation <- emmeans(CHG2model_bb, pairwise ~ simulation | maternal, adjust = "tukey")
+print(posthoc_simulation)
+
+# Visualizing results
+
+# Plot treatment differences within each grazer
+plot(posthoc_maternal$emmeans)  
+
+# Plot grazer differences within each treatment
+plot(posthoc_simulation$emmeans)
+
+```
+
+### [CHG2 Post-hoc Comparisons with Tukeys HSD]{.underline}
+
+```{r Post-hoc CHG2, echo=FALSE, results='hold', warning=FALSE, message=FALSE}
+# Format simulation contrasts
+sim_contrasts <- as.data.frame(posthoc_simulation$contrasts) %>%
+  mutate(p.value = ifelse(p.value < 0.001, "<0.001",
+                          sprintf("%.3f", p.value)))
+
+kable(sim_contrasts, digits = 2, escape = FALSE)
+
+# Format maternal contrasts
+maternal_contrasts <- as.data.frame(posthoc_maternal$contrasts) %>%
+  mutate(p.value = ifelse(p.value < 0.001, "<0.001",
+                          sprintf("%.3f", p.value)))
+
+kable(maternal_contrasts, digits = 2, escape = FALSE)
+```
+
+```{r CHG3 Modeling linear regression with BETAbinomial family, include=FALSE}
+# Model
+CHG3model_bb <- glmmTMB(
+  cbind(CHG3_Cs, CHG3_Ts) 
+  ~ simulation + maternal + simulation:maternal,
+  family = betabinomial, 
+  data = CHG_model_data)
+
+# extract N
+sample_size <- nrow(CHG_model_data)
+
+# Extract formula
+model_formula <- formula(CHG3model_bb)
+model_formula_clean <- deparse(model_formula)
+
+
+# Get position from lookup table
+CHG3_position <- position_to_ranking$position[position_to_ranking$ranking == "CHG3"]
+
+```
+
+**`r model_formula_clean`**\
+CHG3 position = **`r CHG3_position`**\
+n = **`r sample_size`**
+
+```{r CHG3 Post-hoc Comparisons with Tukeys HSD, echo=FALSE, include=FALSE}
+# This will compare maternal levels within each level of simulation
+posthoc_maternal <- emmeans(CHG3model_bb, pairwise ~ maternal | simulation, adjust = "tukey")
+print(posthoc_maternal)
+
+# This will compare simulation levels within each maternal
+posthoc_simulation <- emmeans(CHG3model_bb, pairwise ~ simulation | maternal, adjust = "tukey")
+print(posthoc_simulation)
+
+# Visualizing results
+
+# Plot treatment differences within each grazer
+plot(posthoc_maternal$emmeans)  
+
+# Plot grazer differences within each treatment
+plot(posthoc_simulation$emmeans)
+
+```
+
+### [CHG3 Post-hoc Comparisons with Tukeys HSD]{.underline}
+
+```{r Post-hoc CHG3, echo=FALSE, results='hold', warning=FALSE, message=FALSE}
+# Format simulation contrasts
+sim_contrasts <- as.data.frame(posthoc_simulation$contrasts) %>%
+  mutate(p.value = ifelse(p.value < 0.001, "<0.001",
+                          sprintf("%.3f", p.value)))
+
+kable(sim_contrasts, digits = 2, escape = FALSE)
+
+# Format maternal contrasts
+maternal_contrasts <- as.data.frame(posthoc_maternal$contrasts) %>%
+  mutate(p.value = ifelse(p.value < 0.001, "<0.001",
+                          sprintf("%.3f", p.value)))
+
+kable(maternal_contrasts, digits = 2, escape = FALSE)
+```
+
+```{r CHG4 Modeling linear regression with BETAbinomial family, include=FALSE}
+# Model
+CHG4model_bb <- glmmTMB(
+  cbind(CHG4_Cs, CHG4_Ts) 
+  ~ simulation + maternal + simulation:maternal,
+  family = betabinomial, 
+  data = CHG_model_data)
+
+# extract N
+sample_size <- nrow(CHG_model_data)
+
+# Extract formula
+model_formula <- formula(CHG4model_bb)
+model_formula_clean <- deparse(model_formula)
+
+
+# Get position from lookup table
+CHG4_position <- position_to_ranking$position[position_to_ranking$ranking == "CHG4"]
+
+```
+
+**`r model_formula_clean`**\
+CHG4 position = **`r CHG4_position`**\
+n = **`r sample_size`**
+
+```{r CHG4 Post-hoc Comparisons with Tukeys HSD, echo=FALSE, include=FALSE}
+# This will compare maternal levels within each level of simulation
+posthoc_maternal <- emmeans(CHG4model_bb, pairwise ~ maternal | simulation, adjust = "tukey")
+print(posthoc_maternal)
+
+# This will compare simulation levels within each maternal
+posthoc_simulation <- emmeans(CHG4model_bb, pairwise ~ simulation | maternal, adjust = "tukey")
+print(posthoc_simulation)
+
+# Visualizing results
+
+# Plot treatment differences within each grazer
+plot(posthoc_maternal$emmeans)  
+
+# Plot grazer differences within each treatment
+plot(posthoc_simulation$emmeans)
+
+```
+
+### [CHG4 Post-hoc Comparisons with Tukeys HSD]{.underline}
+
+```{r Post-hoc CHG4, echo=FALSE, results='hold', warning=FALSE, message=FALSE}
+# Format simulation contrasts
+sim_contrasts <- as.data.frame(posthoc_simulation$contrasts) %>%
+  mutate(p.value = ifelse(p.value < 0.001, "<0.001",
+                          sprintf("%.3f", p.value)))
+
+kable(sim_contrasts, digits = 2, escape = FALSE)
+
+# Format maternal contrasts
+maternal_contrasts <- as.data.frame(posthoc_maternal$contrasts) %>%
+  mutate(p.value = ifelse(p.value < 0.001, "<0.001",
+                          sprintf("%.3f", p.value)))
+
+kable(maternal_contrasts, digits = 2, escape = FALSE)
+```
+
+```{r CHG5 Modeling linear regression with BETAbinomial family, include=FALSE}
+# Model
+CHG5model_bb <- glmmTMB(
+  cbind(CHG5_Cs, CHG5_Ts) 
+  ~ simulation + maternal + simulation:maternal,
+  family = betabinomial, 
+  data = CHG_model_data)
+
+# extract N
+sample_size <- nrow(CHG_model_data)
+
+# Extract formula
+model_formula <- formula(CHG5model_bb)
+model_formula_clean <- deparse(model_formula)
+
+
+# Get position from lookup table
+CHG5_position <- position_to_ranking$position[position_to_ranking$ranking == "CHG5"]
+
+```
+
+**`r model_formula_clean`**\
+CHG5 position = **`r CHG5_position`**\
+n = **`r sample_size`**
+
+```{r CHG5 Post-hoc Comparisons with Tukeys HSD, echo=FALSE, include=FALSE}
+# This will compare maternal levels within each level of simulation
+posthoc_maternal <- emmeans(CHG5model_bb, pairwise ~ maternal | simulation, adjust = "tukey")
+print(posthoc_maternal)
+
+# This will compare simulation levels within each maternal
+posthoc_simulation <- emmeans(CHG5model_bb, pairwise ~ simulation | maternal, adjust = "tukey")
+print(posthoc_simulation)
+
+# Visualizing results
+
+# Plot treatment differences within each grazer
+plot(posthoc_maternal$emmeans)  
+
+# Plot grazer differences within each treatment
+plot(posthoc_simulation$emmeans)
+
+```
+
+### [CHG5 Post-hoc Comparisons with Tukeys HSD]{.underline}
+
+```{r Post-hoc CHG5, echo=FALSE, results='hold', warning=FALSE, message=FALSE}
+# Format simulation contrasts
+sim_contrasts <- as.data.frame(posthoc_simulation$contrasts) %>%
+  mutate(p.value = ifelse(p.value < 0.001, "<0.001",
+                          sprintf("%.3f", p.value)))
+
+kable(sim_contrasts, digits = 2, escape = FALSE)
+
+# Format maternal contrasts
+maternal_contrasts <- as.data.frame(posthoc_maternal$contrasts) %>%
+  mutate(p.value = ifelse(p.value < 0.001, "<0.001",
+                          sprintf("%.3f", p.value)))
+
+kable(maternal_contrasts, digits = 2, escape = FALSE)
+```
+
+```{r CHG6 Modeling linear regression with BETAbinomial family, include=FALSE}
+# Model
+CHG6model_bb <- glmmTMB(
+  cbind(CHG6_Cs, CHG6_Ts) 
+  ~ simulation + maternal + simulation:maternal,
+  family = betabinomial, 
+  data = CHG_model_data)
+
+# extract N
+sample_size <- nrow(CHG_model_data)
+
+# Extract formula
+model_formula <- formula(CHG6model_bb)
+model_formula_clean <- deparse(model_formula)
+
+
+# Get position from lookup table
+CHG6_position <- position_to_ranking$position[position_to_ranking$ranking == "CHG6"]
+
+```
+
+**`r model_formula_clean`**\
+CHG6 position = **`r CHG6_position`**\
+n = **`r sample_size`**
+
+```{r CHG6 Post-hoc Comparisons with Tukeys HSD, echo=FALSE, include=FALSE}
+# This will compare maternal levels within each level of simulation
+posthoc_maternal <- emmeans(CHG6model_bb, pairwise ~ maternal | simulation, adjust = "tukey")
+print(posthoc_maternal)
+
+# This will compare simulation levels within each maternal
+posthoc_simulation <- emmeans(CHG6model_bb, pairwise ~ simulation | maternal, adjust = "tukey")
+print(posthoc_simulation)
+
+# Visualizing results
+
+# Plot treatment differences within each grazer
+plot(posthoc_maternal$emmeans)  
+
+# Plot grazer differences within each treatment
+plot(posthoc_simulation$emmeans)
+
+```
+
+### [CHG6 Post-hoc Comparisons with Tukeys HSD]{.underline}
+
+```{r Post-hoc CHG6, echo=FALSE, results='hold', warning=FALSE, message=FALSE}
+# Format simulation contrasts
+sim_contrasts <- as.data.frame(posthoc_simulation$contrasts) %>%
+  mutate(p.value = ifelse(p.value < 0.001, "<0.001",
+                          sprintf("%.3f", p.value)))
+
+kable(sim_contrasts, digits = 2, escape = FALSE)
+
+# Format maternal contrasts
+maternal_contrasts <- as.data.frame(posthoc_maternal$contrasts) %>%
+  mutate(p.value = ifelse(p.value < 0.001, "<0.001",
+                          sprintf("%.3f", p.value)))
+
+kable(maternal_contrasts, digits = 2, escape = FALSE)
+```
+
+```{r CHG7 Modeling linear regression with BETAbinomial family, include=FALSE}
+# Model
+CHG7model_bb <- glmmTMB(
+  cbind(CHG7_Cs, CHG7_Ts) 
+  ~ simulation + maternal + simulation:maternal,
+  family = betabinomial, 
+  data = CHG_model_data)
+
+# extract N
+sample_size <- nrow(CHG_model_data)
+
+# Extract formula
+model_formula <- formula(CHG7model_bb)
+model_formula_clean <- deparse(model_formula)
+
+
+# Get position from lookup table
+CHG7_position <- position_to_ranking$position[position_to_ranking$ranking == "CHG7"]
+
+```
+
+**`r model_formula_clean`**\
+CHG7 position = **`r CHG7_position`**\
+n = **`r sample_size`**
+
+```{r CHG7 Post-hoc Comparisons with Tukeys HSD, echo=FALSE, include=FALSE}
+# This will compare maternal levels within each level of simulation
+posthoc_maternal <- emmeans(CHG7model_bb, pairwise ~ maternal | simulation, adjust = "tukey")
+print(posthoc_maternal)
+
+# This will compare simulation levels within each maternal
+posthoc_simulation <- emmeans(CHG7model_bb, pairwise ~ simulation | maternal, adjust = "tukey")
+print(posthoc_simulation)
+
+# Visualizing results
+
+# Plot treatment differences within each grazer
+plot(posthoc_maternal$emmeans)  
+
+# Plot grazer differences within each treatment
+plot(posthoc_simulation$emmeans)
+
+```
+
+### [CHG7 Post-hoc Comparisons with Tukeys HSD]{.underline}
+
+```{r Post-hoc CHG7, echo=FALSE, results='hold', warning=FALSE, message=FALSE}
+# Format simulation contrasts
+sim_contrasts <- as.data.frame(posthoc_simulation$contrasts) %>%
+  mutate(p.value = ifelse(p.value < 0.001, "<0.001",
+                          sprintf("%.3f", p.value)))
+
+kable(sim_contrasts, digits = 2, escape = FALSE)
+
+# Format maternal contrasts
+maternal_contrasts <- as.data.frame(posthoc_maternal$contrasts) %>%
+  mutate(p.value = ifelse(p.value < 0.001, "<0.001",
+                          sprintf("%.3f", p.value)))
+
+kable(maternal_contrasts, digits = 2, escape = FALSE)
+```
+
+```{r CHG8 Modeling linear regression with BETAbinomial family, include=FALSE}
+# Model
+CHG8model_bb <- glmmTMB(
+  cbind(CHG8_Cs, CHG8_Ts) 
+  ~ simulation + maternal + simulation:maternal,
+  family = betabinomial, 
+  data = CHG_model_data)
+
+# extract N
+sample_size <- nrow(CHG_model_data)
+
+# Extract formula
+model_formula <- formula(CHG8model_bb)
+model_formula_clean <- deparse(model_formula)
+
+
+# Get position from lookup table
+CHG8_position <- position_to_ranking$position[position_to_ranking$ranking == "CHG8"]
+
+```
+
+**`r model_formula_clean`**\
+CHG8 position = **`r CHG8_position`**\
+n = **`r sample_size`**
+
+```{r CHG8 Post-hoc Comparisons with Tukeys HSD, echo=FALSE, include=FALSE}
+# This will compare maternal levels within each level of simulation
+posthoc_maternal <- emmeans(CHG8model_bb, pairwise ~ maternal | simulation, adjust = "tukey")
+print(posthoc_maternal)
+
+# This will compare simulation levels within each maternal
+posthoc_simulation <- emmeans(CHG8model_bb, pairwise ~ simulation | maternal, adjust = "tukey")
+print(posthoc_simulation)
+
+# Visualizing results
+
+# Plot treatment differences within each grazer
+plot(posthoc_maternal$emmeans)  
+
+# Plot grazer differences within each treatment
+plot(posthoc_simulation$emmeans)
+
+```
+
+### [CHG8 Post-hoc Comparisons with Tukeys HSD]{.underline}
+
+```{r Post-hoc CHG8, echo=FALSE, results='hold', warning=FALSE, message=FALSE}
+# Format simulation contrasts
+sim_contrasts <- as.data.frame(posthoc_simulation$contrasts) %>%
+  mutate(p.value = ifelse(p.value < 0.001, "<0.001",
+                          sprintf("%.3f", p.value)))
+
+kable(sim_contrasts, digits = 2, escape = FALSE)
+
+# Format maternal contrasts
+maternal_contrasts <- as.data.frame(posthoc_maternal$contrasts) %>%
+  mutate(p.value = ifelse(p.value < 0.001, "<0.001",
+                          sprintf("%.3f", p.value)))
+
+kable(maternal_contrasts, digits = 2, escape = FALSE)
+```
+
+```{r CHG9 Modeling linear regression with BETAbinomial family, include=FALSE}
+# Model
+CHG9model_bb <- glmmTMB(
+  cbind(CHG9_Cs, CHG9_Ts) 
+  ~ simulation + maternal + simulation:maternal,
+  family = betabinomial, 
+  data = CHG_model_data)
+
+# extract N
+sample_size <- nrow(CHG_model_data)
+
+# Extract formula
+model_formula <- formula(CHG9model_bb)
+model_formula_clean <- deparse(model_formula)
+
+
+# Get position from lookup table
+CHG9_position <- position_to_ranking$position[position_to_ranking$ranking == "CHG9"]
+
+```
+
+**`r model_formula_clean`**\
+CHG9 position = **`r CHG9_position`**\
+n = **`r sample_size`**
+
+```{r CHG9 Post-hoc Comparisons with Tukeys HSD, echo=FALSE, include=FALSE}
+# This will compare maternal levels within each level of simulation
+posthoc_maternal <- emmeans(CHG9model_bb, pairwise ~ maternal | simulation, adjust = "tukey")
+print(posthoc_maternal)
+
+# This will compare simulation levels within each maternal
+posthoc_simulation <- emmeans(CHG9model_bb, pairwise ~ simulation | maternal, adjust = "tukey")
+print(posthoc_simulation)
+
+# Visualizing results
+
+# Plot treatment differences within each grazer
+plot(posthoc_maternal$emmeans)  
+
+# Plot grazer differences within each treatment
+plot(posthoc_simulation$emmeans)
+
+```
+
+### [CHG9 Post-hoc Comparisons with Tukeys HSD]{.underline}
+
+```{r Post-hoc CHG9, echo=FALSE, results='hold', warning=FALSE, message=FALSE}
+# Format simulation contrasts
+sim_contrasts <- as.data.frame(posthoc_simulation$contrasts) %>%
+  mutate(p.value = ifelse(p.value < 0.001, "<0.001",
+                          sprintf("%.3f", p.value)))
+
+kable(sim_contrasts, digits = 2, escape = FALSE)
+
+# Format maternal contrasts
+maternal_contrasts <- as.data.frame(posthoc_maternal$contrasts) %>%
+  mutate(p.value = ifelse(p.value < 0.001, "<0.001",
+                          sprintf("%.3f", p.value)))
+
+kable(maternal_contrasts, digits = 2, escape = FALSE)
+```
+
+## DIFFERENTIAL METHYLATION ANALYSIS
+
+Con la función "pairwise_diff()" de methylKit, podemos comparar la población de cada tratamiento con la población control (en este caso el control es Grazed+Unclipped). Obtenemos hipo- e hiper- metilaciones con respecto al control, y cada una de estas diferencias está asociada a un p-valor. En este caso hemos considerado como Differentially Methylated Points (**DMPs**) cuando la **diferencia de metilación \> 10%** y el **p-valor \< 0.05**
+
+```{r CHG DIFFERENTIAL METHYLATION ANALYSIS, include=FALSE}
+# I will create a function to then compare all against all
+
+# Function for pairwise comparison
+pairwise_diff <- function(meth_obj, g1, g2, min_diff = 10, q_cutoff = 0.05) {
+  
+  # Subset the object to only keep the two groups of interest
+  sub_obj <- reorganize(
+    meth_obj,
+    sample.ids = getSampleID(meth_obj)[meth_obj@treatment %in% c(g1, g2)],
+    treatment = meth_obj@treatment[meth_obj@treatment %in% c(g1, g2)]
+  )
+  
+  # Run differential methylation
+  diff <- calculateDiffMeth(
+    sub_obj,
+    overdispersion = "MN",
+    test = "Chisq"
+  )
+  
+  # Extract significant CHGs
+  sig <- getMethylDiff(diff, difference = min_diff, qvalue = q_cutoff)
+  
+  return(list(all = diff, significant = sig))
+}
+
+
+# MAKE COMPARISONS
+
+# FIRST 3 ARE USING GU AS CONTROL AND COMPARED TO THE 2 TREATMENTS AND THE COMBINATION OF BOTH TREATMENTS
+# GRAZED VS. UNGRAZED (WITHIN UNCLIPPED)
+res_GUvsUU <- pairwise_diff(CHG_meth, g1 = 2, g2 = 3)
+# UNCLIPPED VS. CLIPPED (WITHIN GRAZED)
+res_GUvsGC <- pairwise_diff(CHG_meth, g1 = 2, g2 = 0)
+# GRAZED+UNCLIPPED VS. UNGRAZED+CLIPPED 
+res_GUvsUC <- pairwise_diff(CHG_meth, g1 = 2, g2 = 1)
+```
+
+```{r CHG VOLCANO PLOTS FOR VISUALIZING DMPs, echo=FALSE, results='hold', warning=FALSE, message=FALSE}
+# Volcano plot function
+plot_volcano <- function(diff_obj, min_diff = 10, q_cutoff = 0.05, title = "") {
+  df <- as.data.frame(diff_obj)
+  
+  # Calculate variables
+  df$logq <- -log10(df$qvalue)
+  df$status <- ifelse(abs(df$meth.diff) >= min_diff & df$qvalue <= q_cutoff, "sig", "ns")
+  
+  # Plot
+  p <- ggplot(df, aes(x = meth.diff, y = logq)) +
+    geom_point(aes(color = status), alpha = 0.6, size = 1.5, show.legend = FALSE) +
+    scale_color_manual(values = c("sig" = "red", "ns" = "black")) +
+    geom_vline(xintercept = c(-min_diff, min_diff), linetype = "dashed", color = "blue") +
+    geom_hline(yintercept = -log10(q_cutoff), linetype = "dashed", color = "blue") +
+    labs(
+      x = "% Methylation Difference",
+      y = expression(-log[10]("q-value")),
+      title = title
+    ) +
+    theme_bw() +
+    theme(
+      axis.title = element_blank(),  # remove axis labels
+      axis.text = element_text(size = 9),
+      plot.title = element_text(size = 11, hjust = 0.5)
+    )
+  
+  return(p)
+}
+
+# Generate volcano plots
+p1 <- plot_volcano(res_GUvsUU$all, title = "Ungrazed")
+p2 <- plot_volcano(res_GUvsGC$all, title = "Clipped")
+p3 <- plot_volcano(res_GUvsUC$all, title = "Ungrazed + Clipped")
+
+
+grid.arrange(
+  p1, p2, p3, ncol = 3,
+  left   = textGrob(expression(-log[10](q-value)), rot = 90, gp = gpar(fontsize = 12)),
+  bottom = textGrob("% Methylation Difference", gp = gpar(fontsize = 12))
+)
+
+```
+
+```{r CHG DMPs table, echo=FALSE, results='hold', warning=FALSE, message=FALSE}
+# Extract the significant results
+sigUngrazed <- res_GUvsUU$significant
+sigClipped <- res_GUvsGC$significant
+sigUngrazedClipped <- res_GUvsUC$significant
+
+# Count positives and negatives
+n_posUngrazed <- sum(sigUngrazed$meth.diff > 0)
+n_negUngrazed <- sum(sigUngrazed$meth.diff < 0)
+
+n_posClipped <- sum(sigClipped$meth.diff > 0)
+n_negClipped <- sum(sigClipped$meth.diff < 0)
+
+n_posUngrazedClipped <- sum(sigUngrazedClipped$meth.diff > 0)
+n_negUngrazedClipped <- sum(sigUngrazedClipped$meth.diff < 0)
+
+
+# Build the table
+meth_table <- data.frame(
+  Condition = c("Hypermethylated", "Hypomethylated"),
+  Ungrazed = c(n_posUngrazed, n_negUngrazed),
+  Clipped = c(n_posClipped, n_negClipped),
+  `Ungrazed + Clipped` = c(n_posUngrazedClipped, n_negUngrazedClipped)
+)
+
+# Show nice table in R Markdown
+knitr::kable(meth_table, align = "c", caption = "Differentially methylated sites")
+
+```

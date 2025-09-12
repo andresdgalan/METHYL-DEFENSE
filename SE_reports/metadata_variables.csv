@@ -1,0 +1,25 @@
+variable,description,units,method_SE
+Sequences analysed in total,Total sequences analysed,count,Standard error calculated across reads or alignments per Bismark summary
+Number of alignments with a unique best hit from the different alignments,Unique best alignments,count,Standard error calculated across reads or alignments per Bismark summary
+Mapping efficiency,Mapping efficiency,%,Standard error calculated across reads or alignments per Bismark summary
+Sequences with no alignments under any condition,Sequences without alignments,count,Standard error calculated across reads or alignments per Bismark summary
+Sequences did not map uniquely,Non-unique mappings,count,Standard error calculated across reads or alignments per Bismark summary
+Sequences which were discarded because genomic sequence could not be extracted,Sequences discarded (genomic sequence could not be extracted),count,Standard error calculated across reads or alignments per Bismark summary
+Number of sequences with unique best (first) alignment came from the bowtie output,Number of sequences with unique best (first) alignment from Bowtie output,count,Standard error calculated across reads or alignments per Bismark summary
+CT/CT,Converted top strand (CT/CT),count,Standard error calculated across reads or alignments per Bismark summary
+CT/GA,Converted bottom strand (CT/GA),count,Standard error calculated across reads or alignments per Bismark summary
+GA/CT,Complementary to converted top strand (GA/CT),count,Standard error calculated across reads or alignments per Bismark summary
+GA/GA,Complementary to converted bottom strand (GA/GA),count,Standard error calculated across reads or alignments per Bismark summary
+Total number of C's analysed,Total cytosines analysed,count,Standard error calculated across reads or alignments per Bismark summary
+Total methylated C's in CpG context,Methylated C in CpG,count,Standard error calculated across reads or alignments per Bismark summary
+Total methylated C's in CHG context,Methylated C in CHG,count,Standard error calculated across reads or alignments per Bismark summary
+Total methylated C's in CHH context,Methylated C in CHH,count,Standard error calculated across reads or alignments per Bismark summary
+Total methylated C's in Unknown context,Methylated C in unknown context,count,Standard error calculated across reads or alignments per Bismark summary
+Total unmethylated C's in CpG context,Unmethylated C in CpG,count,Standard error calculated across reads or alignments per Bismark summary
+Total unmethylated C's in CHG context,Unmethylated C in CHG,count,Standard error calculated across reads or alignments per Bismark summary
+Total unmethylated C's in CHH context,Unmethylated C in CHH,count,Standard error calculated across reads or alignments per Bismark summary
+Total unmethylated C's in Unknown context,Unmethylated C in unknown context,count,Standard error calculated across reads or alignments per Bismark summary
+C methylated in CpG context,C methylation in CpG,%,Standard error calculated across reads or alignments per Bismark summary
+C methylated in CHG context,C methylation in CHG,%,Standard error calculated across reads or alignments per Bismark summary
+C methylated in CHH context,C methylation in CHH,%,Standard error calculated across reads or alignments per Bismark summary
+C methylated in Unknown context (CN or CHN),C methylation in unknown context,%,Standard error calculated across reads or alignments per Bismark summary
