@@ -1,4 +1,4 @@
-Final Alignment report
+﻿Final Alignment report
 ======================
 Sequences analysed in total:    14956206,1 ± 1802629,2
 Number of alignments with a unique best hit from the different alignments:      2947879,2 ± 308535,4

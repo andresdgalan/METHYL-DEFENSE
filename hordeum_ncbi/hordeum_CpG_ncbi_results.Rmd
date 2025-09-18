@@ -1,0 +1,276 @@
+---
+title: "H.murinum CpG NCBI"
+author: "Andrés Delgado"
+date: "2025-09-12"
+output: html_document
+---
+
+En este documento presento algunos resultados sobre los patrones de metilación de P.lagopus bajo distintos tratamientos de herbivoría. 
+
+
+## PREPROCESSING
+
+#### Brevemente resumo los pasos previos al análisis:
+
+1.  Se utilizó como genoma de referencia el ensamblaje ASM2249601v1 (Hordeum marinum, GCA_022496015.1), descargado de NCBI Genome el [02/09/2025] en el siguiente enlace: https://www.ncbi.nlm.nih.gov/datasets/genome/GCA_022496015.1/
+
+2.  Alineamiento de las lecturas de bisulfito de mis muestras tratadas con el genoma de referencia usando BISMARK en linux.
+
+3.  Generación de informes de metilación de las muestras asociados a sus posiciones en el genoma de referencia. BISMARK genera estos informes en forma de archivos .bam
+
+4.  Importación de los archivos .bam a methylkit para el análisis
+
+
+```{r setup LOADING DATA AND PACKAGES, include=FALSE}
+# Here I paste the path to the original files which is not inside the project due to their great size
+bam_dir <- "C:/Users/iglorena.IRNASE/Documents/andres/INTERTROPHIC/EPIGENETICA/NOVOGENE_DOWNLOAD/methylation_report_hordeum/ncbi_genome"
+
+bam.list <- as.list(list.files(
+  path   = bam_dir,
+  pattern = "_bismark_bt2.sorted\\.bam$",
+  full.names = FALSE
+))
+
+# In this case, one of my bams is unusable, I remove it:
+bam.list <- bam.list[!bam.list %in% c("HO308.1_bismark_bt2.sorted.bam",
+                                      "HO315.1_bismark_bt2.sorted.bam",
+                                      "HO322.1_bismark_bt2.sorted.bam",
+                                      "HO342.1_bismark_bt2.sorted.bam")]
+
+
+
+library("methylKit")
+library(ggplot2)
+library(dplyr)      # tidy
+library(tidyr)      # tidy 
+library(pheatmap)   # Correlogram
+library(dendextend) # Dendrogram
+library(reshape2)   # melt function (tidy)
+library(adegenet)   # DAPC
+library(stringr)    # str_detect (tidy)
+library(kableExtra) # Tables
+library(emmeans)    # Post-hoc
+library(glmmTMB)    # Beta-Binomial modelling
+library(gridExtra)  # Plotting many plots together
+library(grid)       # Plotting many plots together
+library(here)       # Reproducibility of working directory
+```
+
+```{r EXTRACTING COMMON INFORMATION FOR ALL CONTEXT, include=FALSE}
+# sample.id assigns a unique ID to each sample (we remove the suffix and have the id)
+sample.id <- as.list(gsub(".1_bismark_bt2.sorted\\.bam$", "", bam.list))
+
+# treatment vector specifies experimental group
+# Usually methylKit is designed for binary treatment designs
+# so i will need to encode both factors into a single one
+treatment_table <- read.table(file = here("hordeum_treatment.csv"), header = T, sep = ";")
+
+# # CHECKING THAT TREATMENT TABLE AND SAMPLE LIST ARE THE SAME
+# GET THE VECTORS
+sample_id_vec <- unlist(sample.id)
+table_ids <- treatment_table$id
+
+ # Find ids in sample.id that are NOT in treatment_table$id
+ ids_in_sample_not_in_table <- setdiff(sample_id_vec, table_ids)
+
+ # Find ids in treatment_table$id that are NOT in sample.id
+ ids_in_table_not_in_sample <- setdiff(table_ids, sample_id_vec)
+
+ # Print results
+ cat("IDs in sample.id but not in treatment_table$id:\n")
+ print(ids_in_sample_not_in_table)
+
+ cat("IDs in treatment_table$id but not in sample.id:\n")
+ print(ids_in_table_not_in_sample)
+ 
+ # Remove the unusable sample
+treatment_table <- treatment_table[!treatment_table$id %in% c("HO308", "HO315", "HO322", "HO342"), ]
+
+
+# Reorder treatment_table so its ids follow the order in sample.id
+treatment_table <- treatment_table[match(sample_id_vec, treatment_table$id), ]
+
+# Convert columns to factors
+treatment_table$maternal <- factor(treatment_table$maternal, levels = c("graz", "ungraz"))
+treatment_table$simulation <- factor(treatment_table$simulation, levels = c("clip", "unclip"))
+
+# Combine into a single factor
+treatment_table$combined <- interaction(treatment_table$maternal, treatment_table$simulation, sep = "-")
+levels(treatment_table$combined)
+# [1] "graz-clip" "ungraz-clip" "graz-unclip" "ungraz-unclip"
+
+# encode this as numeric for methylKit (e.g., 0, 1, 2, 3)
+treatment_multi <- as.numeric(treatment_table$combined) - 1
+# Now treatment has values: 0, 1, 2, 3 (corresponding to the 4 groups)
+```
+
+```{r CpG CREATING and SAVING METHYLKIT OBJECT, include=FALSE}
+# THIS STEP TAKES TOO LONG SO I WILL ONLY RUN IT WHEN I NEED TO CHANGE IT
+  # # full paths → required by processBismarkAln
+  # bam.path <- file.path(bam_dir, bam.list)
+  # bam.path  <- as.character(bam.path)
+  # sample.id <- as.character(sample.id)
+  # 
+  # 
+  # # process each BAM individually
+  # # We use this loop because we can't change directory in Rmarkdown, and processBismarkAln doesn't accept a vector of bam files, it needs them one at a time
+  # objs <- mapply(
+  #   function(file, id, tr) {
+  #     processBismarkAln(
+  #       location   = file,
+  #       sample.id  = id,
+  #       assembly   = "mock",
+  #       treatment  = tr,
+  #       mincov     = 5,
+  #       read.context = "CpG"
+  #     )
+  #   },
+  #   file = bam.path,
+  #   id   = sample.id,
+  #   tr   = treatment_multi,
+  #   SIMPLIFY = FALSE
+  # )
+  # 
+  # # merge them into one methylRawList
+  # hordeum_CpG_obj <- new("methylRawList", objs)
+  # 
+  # # set treatment vector explicitly
+  # # even though we already specified when creating the object, using the loop didn't work for treatment
+  # hordeum_CpG_obj@treatment <- treatment_multi
+  #  
+  #  # Save the result for later use
+  #  saveRDS(hordeum_CpG_obj, file = "hordeum_ncbi_CpG.rds")
+```
+
+```{r CpG LOADING METHYLOBJECT AND UNITING, include=FALSE}
+hordeum_CpG_obj <- readRDS(here("hordeum_ncbi", "hordeum_ncbi_CpG.rds"))
+
+# Unite all samples into one object to compare methylation across samples at common CpG sites
+CpG_meth <- methylKit::unite(hordeum_CpG_obj, min.per.group = 5L)
+```
+
+```{r CpG METHYLATION % MATRIX, include=FALSE}
+CpG_meth_matrix <- as.matrix(percMethylation(CpG_meth))
+# extract genomic positions
+coords <- getData(CpG_meth)$start
+
+# assign them as rownames to meth_matrix
+rownames(CpG_meth_matrix) <- coords
+```
+
+
+## DIFFERENTIAL METHYLATION ANALYSIS
+
+Con la función "pairwise_diff()" de methylKit, podemos comparar la población de cada tratamiento con la población control (en este caso el control es Grazed+Unclipped). Obtenemos hipo- e hiper- metilaciones con respecto al control, y cada una de estas diferencias está asociada a un p-valor. En este caso hemos considerado como Differentially Methylated Points (**DMPs**) cuando la **diferencia de metilación \> 10%** y el **p-valor \< 0.05**
+
+```{r CpG DIFFERENTIAL METHYLATION ANALYSIS, include=FALSE}
+# I will create a function to then compare all against all
+
+# Function for pairwise comparison
+pairwise_diff <- function(meth_obj, g1, g2, min_diff = 10, q_cutoff = 0.05) {
+  
+  # Subset the object to only keep the two groups of interest
+  sub_obj <- reorganize(
+    meth_obj,
+    sample.ids = getSampleID(meth_obj)[meth_obj@treatment %in% c(g1, g2)],
+    treatment = meth_obj@treatment[meth_obj@treatment %in% c(g1, g2)]
+  )
+  
+  # Run differential methylation
+  diff <- calculateDiffMeth(
+    sub_obj,
+    overdispersion = "MN",
+    test = "Chisq"
+  )
+  
+  # Extract significant CpGs
+  sig <- getMethylDiff(diff, difference = min_diff, qvalue = q_cutoff)
+  
+  return(list(all = diff, significant = sig))
+}
+
+
+# MAKE COMPARISONS
+
+# FIRST 3 ARE USING GU AS CONTROL AND COMPARED TO THE 2 TREATMENTS AND THE COMBINATION OF BOTH TREATMENTS
+# GRAZED VS. UNGRAZED (WITHIN UNCLIPPED)
+res_GUvsUU <- pairwise_diff(CpG_meth, g1 = 2, g2 = 3)
+# UNCLIPPED VS. CLIPPED (WITHIN GRAZED)
+res_GUvsGC <- pairwise_diff(CpG_meth, g1 = 2, g2 = 0)
+ # UNCLIPPED VS. CLIPPED (WITHIN UNGRAZED)
+ res_UUvsUC <- pairwise_diff(CpG_meth, g1 = 3, g2 = 1)
+```
+
+```{r CpG VOLCANO PLOTS FOR VISUALIZING DMPs, echo=FALSE, results='hold', warning=FALSE, message=FALSE}
+# Volcano plot function
+plot_volcano <- function(diff_obj, min_diff = 10, q_cutoff = 0.05, title = "") {
+  df <- as.data.frame(diff_obj)
+  
+  # Calculate variables
+  df$logq <- -log10(df$qvalue)
+  df$status <- ifelse(abs(df$meth.diff) >= min_diff & df$qvalue <= q_cutoff, "sig", "ns")
+  
+  # Plot
+  p <- ggplot(df, aes(x = meth.diff, y = logq)) +
+    geom_point(aes(color = status), alpha = 0.6, size = 1.5, show.legend = FALSE) +
+    scale_color_manual(values = c("sig" = "red", "ns" = "black")) +
+    geom_vline(xintercept = c(-min_diff, min_diff), linetype = "dashed", color = "blue") +
+    geom_hline(yintercept = -log10(q_cutoff), linetype = "dashed", color = "blue") +
+    labs(
+      x = "% Methylation Difference",
+      y = expression(-log[10]("q-value")),
+      title = title
+    ) +
+    theme_bw() +
+    theme(
+      axis.title = element_blank(),  # remove axis labels
+      axis.text = element_text(size = 9),
+      plot.title = element_text(size = 11, hjust = 0.5)
+    )
+  
+  return(p)
+}
+
+# Generate volcano plots
+p1 <- plot_volcano(res_GUvsUU$all, title = "Ungrazed")
+p2 <- plot_volcano(res_GUvsGC$all, title = "Clipping (Grazed)")
+p3 <- plot_volcano(res_UUvsUC$all, title = "Clipping (Ungrazed)")
+
+
+grid.arrange(
+  p1, p2, p3, ncol = 3,
+  left   = textGrob(expression(-log[10](q-value)), rot = 90, gp = gpar(fontsize = 12)),
+  bottom = textGrob("% Methylation Difference", gp = gpar(fontsize = 12))
+)
+
+```
+
+```{r CpG DMPs table, echo=FALSE, results='hold', warning=FALSE, message=FALSE}
+# Extract the significant results
+sigUngrazed <- res_GUvsUU$significant
+sigClipped <- res_GUvsGC$significant
+sigUngrazedClipped <- res_UUvsUC$significant
+
+# Count positives and negatives
+n_posUngrazed <- sum(sigUngrazed$meth.diff > 0)
+n_negUngrazed <- sum(sigUngrazed$meth.diff < 0)
+
+n_posClipped <- sum(sigClipped$meth.diff > 0)
+n_negClipped <- sum(sigClipped$meth.diff < 0)
+
+n_posUngrazedClipped <- sum(sigUngrazedClipped$meth.diff > 0)
+n_negUngrazedClipped <- sum(sigUngrazedClipped$meth.diff < 0)
+
+
+# Build the table
+meth_table <- data.frame(
+  Condition = c("Hypermethylated", "Hypomethylated"),
+  Ungrazed = c(n_posUngrazed, n_negUngrazed),
+  Clipped = c(n_posClipped, n_negClipped),
+  `Ungrazed + Clipped` = c(n_posUngrazedClipped, n_negUngrazedClipped)
+)
+
+# Show nice table in R Markdown
+knitr::kable(meth_table, align = "c", caption = "Differentially methylated sites")
+
+```

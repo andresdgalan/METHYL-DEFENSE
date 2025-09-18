@@ -1,0 +1,5 @@
+Trying to process
+	CUsersiglorena.IRNASEDocumentsandresINTERTROPHICEPIGENETICANOVOGENE_DOWNLOADmethylation_report_hordeumncbi_genomeHO308.1_bismark_bt2.sorted.bam
+Error 
+not enough alignments that pass coverage and phred score thresholds to calculate conversion rates
+ EXITING....
