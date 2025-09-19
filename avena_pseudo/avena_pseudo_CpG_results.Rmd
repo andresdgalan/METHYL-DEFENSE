@@ -35,6 +35,12 @@ bam.list <- as.list(list.files(
   full.names = FALSE
 ))
 
+# Save list as an R object
+saveRDS(bam.list, "bam_list.rds")
+
+# Read bam.list
+bam.list <- readRDS("bam_list.rds")
+
 
 library("methylKit")
 library(ggplot2)

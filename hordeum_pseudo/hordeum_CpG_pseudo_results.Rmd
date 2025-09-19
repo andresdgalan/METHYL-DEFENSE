@@ -5,8 +5,7 @@ date: "2025-09-12"
 output: html_document
 ---
 
-En este documento presento algunos resultados sobre los patrones de metilación de P.lagopus bajo distintos tratamientos de herbivoría. 
-
+En este documento presento algunos resultados sobre los patrones de metilación de P.lagopus bajo distintos tratamientos de herbivoría.
 
 ## PREPROCESSING
 
@@ -33,6 +32,13 @@ bam.list <- as.list(list.files(
   pattern = "_bismark_bt2.sorted\\.bam$",
   full.names = FALSE
 ))
+
+# Save list as an R object
+saveRDS(bam.list, "bam_list.rds")
+
+# Read bam.list
+bam.list <- readRDS("bam_list.rds")
+
 
 
 library("methylKit")
