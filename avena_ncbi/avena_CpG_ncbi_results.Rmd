@@ -25,14 +25,17 @@ En este documento presento algunos resultados sobre los patrones de metilación 
 El primer paso en el análisis ha sido explorar visualmente las diferencias en los perfiles de metilación entre tratamientos. Para ello hemos utilizado los porcentajes de metilación de cada una de las posiciones CpG (3764 posiciones del genoma con una Citosina seguida de una Guanina) y los hemos comparado entre muestras para ver cuáles se parecen más entre sí y cuáles son más diferentes.Aquí muestro un Correlograma, un Dendograma y un DAPC (Discriminant Analysis of Principal Components), que es un análisis multivariante usado en genética de poblaciones para describir y visualizar la estructura genética entre grupos.Utiliza el PCA y luego maximiza la separación entre grupos predefinidos (los tratamientos).
 
 ```{r setup LOADING DATA AND PACKAGES, include=FALSE}
-# Here I paste the path to the original files which is not inside the project due to their great size
-bam_dir <- "C:/Users/iglorena.IRNASE/Documents/andres/INTERTROPHIC/EPIGENETICA/NOVOGENE_DOWNLOAD/methylation_report_avena/ncbi_genome"
+# # Here I paste the path to the original files which is not inside the project due to their great size
+# bam_dir <- "C:/Users/iglorena.IRNASE/Documents/andres/INTERTROPHIC/EPIGENETICA/NOVOGENE_DOWNLOAD/methylation_report_avena/ncbi_genome"
+# 
+# bam.list <- as.list(list.files(
+#   path   = bam_dir,
+#   pattern = "_bismark_bt2.sorted\\.bam$",
+#   full.names = FALSE
+# ))
 
-bam.list <- as.list(list.files(
-  path   = bam_dir,
-  pattern = "_bismark_bt2.sorted\\.bam$",
-  full.names = FALSE
-))
+# Read bam.list
+bam.list <- readRDS("bam_list.rds")
 
 
 library("methylKit")
@@ -151,6 +154,9 @@ filtered_treatment <- avena_CpG_obj@treatment[keep_samples]
 
 # Convert back to methylRawList (no sample.id argument needed)
 avena_CpG_obj_filtered <- new("methylRawList", filtered_list, treatment = filtered_treatment)
+
+# Número de CpGs en cada muestra
+sapply(avena_CpG_obj_filtered, nrow)
 
 # Unite all samples into one object to compare methylation across samples at common CpG sites
 CpG_meth <- methylKit::unite(avena_CpG_obj_filtered)

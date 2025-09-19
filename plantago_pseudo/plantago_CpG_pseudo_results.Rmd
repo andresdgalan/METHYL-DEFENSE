@@ -25,17 +25,17 @@ En este documento presento algunos resultados sobre los patrones de metilación 
 El primer paso en el análisis ha sido explorar visualmente las diferencias en los perfiles de metilación entre tratamientos. Para ello hemos utilizado los porcentajes de metilación de cada una de las posiciones CpG (3764 posiciones del genoma con una Citosina seguida de una Guanina) y los hemos comparado entre muestras para ver cuáles se parecen más entre sí y cuáles son más diferentes.Aquí muestro un Correlograma, un Dendograma y un DAPC (Discriminant Analysis of Principal Components), que es un análisis multivariante usado en genética de poblaciones para describir y visualizar la estructura genética entre grupos.Utiliza el PCA y luego maximiza la separación entre grupos predefinidos (los tratamientos).
 
 ```{r setup LOADING DATA AND PACKAGES, include=FALSE}
-# Here I paste the path to the original files which is not inside the project due to their great size
-bam_dir <- "C:/Users/iglorena.IRNASE/Documents/andres/INTERTROPHIC/EPIGENETICA/NOVOGENE_DOWNLOAD/methylation_report_plantago/andres_genome"
-
-bam.list <- as.list(list.files(
-  path   = bam_dir,
-  pattern = "_bismark_bt2.sorted\\.bam$",
-  full.names = FALSE
-))
-
-# Save list as an R object
-saveRDS(bam.list, "bam_list.rds")
+# # Here I paste the path to the original files which is not inside the project due to their great size
+# bam_dir <- "C:/Users/iglorena.IRNASE/Documents/andres/INTERTROPHIC/EPIGENETICA/NOVOGENE_DOWNLOAD/methylation_report_plantago/andres_genome"
+# 
+# bam.list <- as.list(list.files(
+#   path   = bam_dir,
+#   pattern = "_bismark_bt2.sorted\\.bam$",
+#   full.names = FALSE
+# ))
+# 
+# # Save list as an R object
+# saveRDS(bam.list, "bam_list.rds")
 
 # Read bam.list
 bam.list <- readRDS("bam_list.rds")
@@ -105,44 +105,50 @@ treatment_multi <- as.numeric(treatment_table$combined) - 1
 
 ```{r CpG CREATING and SAVING METHYLKIT OBJECT, include=FALSE}
 # THIS STEP TAKES TOO LONG SO I WILL ONLY RUN IT WHEN I NEED TO CHANGE IT
-  # full paths → required by processBismarkAln
-  bam.path <- file.path(bam_dir, bam.list)
-  bam.path  <- as.character(bam.path)
-  sample.id <- as.character(sample.id)
-  
-  
-  # process each BAM individually
-  # We use this loop because we can't change directory in Rmarkdown, and processBismarkAln doesn't accept a vector of bam files, it needs them one at a time
-  objs <- mapply(
-    function(file, id, tr) {
-      processBismarkAln(
-        location   = file,
-        sample.id  = id,
-        assembly   = "mock",
-        treatment  = tr,
-        mincov     = 5,
-        read.context = "CpG"
-      )
-    },
-    file = bam.path,
-    id   = sample.id,
-    tr   = treatment_multi,
-    SIMPLIFY = FALSE
-  )
-  
-  # merge them into one methylRawList
-  plantago_CpG_obj <- new("methylRawList", objs)
-  
-  # set treatment vector explicitly
-  # even though we already specified when creating the object, using the loop didn't work for treatment
-  plantago_CpG_obj@treatment <- treatment_multi
-   
-   # Save the result for later use
-   saveRDS(plantago_CpG_obj, file = "plantago_pseudo_CpG.rds")
+  # # full paths → required by processBismarkAln
+  # bam.path <- file.path(bam_dir, bam.list)
+  # bam.path  <- as.character(bam.path)
+  # sample.id <- as.character(sample.id)
+  # 
+  # 
+  # # process each BAM individually
+  # # We use this loop because we can't change directory in Rmarkdown, and processBismarkAln doesn't accept a vector of bam files, it needs them one at a time
+  # objs <- mapply(
+  #   function(file, id, tr) {
+  #     processBismarkAln(
+  #       location   = file,
+  #       sample.id  = id,
+  #       assembly   = "mock",
+  #       treatment  = tr,
+  #       mincov     = 5,
+  #       read.context = "CpG"
+  #     )
+  #   },
+  #   file = bam.path,
+  #   id   = sample.id,
+  #   tr   = treatment_multi,
+  #   SIMPLIFY = FALSE
+  # )
+  # 
+  # # merge them into one methylRawList
+  # plantago_CpG_obj <- new("methylRawList", objs)
+  # 
+  # # set treatment vector explicitly
+  # # even though we already specified when creating the object, using the loop didn't work for treatment
+  # plantago_CpG_obj@treatment <- treatment_multi
+  #  
+  #  # Save the result for later use
+  #  saveRDS(plantago_CpG_obj, file = "plantago_pseudo_CpG.rds")
 ```
 
 ```{r CpG LOADING METHYLOBJECT AND UNITING, include=FALSE}
 plantago_CpG_obj <- readRDS(here("plantago_pseudo", "plantago_pseudo_CpG.rds"))
+
+# Número de CpGs en cada muestra
+sapply(plantago_CpG_obj, nrow)
+
+# Número total de CpGs (no único, porque diferentes muestras pueden no compartirlos)
+sum(sapply(plantago_CpG_obj, nrow))
 
 # Unite all samples into one object to compare methylation across samples at common CpG sites
 CpG_meth <- methylKit::unite(plantago_CpG_obj)
