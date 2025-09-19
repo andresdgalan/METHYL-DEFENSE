@@ -238,9 +238,12 @@ optim_a <- optim.a.score(dapc_res)
 cat("Optimal number of PCs (alpha-score):", optim_a$best, "\n")
 
 # Re-run DAPC using the optimal number of PCs suggested automatically
-dapc_res <- dapc(t(CHH_meth_matrix), grp, 
-                 n.pca = 2,  # Normaly I would use "optim_a$best" but optimal is 1, I use 2 for plotting
-                 n.da = length(levels(grp)) - 1)
+dapc_res <- dapc(
+  t(CHH_meth_matrix), 
+  grp,
+  n.pca = max(2, optim_a$best),
+  n.da  = length(levels(grp)) - 1
+)
 
 # Extract full loadings matrix (all CHHs × LDs)
 loadings <- dapc_res$var.contr  
