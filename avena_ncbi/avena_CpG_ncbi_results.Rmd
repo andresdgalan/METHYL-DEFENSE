@@ -1132,8 +1132,8 @@ pairwise_diff <- function(meth_obj, g1, g2, min_diff = 10, q_cutoff = 0.05) {
 res_GUvsUU <- pairwise_diff(CpG_meth, g1 = 2, g2 = 3)
 # UNCLIPPED VS. CLIPPED (WITHIN GRAZED)
 res_GUvsGC <- pairwise_diff(CpG_meth, g1 = 2, g2 = 0)
-# GRAZED+UNCLIPPED VS. UNGRAZED+CLIPPED 
-res_GUvsUC <- pairwise_diff(CpG_meth, g1 = 2, g2 = 1)
+ # UNCLIPPED VS. CLIPPED (WITHIN UNGRAZED)
+ res_UUvsUC <- pairwise_diff(CpG_meth, g1 = 3, g2 = 1)
 ```
 
 ```{r CpG VOLCANO PLOTS FOR VISUALIZING DMPs, echo=FALSE, results='hold', warning=FALSE, message=FALSE}
@@ -1168,8 +1168,8 @@ plot_volcano <- function(diff_obj, min_diff = 10, q_cutoff = 0.05, title = "") {
 
 # Generate volcano plots
 p1 <- plot_volcano(res_GUvsUU$all, title = "Ungrazed")
-p2 <- plot_volcano(res_GUvsGC$all, title = "Clipped")
-p3 <- plot_volcano(res_GUvsUC$all, title = "Ungrazed + Clipped")
+p2 <- plot_volcano(res_GUvsGC$all, title = "Clipping (Grazed)")
+p3 <- plot_volcano(res_UUvsUC$all, title = "Clipping (Ungrazed)")
 
 
 grid.arrange(
@@ -1184,7 +1184,7 @@ grid.arrange(
 # Extract the significant results
 sigUngrazed <- res_GUvsUU$significant
 sigClipped <- res_GUvsGC$significant
-sigUngrazedClipped <- res_GUvsUC$significant
+sigUngrazedClipped <- res_UUvsUC$significant
 
 # Count positives and negatives
 n_posUngrazed <- sum(sigUngrazed$meth.diff > 0)

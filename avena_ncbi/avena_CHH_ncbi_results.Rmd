@@ -22,20 +22,20 @@ En este documento presento algunos resultados sobre los patrones de metilación 
 
 ## CLUSTERING METHYLATION PROFILES
 
-El primer paso en el análisis ha sido explorar visualmente las diferencias en los perfiles de metilación entre tratamientos. Para ello hemos utilizado los porcentajes de metilación de cada una de las posiciones CHH (3764 posiciones del genoma con una Citosina seguida de una Guanina) y los hemos comparado entre muestras para ver cuáles se parecen más entre sí y cuáles son más diferentes.Aquí muestro un Correlograma, un Dendograma y un DAPC (Discriminant Analysis of Principal Components), que es un análisis multivariante usado en genética de poblaciones para describir y visualizar la estructura genética entre grupos.Utiliza el PCA y luego maximiza la separación entre grupos predefinidos (los tratamientos).
+El primer paso en el análisis ha sido explorar visualmente las diferencias en los perfiles de metilación entre tratamientos. Para ello hemos utilizado los porcentajes de metilación de cada una de las posiciones CHH (18999 posiciones del genoma con una Citosina seguida de dos bases distintas de Guanina) y los hemos comparado entre muestras para ver cuáles se parecen más entre sí y cuáles son más diferentes.Aquí muestro un Correlograma, un Dendograma y un DAPC (Discriminant Analysis of Principal Components), que es un análisis multivariante usado en genética de poblaciones para describir y visualizar la estructura genética entre grupos.Utiliza el PCA y luego maximiza la separación entre grupos predefinidos (los tratamientos).
 
 ```{r setup LOADING DATA AND PACKAGES, include=FALSE}
-# Here I paste the path to the original files which is not inside the project due to their great size
-bam_dir <- "C:/Users/iglorena.IRNASE/Documents/andres/INTERTROPHIC/EPIGENETICA/NOVOGENE_DOWNLOAD/methylation_report_avena/ncbi_genome"
-
-bam.list <- as.list(list.files(
-  path   = bam_dir,
-  pattern = "_bismark_bt2.sorted\\.bam$",
-  full.names = FALSE
-))
-
-# Save list as an R object
-saveRDS(bam.list, "bam_list.rds")
+# # Here I paste the path to the original files which is not inside the project due to their great size
+# bam_dir <- "C:/Users/iglorena.IRNASE/Documents/andres/INTERTROPHIC/EPIGENETICA/NOVOGENE_DOWNLOAD/methylation_report_avena/ncbi_genome"
+# 
+# bam.list <- as.list(list.files(
+#   path   = bam_dir,
+#   pattern = "_bismark_bt2.sorted\\.bam$",
+#   full.names = FALSE
+# ))
+# 
+# # Save list as an R object
+# saveRDS(bam.list, "bam_list.rds")
 
 # Read bam.list
 bam.list <- readRDS("bam_list.rds")
@@ -224,7 +224,12 @@ grp <- as.factor(treatments)
 
 
 # Run DAPC keeping 14 principal components (and all possible discriminant functions). I used 14 because it's a safe maximum: 42/3
-dapc_res <- dapc(t(CHH_meth_matrix), grp, n.pca = 14, n.da = length(levels(grp)) - 1)
+dapc_res <- dapc(
+  t(CHH_meth_matrix), 
+  grp,
+  n.pca = max(2, optim_a$best),
+  n.da  = length(levels(grp)) - 1
+)
 
 # Optimize the number of PCs using the alpha-score method (balances discrimination vs overfitting).
 optim_a <- optim.a.score(dapc_res)
@@ -1132,8 +1137,8 @@ pairwise_diff <- function(meth_obj, g1, g2, min_diff = 10, q_cutoff = 0.05) {
 res_GUvsUU <- pairwise_diff(CHH_meth, g1 = 2, g2 = 3)
 # UNCLIPPED VS. CLIPPED (WITHIN GRAZED)
 res_GUvsGC <- pairwise_diff(CHH_meth, g1 = 2, g2 = 0)
-# GRAZED+UNCLIPPED VS. UNGRAZED+CLIPPED 
-res_GUvsUC <- pairwise_diff(CHH_meth, g1 = 2, g2 = 1)
+ # UNCLIPPED VS. CLIPPED (WITHIN UNGRAZED)
+ res_UUvsUC <- pairwise_diff(CHH_meth, g1 = 3, g2 = 1)
 ```
 
 ```{r CHH VOLCANO PLOTS FOR VISUALIZING DMPs, echo=FALSE, results='hold', warning=FALSE, message=FALSE}
@@ -1168,8 +1173,8 @@ plot_volcano <- function(diff_obj, min_diff = 10, q_cutoff = 0.05, title = "") {
 
 # Generate volcano plots
 p1 <- plot_volcano(res_GUvsUU$all, title = "Ungrazed")
-p2 <- plot_volcano(res_GUvsGC$all, title = "Clipped")
-p3 <- plot_volcano(res_GUvsUC$all, title = "Ungrazed + Clipped")
+p2 <- plot_volcano(res_GUvsGC$all, title = "Clipping (Grazed)")
+p3 <- plot_volcano(res_UUvsUC$all, title = "Clipping (Ungrazed)")
 
 
 grid.arrange(
@@ -1184,7 +1189,7 @@ grid.arrange(
 # Extract the significant results
 sigUngrazed <- res_GUvsUU$significant
 sigClipped <- res_GUvsGC$significant
-sigUngrazedClipped <- res_GUvsUC$significant
+sigUngrazedClipped <- res_UUvsUC$significant
 
 # Count positives and negatives
 n_posUngrazed <- sum(sigUngrazed$meth.diff > 0)

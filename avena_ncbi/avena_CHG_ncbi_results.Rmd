@@ -22,17 +22,20 @@ En este documento presento algunos resultados sobre los patrones de metilación 
 
 ## CLUSTERING METHYLATION PROFILES
 
-El primer paso en el análisis ha sido explorar visualmente las diferencias en los perfiles de metilación entre tratamientos. Para ello hemos utilizado los porcentajes de metilación de cada una de las posiciones CHG (3764 posiciones del genoma con una Citosina seguida de una Guanina) y los hemos comparado entre muestras para ver cuáles se parecen más entre sí y cuáles son más diferentes.Aquí muestro un Correlograma, un Dendograma y un DAPC (Discriminant Analysis of Principal Components), que es un análisis multivariante usado en genética de poblaciones para describir y visualizar la estructura genética entre grupos.Utiliza el PCA y luego maximiza la separación entre grupos predefinidos (los tratamientos).
+El primer paso en el análisis ha sido explorar visualmente las diferencias en los perfiles de metilación entre tratamientos. Para ello hemos utilizado los porcentajes de metilación de cada una de las posiciones CHG (4528 posiciones del genoma con una Citosina seguida de C/T/A, seguida de una Guanina) y los hemos comparado entre muestras para ver cuáles se parecen más entre sí y cuáles son más diferentes.Aquí muestro un Correlograma, un Dendograma y un DAPC (Discriminant Analysis of Principal Components), que es un análisis multivariante usado en genética de poblaciones para describir y visualizar la estructura genética entre grupos.Utiliza el PCA y luego maximiza la separación entre grupos predefinidos (los tratamientos).
 
 ```{r setup LOADING DATA AND PACKAGES, include=FALSE}
-# Here I paste the path to the original files which is not inside the project due to their great size
-bam_dir <- "C:/Users/iglorena.IRNASE/Documents/andres/INTERTROPHIC/EPIGENETICA/NOVOGENE_DOWNLOAD/methylation_report_avena/ncbi_genome"
+# # Here I paste the path to the original files which is not inside the project due to their great size
+# bam_dir <- "C:/Users/iglorena.IRNASE/Documents/andres/INTERTROPHIC/EPIGENETICA/NOVOGENE_DOWNLOAD/methylation_report_avena/ncbi_genome"
+# 
+# bam.list <- as.list(list.files(
+#   path   = bam_dir,
+#   pattern = "_bismark_bt2.sorted\\.bam$",
+#   full.names = FALSE
+# ))
 
-bam.list <- as.list(list.files(
-  path   = bam_dir,
-  pattern = "_bismark_bt2.sorted\\.bam$",
-  full.names = FALSE
-))
+# Read bam.list
+bam.list <- readRDS("bam_list.rds")
 
 
 library("methylKit")
@@ -227,9 +230,13 @@ optim_a <- optim.a.score(dapc_res)
 cat("Optimal number of PCs (alpha-score):", optim_a$best, "\n")
 
 # Re-run DAPC using the optimal number of PCs suggested automatically
-dapc_res <- dapc(t(CHG_meth_matrix), grp, 
-                 n.pca = optim_a$best, 
-                 n.da = length(levels(grp)) - 1)
+dapc_res <- dapc(
+  t(CHG_meth_matrix), 
+  grp,
+  n.pca = max(2, optim_a$best),
+  n.da  = length(levels(grp)) - 1
+)
+
 
 # Extract full loadings matrix (all CHGs × LDs)
 loadings <- dapc_res$var.contr  
@@ -1126,8 +1133,8 @@ pairwise_diff <- function(meth_obj, g1, g2, min_diff = 10, q_cutoff = 0.05) {
 res_GUvsUU <- pairwise_diff(CHG_meth, g1 = 2, g2 = 3)
 # UNCLIPPED VS. CLIPPED (WITHIN GRAZED)
 res_GUvsGC <- pairwise_diff(CHG_meth, g1 = 2, g2 = 0)
-# GRAZED+UNCLIPPED VS. UNGRAZED+CLIPPED 
-res_GUvsUC <- pairwise_diff(CHG_meth, g1 = 2, g2 = 1)
+ # UNCLIPPED VS. CLIPPED (WITHIN UNGRAZED)
+ res_UUvsUC <- pairwise_diff(CHG_meth, g1 = 3, g2 = 1)
 ```
 
 ```{r CHG VOLCANO PLOTS FOR VISUALIZING DMPs, echo=FALSE, results='hold', warning=FALSE, message=FALSE}
@@ -1162,8 +1169,8 @@ plot_volcano <- function(diff_obj, min_diff = 10, q_cutoff = 0.05, title = "") {
 
 # Generate volcano plots
 p1 <- plot_volcano(res_GUvsUU$all, title = "Ungrazed")
-p2 <- plot_volcano(res_GUvsGC$all, title = "Clipped")
-p3 <- plot_volcano(res_GUvsUC$all, title = "Ungrazed + Clipped")
+p2 <- plot_volcano(res_GUvsGC$all, title = "Clipping (Grazed)")
+p3 <- plot_volcano(res_UUvsUC$all, title = "Clipping (Ungrazed)")
 
 
 grid.arrange(
@@ -1178,7 +1185,7 @@ grid.arrange(
 # Extract the significant results
 sigUngrazed <- res_GUvsUU$significant
 sigClipped <- res_GUvsGC$significant
-sigUngrazedClipped <- res_GUvsUC$significant
+sigUngrazedClipped <- res_UUvsUC$significant
 
 # Count positives and negatives
 n_posUngrazed <- sum(sigUngrazed$meth.diff > 0)
