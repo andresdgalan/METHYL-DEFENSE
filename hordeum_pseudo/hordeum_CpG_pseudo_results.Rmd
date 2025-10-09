@@ -56,6 +56,7 @@ library(glmmTMB)    # Beta-Binomial modelling
 library(gridExtra)  # Plotting many plots together
 library(grid)       # Plotting many plots together
 library(here)       # Reproducibility of working directory
+library(ggrepel)    # Labels on plots
 ```
 
 ```{r EXTRACTING COMMON INFORMATION FOR ALL CONTEXT, include=FALSE}
@@ -144,15 +145,45 @@ treatment_multi <- as.numeric(treatment_table$combined) - 1
 ```{r CpG LOADING METHYLOBJECT AND UNITING, include=FALSE}
 hordeum_CpG_obj <- readRDS(here("hordeum_pseudo", "hordeum_pseudo_CpG.rds"))
 
-# Número de CpGs en cada muestra
-sapply(hordeum_CpG_obj, nrow)
+# Get CpG counts
+CpG_counts <- sapply(hordeum_CpG_obj, nrow)
 
-# Número total de CpGs (no único, porque diferentes muestras pueden no compartirlos)
-sum(sapply(hordeum_CpG_obj, nrow))
+# Convert to dataframe with sample IDs
+CpGs_per_sample <- data.frame(
+  id = sub("^.*\\/(HO[0-9]+[A-Z]?).*$", "\\1", names(CpG_counts)), # extract HO IDs
+  CpG = as.integer(CpG_counts),
+  stringsAsFactors = FALSE
+)
+
+# Add treatment info
+CpGs_per_sample <- treatment_table %>%
+  left_join(CpGs_per_sample, by = "id")
+
+# Filter out the samples with very low number of CpGs (<500)
+# Get IDs of samples with >= 500 CpGs
+keep_ids <- CpGs_per_sample$id[CpGs_per_sample$CpG >= 500]
+
+# Match these IDs back to hordeum_CpG_obj names
+samples_to_keep <- names(hordeum_CpG_obj)[
+  sub("^.*\\/(HO[0-9]+[A-Z]?).*$", "\\1", names(hordeum_CpG_obj)) %in% keep_ids
+]
+
+# Apply filters
+filtered_list <- hordeum_CpG_obj[keep_ids]
+filtered_treatment <- hordeum_CpG_obj@treatment[keep_ids]
+
+# Convert back to methylRawList (no sample.id argument needed)
+hordeum_CpG_obj_filtered <- new("methylRawList", filtered_list, treatment = filtered_treatment)
+
+# Subset the methylRawList
+hordeum_CpG_obj_filtered <- hordeum_CpG_obj[samples_to_keep]
+hordeum_CpG_obj <- hordeum_CpG_obj_filtered
+
+
 
 
 # Unite all samples into one object to compare methylation across samples at common CpG sites
-CpG_meth <- methylKit::unite(hordeum_CpG_obj, min.per.group = 9L)
+CpG_meth <- methylKit::unite(hordeum_CpG_obj_filtered)
 
 colSums(is.na(CpG_meth))       # cuántos NAs por muestra
 rowMeans(is.na(CpG_meth))      # proporción de NAs por CpG
