@@ -102,40 +102,40 @@ treatment_multi <- as.numeric(treatment_table$combined) - 1
 
 ```{r CpG CREATING and SAVING METHYLKIT OBJECT, include=FALSE}
 # THIS STEP TAKES TOO LONG SO I WILL ONLY RUN IT WHEN I NEED TO CHANGE IT
-# full paths → required by processBismarkAln
-bam.path <- file.path(bam_dir, bam.list)
-bam.path  <- as.character(bam.path)
-sample.id <- as.character(sample.id)
-
-
-# process each BAM individually
-# We use this loop because we can't change directory in Rmarkdown, and processBismarkAln doesn't accept a vector of bam files, it needs them one at a time
-objs <- mapply(
-  function(file, id, tr) {
-    processBismarkAln(
-      location   = file,
-      sample.id  = id,
-      assembly   = "mock",
-      treatment  = tr,
-      mincov     = 5,
-      read.context = "CpG"
-    )
-  },
-  file = bam.path,
-  id   = sample.id,
-  tr   = treatment_multi,
-  SIMPLIFY = FALSE
-)
-
-# merge them into one methylRawList
-plantago_CpG_obj <- new("methylRawList", objs)
-
-# set treatment vector explicitly
-# even though we already specified when creating the object, using the loop didn't work for treatment
-plantago_CpG_obj@treatment <- treatment_multi
-
- # Save the result for later use
- saveRDS(plantago_CpG_obj, file = "plantago_pseudo_CpG.rds")
+# # full paths → required by processBismarkAln
+# bam.path <- file.path(bam_dir, bam.list)
+# bam.path  <- as.character(bam.path)
+# sample.id <- as.character(sample.id)
+# 
+# 
+# # process each BAM individually
+# # We use this loop because we can't change directory in Rmarkdown, and processBismarkAln doesn't accept a vector of bam files, it needs them one at a time
+# objs <- mapply(
+#   function(file, id, tr) {
+#     processBismarkAln(
+#       location   = file,
+#       sample.id  = id,
+#       assembly   = "mock",
+#       treatment  = tr,
+#       mincov     = 5,
+#       read.context = "CpG"
+#     )
+#   },
+#   file = bam.path,
+#   id   = sample.id,
+#   tr   = treatment_multi,
+#   SIMPLIFY = FALSE
+# )
+# 
+# # merge them into one methylRawList
+# plantago_CpG_obj <- new("methylRawList", objs)
+# 
+# # set treatment vector explicitly
+# # even though we already specified when creating the object, using the loop didn't work for treatment
+# plantago_CpG_obj@treatment <- treatment_multi
+# 
+#  # Save the result for later use
+#  saveRDS(plantago_CpG_obj, file = "plantago_pseudo_CpG.rds")
 ```
 
 ```{r CpG LOADING METHYLOBJECT AND UNITING, include=FALSE}
