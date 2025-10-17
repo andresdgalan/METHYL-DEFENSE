@@ -20,17 +20,15 @@ En este documento presento algunos resultados sobre los patrones de metilación 
 
 4.  Importación de los archivos .bam a methylkit para el análisis
 
-## CLUSTERING METHYLATION PROFILES
 
-El primer paso en el análisis ha sido explorar visualmente las diferencias en los perfiles de metilación entre tratamientos. Para ello hemos utilizado los porcentajes de metilación de cada una de las posiciones CHH (18999 posiciones del genoma con una Citosina seguida de dos bases distintas de Guanina) y los hemos comparado entre muestras para ver cuáles se parecen más entre sí y cuáles son más diferentes.Aquí muestro un Correlograma, un Dendograma y un DAPC (Discriminant Analysis of Principal Components), que es un análisis multivariante usado en genética de poblaciones para describir y visualizar la estructura genética entre grupos.Utiliza el PCA y luego maximiza la separación entre grupos predefinidos (los tratamientos).
 
 ```{r setup LOADING DATA AND PACKAGES, include=FALSE}
 # # Here I paste the path to the original files which is not inside the project due to their great size
-# bam_dir <- "C:/Users/iglorena.IRNASE/Documents/andres/INTERTROPHIC/EPIGENETICA/NOVOGENE_DOWNLOAD/methylation_report_avena/ncbi_genome"
+# bam_dir <- "C:/Users/iglorena.IRNASE/Documents/andres/INTERTROPHIC/EPIGENETICA/NOVOGENE_DOWNLOAD/methylation_report_avena/ncbi_genome_pe"
 # 
 # bam.list <- as.list(list.files(
 #   path   = bam_dir,
-#   pattern = "_bismark_bt2.sorted\\.bam$",
+#   pattern = "_bismark_bt2_pe.sorted\\.bam$",
 #   full.names = FALSE
 # ))
 # 
@@ -161,6 +159,10 @@ avena_CHH_obj_filtered <- new("methylRawList", filtered_list, treatment = filter
 # Unite all samples into one object to compare methylation across samples at common CHH sites
 CHH_meth <- methylKit::unite(avena_CHH_obj_filtered)
 ```
+
+## CLUSTERING METHYLATION PROFILES
+
+El primer paso en el análisis ha sido explorar visualmente las diferencias en los perfiles de metilación entre tratamientos. Para ello hemos utilizado los porcentajes de metilación de cada una de las posiciones CHH (posiciones del genoma con una Citosina seguida de dos bases distintas de Guanina). Hemos evaluado un total de **`r nrow(CHH_meth)`** posiciones compartidas por las **`r (ncol(CHH_meth) - 4)/3 `** muestras, separando por tratamientos para ver posibles agrupaciones. Aquí muestro un Correlograma, un Dendograma y un DAPC (Discriminant Analysis of Principal Components), que es un análisis multivariante usado en genética de poblaciones para describir y visualizar la estructura genética entre grupos.Utiliza el PCA y luego maximiza la separación entre grupos predefinidos (los tratamientos).
 
 ```{r CHH METHYLATION % MATRIX, include=FALSE}
 CHH_meth_matrix <- as.matrix(percMethylation(CHH_meth))

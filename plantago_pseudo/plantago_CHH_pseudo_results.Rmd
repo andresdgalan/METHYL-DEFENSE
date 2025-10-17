@@ -32,7 +32,7 @@ En este documento presento algunos resultados sobre los patrones de metilación 
  ))
 
 # Read bam.list
-# bam.list <- readRDS("bam_list.rds")
+bam.list <- readRDS("bam_list.rds")
 
 
 library("methylKit")
