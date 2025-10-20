@@ -34,6 +34,10 @@ bam.list <- as.list(list.files(
 # Save the object in the project to open it from other computers
 saveRDS(bam.list, file = "bam_list.rds")
 
+
+# Save the object in the project to open it from other computers
+saveRDS(bam.list, file = "bam_list.rds")
+
 # Read bam.list
 bam.list <- readRDS("bam_list.rds")
 

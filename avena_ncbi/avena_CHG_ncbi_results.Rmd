@@ -31,6 +31,7 @@ bam.list <- as.list(list.files(
   full.names = FALSE
 ))
 
+
 # Read bam.list
 bam.list <- readRDS("bam_list.rds")
 

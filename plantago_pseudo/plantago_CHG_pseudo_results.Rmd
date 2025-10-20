@@ -26,6 +26,7 @@ En este documento presento algunos resultados sobre los patrones de metilación 
 # Here I paste the path to the original files which is not inside the project due to their great size
 bam_dir <- "C:/Users/iglorena.IRNASE/Documents/andres/INTERTROPHIC/EPIGENETICA/NOVOGENE_DOWNLOAD/methylation_report_plantago/andres_genome_pe"
 
+
 bam.list <- as.list(list.files(
   path   = bam_dir,
   pattern = "_bismark_bt2_pe.sorted\\.bam$",
