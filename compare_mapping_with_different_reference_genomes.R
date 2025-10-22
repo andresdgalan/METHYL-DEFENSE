@@ -8,7 +8,7 @@ library(tidyverse)
 library(here)
 
 # Directorio de archivos
-input_dir <- here("SE_reports")
+input_dir <- here("bismark_reports")
 
 # Listar archivos
 files <- list.files(input_dir, pattern = "bismark_summary_.*\\.txt", full.names = TRUE)
@@ -44,7 +44,8 @@ read_summary_alt <- function(file) {
   # Extraer especie y referencia del nombre del archivo
   fname <- basename(file)
   dat$sp <- str_extract(fname, "avena|hordeum|plantago")
-  dat$ref <- str_extract(fname, "ncbi|andres")
+  dat$ref <- str_extract(fname, "ncbi|pseudo")
+  dat$aln <- str_match(fname, "_(pe|se)\\.txt$")[,2]
   
   return(dat)
 }
@@ -55,11 +56,13 @@ all_data_long <- map_dfr(files, read_summary_alt)
 
 # Pivotar a formato ancho: mean_XXX y se_XXX
 all_data <- all_data_long %>%
-  select(sp, ref, variable, mean, se) %>%
+  select(sp, ref, aln, variable, mean, se) %>%
   pivot_wider(names_from = variable, values_from = c(mean,se))
 
 # Guardar dataframe
 write_csv(all_data, file.path(input_dir, "summary_dataframe.csv"))
+
+all_data$ref_aln <- paste(all_data$ref, all_data$aln, sep = "_")
 
 # Metadata de variables
 metadata <- all_data_long %>%
@@ -136,10 +139,10 @@ for (v in unique(all_data_long$variable)) {
   if (!(mean_col %in% names(all_data))) next
   
   df_plot <- all_data %>%
-    select(sp, ref, !!mean_col, !!se_col) %>%
+    select(sp, ref_aln, !!mean_col, !!se_col) %>%
     rename(mean = !!mean_col, se = !!se_col)
   
-  p <- ggplot(df_plot, aes(x = sp, y = mean, fill = ref)) +
+  p <- ggplot(df_plot, aes(x = sp, y = mean, fill = ref_aln)) +
     geom_col(position = position_dodge(width = 0.8)) +
     geom_errorbar(aes(ymin = mean - se, ymax = mean + se),
                   position = position_dodge(width = 0.8), width = 0.3) +
