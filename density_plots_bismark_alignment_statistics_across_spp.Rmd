@@ -1,0 +1,85 @@
+---
+title: "Density plots for bismark alignment statistics across species"
+output: html_document
+---
+
+```{r libraries and data, include=FALSE}
+library(tidyverse)
+library(here)
+
+avena <- read.table(here("bismark_reports/bismark_table_avena_ncbi_pe.txt"),
+                    header = TRUE, sep = "\t")
+
+hordeum <- read.table(here("bismark_reports/bismark_table_hordeum_pseudo_pe.txt"),
+                    header = TRUE, sep = "\t")
+
+plantago <- read.table(here("bismark_reports/bismark_table_plantago_pseudo_pe.txt"),
+                    header = TRUE, sep = "\t")
+```
+
+```{r change variable names, include=FALSE}
+name_map <- data.frame(
+  old = names(avena),
+  new = c("Sample", "Total Sequences analysed", "Unique alignments", "Mapping efficiency (%)", "Sequences with no alignments",
+          "Sequences did not map uniquely", "Discarded", "CT_CT", "CT_GA", "GA_CT", "GA_GA",
+          "Total number of C's analysed", "Total methylated C's in CpG context", "Total methylated C's in CHG context", "Total methylated C's in CHH context", "Total methylated C's in Unknown context",
+          "Total unmethylated C's in CpG context", "Total unmethylated C's in CHG context", "Total unmethylated C's in CHH context", "Total unmethylated C's in Unknown context",
+          "% C methylated in CpG context", "% C methylated in CHG context", "% C methylated in CHH context", "% C methylated in Unknown context"),
+  stringsAsFactors = FALSE
+)
+
+rename_with_map <- function(df, map) {
+  names(df) <- ifelse(names(df) %in% map$old,
+                      map$new[match(names(df), map$old)],
+                      names(df))
+  df
+}
+
+# Aplicar a los tres dataframes
+avena    <- rename_with_map(avena, name_map)
+hordeum  <- rename_with_map(hordeum, name_map)
+plantago <- rename_with_map(plantago, name_map)
+```
+
+
+```{r plotting, echo=FALSE, results='hold', warning=FALSE, message=FALSE}
+# Obtener nombres de variables (excepto 'Sample')
+vars <- setdiff(names(avena), c("Sample", "Discarded"))
+
+
+# Loop sobre todas las variables
+for (v in vars) {
+  # Calcular densidades
+  d_avena <- density(na.omit(avena[[v]]))
+  d_hordeum <- density(na.omit(hordeum[[v]]))
+  d_plantago <- density(na.omit(plantago[[v]]))
+  
+  # Límites comunes
+  xlim <- range(d_avena$x, d_hordeum$x, d_plantago$x)
+  ylim <- range(d_avena$y, d_hordeum$y, d_plantago$y)
+  
+  # Plot base (avena)
+  plot(d_avena,
+       main = v,
+       xlab = v,
+       ylab = "Densidad",
+       col = "darkgreen", lwd = 2,
+       xlim = xlim, ylim = ylim)
+  
+  # Añadir otras especies
+  lines(d_hordeum, col = "darkorange", lwd = 2)
+  lines(d_plantago, col = "steelblue", lwd = 2)
+  
+  # Leyenda
+  legend("topright",
+         legend = c("Avena", "Hordeum", "Plantago"),
+         col = c("darkgreen", "darkorange", "steelblue"),
+         lwd = 2, bty = "n")
+  
+  # # Pausa opcional para ver los gráficos uno a uno (pulsa Enter para avanzar)
+  # readline(prompt = "Presiona [Enter] para continuar...")
+}
+
+
+```
+
