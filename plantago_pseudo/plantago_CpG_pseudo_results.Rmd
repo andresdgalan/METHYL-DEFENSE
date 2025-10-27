@@ -63,6 +63,8 @@ sample.id <- as.list(gsub("_R1_trimmed_bismark_bt2_pe.sorted\\.bam$", "", bam.li
 # Usually methylKit is designed for binary treatment designs
 # so i will need to encode both factors into a single one
 treatment_table <- read.table(file = here("plantago_treatment.csv"), header = T, sep = ";")
+genome_position_map <- read.table(file = here("Plantago_genome_position_map.txt"), header = F, sep = "\t")
+
 
 # # CHECKING THAT TREATMENT TABLE AND SAMPLE LIST ARE THE SAME
 # GET THE VECTORS
@@ -1123,7 +1125,6 @@ pairwise_diff <- function(meth_obj, g1, g2, min_diff = 10, q_cutoff = 0.05) {
 
 # MAKE COMPARISONS
 
-# FIRST 3 ARE USING GU AS CONTROL AND COMPARED TO THE 2 TREATMENTS AND THE COMBINATION OF BOTH TREATMENTS
 # GRAZED VS. UNGRAZED (WITHIN UNCLIPPED)
 res_GUvsUU <- pairwise_diff(CpG_meth, g1 = 2, g2 = 3)
 # UNCLIPPED VS. CLIPPED (WITHIN GRAZED)
@@ -1131,6 +1132,56 @@ res_GUvsGC <- pairwise_diff(CpG_meth, g1 = 2, g2 = 0)
  # UNCLIPPED VS. CLIPPED (WITHIN UNGRAZED)
  res_UUvsUC <- pairwise_diff(CpG_meth, g1 = 3, g2 = 1)
 ```
+
+```{r CpG mapping genome position and exporting table of DMPs, include=FALSE}
+# Helper function to map each CpG position to its contig
+add_contig_id <- function(sig_df, genome_map) {
+  # Ensure data frames
+  sig_df <- as.data.frame(getData(sig_df))
+  genome_map <- as.data.frame(genome_map)
+  colnames(genome_map) <- c("contig_id", "start_pos", "end_pos")
+  
+  # Convert to data.table for fast range joins
+  library(data.table)
+  sig_dt <- data.table(start = sig_df$start)
+  map_dt <- data.table(genome_map)
+  
+  # Set key for range join
+  setkey(map_dt, start_pos, end_pos)
+  
+  # Perform non-equi join to find the contig where start is between start_pos and end_pos
+  sig_dt <- foverlaps(
+    x = data.table(start = sig_df$start, end = sig_df$start),  # single-point intervals
+    y = map_dt,
+    by.x = c("start", "end"),
+    by.y = c("start_pos", "end_pos"),
+    nomatch = 0L
+  )
+  
+  # foverlaps returns both matched info and the original start positions
+  # Keep only necessary columns
+  sig_dt <- sig_dt[, .(start, contig_id)]
+  
+  # Merge contig_id back into the original significant table
+  sig_df <- merge(sig_df, sig_dt, by = "start", all.x = TRUE)
+  
+  return(sig_df)
+}
+
+
+# Apply function to all your result objects
+DMPs_CpG_GUvsUU <- add_contig_id(res_GUvsUU$significant, genome_position_map)
+DMPs_CpG_GUvsGC <- add_contig_id(res_GUvsGC$significant, genome_position_map)
+DMPs_CpG_UUvsUC <- add_contig_id(res_UUvsUC$significant, genome_position_map)
+
+
+# Export results as tab-delimited text files
+write.table(DMPs_CpG_GUvsUU, "DMPs_CpG_GUvsUU.txt", sep = "\t", quote = FALSE, row.names = FALSE)
+write.table(DMPs_CpG_GUvsGC, "DMPs_CpG_GUvsGC.txt", sep = "\t", quote = FALSE, row.names = FALSE)
+write.table(DMPs_CpG_UUvsUC, "DMPs_CpG_UUvsUC.txt", sep = "\t", quote = FALSE, row.names = FALSE)
+
+```
+
 
 ```{r CpG VOLCANO PLOTS FOR VISUALIZING DMPs, echo=FALSE, results='hold', warning=FALSE, message=FALSE}
 # Volcano plot function
@@ -1163,7 +1214,7 @@ plot_volcano <- function(diff_obj, min_diff = 10, q_cutoff = 0.05, title = "") {
 }
 
 # Generate volcano plots
-p1 <- plot_volcano(res_GUvsUU$all, title = "Ungrazed")
+p1 <- plot_volcano(res_GUvsUU$all, title = "Ungrazed (Unclipped)")
 p2 <- plot_volcano(res_GUvsGC$all, title = "Clipping (Grazed)")
 p3 <- plot_volcano(res_UUvsUC$all, title = "Clipping (Ungrazed)")
 
@@ -1196,9 +1247,9 @@ n_negUngrazedClipped <- sum(sigUngrazedClipped$meth.diff < 0)
 # Build the table
 meth_table <- data.frame(
   Condition = c("Hypermethylated", "Hypomethylated"),
-  Ungrazed = c(n_posUngrazed, n_negUngrazed),
-  Clipped = c(n_posClipped, n_negClipped),
-  `Ungrazed + Clipped` = c(n_posUngrazedClipped, n_negUngrazedClipped)
+  UngrazedU = c(n_posUngrazed, n_negUngrazed),
+  ClippingG = c(n_posClipped, n_negClipped),
+  ClippingU = c(n_posUngrazedClipped, n_negUngrazedClipped)
 )
 
 # Show nice table in R Markdown

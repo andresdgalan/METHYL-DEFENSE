@@ -45,7 +45,6 @@ library(dplyr)      # tidy
 library(tidyr)      # tidy 
 library(pheatmap)   # Correlogram
 library(dendextend) # Dendrogram
-library(reshape2)   # melt function (tidy)
 library(adegenet)   # DAPC
 library(stringr)    # str_detect (tidy)
 library(kableExtra) # Tables
@@ -64,6 +63,7 @@ sample.id <- as.list(gsub("_R1_trimmed_bismark_bt2_pe.sorted\\.bam$", "", bam.li
 # Usually methylKit is designed for binary treatment designs
 # so i will need to encode both factors into a single one
 treatment_table <- read.table(file = here("plantago_treatment.csv"), header = T, sep = ";")
+genome_position_map <- read.table(file = here("Plantago_genome_position_map.txt"), header = F, sep = "\t")
 
 # # CHECKING THAT TREATMENT TABLE AND SAMPLE LIST ARE THE SAME
 # GET THE VECTORS
@@ -103,40 +103,40 @@ treatment_multi <- as.numeric(treatment_table$combined) - 1
 
 ```{r CHG CREATING and SAVING METHYLKIT OBJECT, include=FALSE}
 # THIS STEP TAKES TOO LONG SO I WILL ONLY RUN IT WHEN I NEED TO CHANGE IT
-  # full paths → required by processBismarkAln
-  bam.path <- file.path(bam_dir, bam.list)
-  bam.path  <- as.character(bam.path)
-  sample.id <- as.character(sample.id)
-
-
-  # process each BAM individually
-  # We use this loop because we can't change directory in Rmarkdown, and processBismarkAln doesn't accept a vector of bam files, it needs them one at a time
-  objs <- mapply(
-    function(file, id, tr) {
-      processBismarkAln(
-        location   = file,
-        sample.id  = id,
-        assembly   = "mock",
-        treatment  = tr,
-        mincov     = 5,
-        read.context = "CHG"
-      )
-    },
-    file = bam.path,
-    id   = sample.id,
-    tr   = treatment_multi,
-    SIMPLIFY = FALSE
-  )
-
-  # merge them into one methylRawList
-  plantago_CHG_obj <- new("methylRawList", objs)
-
-  # set treatment vector explicitly
-  # even though we already specified when creating the object, using the loop didn't work for treatment
-  plantago_CHG_obj@treatment <- treatment_multi
-
-   # Save the result for later use
-   saveRDS(plantago_CHG_obj, file = "plantago_pseudo_CHG.rds")
+  # # full paths → required by processBismarkAln
+  # bam.path <- file.path(bam_dir, bam.list)
+  # bam.path  <- as.character(bam.path)
+  # sample.id <- as.character(sample.id)
+  # 
+  # 
+  # # process each BAM individually
+  # # We use this loop because we can't change directory in Rmarkdown, and processBismarkAln doesn't accept a vector of bam files, it needs them one at a time
+  # objs <- mapply(
+  #   function(file, id, tr) {
+  #     processBismarkAln(
+  #       location   = file,
+  #       sample.id  = id,
+  #       assembly   = "mock",
+  #       treatment  = tr,
+  #       mincov     = 5,
+  #       read.context = "CHG"
+  #     )
+  #   },
+  #   file = bam.path,
+  #   id   = sample.id,
+  #   tr   = treatment_multi,
+  #   SIMPLIFY = FALSE
+  # )
+  # 
+  # # merge them into one methylRawList
+  # plantago_CHG_obj <- new("methylRawList", objs)
+  # 
+  # # set treatment vector explicitly
+  # # even though we already specified when creating the object, using the loop didn't work for treatment
+  # plantago_CHG_obj@treatment <- treatment_multi
+  # 
+  #  # Save the result for later use
+  #  saveRDS(plantago_CHG_obj, file = "plantago_pseudo_CHG.rds")
 ```
 
 ```{r CHG LOADING METHYLOBJECT AND UNITING, include=FALSE}
@@ -229,9 +229,9 @@ dapc_res <- dapc(t(CHG_meth_matrix), grp,
 loadings <- dapc_res$var.contr  
 
 # Convert to tidy data frame: CHG, LD, Loading
-loadings_df <- melt(loadings,
-                    varnames = c("CHG", "LD"),
-                    value.name = "Loading")
+loadings_df <- as.data.frame(loadings) %>%
+  mutate(CHG = rownames(.)) %>%
+  pivot_longer(-CHG, names_to = "LD", values_to = "Loading")
 
 # Save to tab-delimited text file
 write.table(loadings_df, "plantago_pseudo_CHG_loadings_with_positions.csv",
@@ -1120,8 +1120,57 @@ pairwise_diff <- function(meth_obj, g1, g2, min_diff = 10, q_cutoff = 0.05) {
 res_GUvsUU <- pairwise_diff(CHG_meth, g1 = 2, g2 = 3)
 # UNCLIPPED VS. CLIPPED (WITHIN GRAZED)
 res_GUvsGC <- pairwise_diff(CHG_meth, g1 = 2, g2 = 0)
-# GRAZED+UNCLIPPED VS. UNGRAZED+CLIPPED 
-res_GUvsUC <- pairwise_diff(CHG_meth, g1 = 2, g2 = 1)
+ # UNCLIPPED VS. CLIPPED (WITHIN UNGRAZED)
+ res_UUvsUC <- pairwise_diff(CHG_meth, g1 = 3, g2 = 1)
+```
+
+```{r CHG mapping genome position and exporting table of DMPs, include=FALSE}
+# Helper function to map each CHG position to its contig
+add_contig_id <- function(sig_df, genome_map) {
+  # Ensure data frames
+  sig_df <- as.data.frame(getData(sig_df))
+  genome_map <- as.data.frame(genome_map)
+  colnames(genome_map) <- c("contig_id", "start_pos", "end_pos")
+  
+  # Convert to data.table for fast range joins
+  library(data.table)
+  sig_dt <- data.table(start = sig_df$start)
+  map_dt <- data.table(genome_map)
+  
+  # Set key for range join
+  setkey(map_dt, start_pos, end_pos)
+  
+  # Perform non-equi join to find the contig where start is between start_pos and end_pos
+  sig_dt <- foverlaps(
+    x = data.table(start = sig_df$start, end = sig_df$start),  # single-point intervals
+    y = map_dt,
+    by.x = c("start", "end"),
+    by.y = c("start_pos", "end_pos"),
+    nomatch = 0L
+  )
+  
+  # foverlaps returns both matched info and the original start positions
+  # Keep only necessary columns
+  sig_dt <- sig_dt[, .(start, contig_id)]
+  
+  # Merge contig_id back into the original significant table
+  sig_df <- merge(sig_df, sig_dt, by = "start", all.x = TRUE)
+  
+  return(sig_df)
+}
+
+
+# Apply function to all your result objects
+DMPs_CHG_GUvsUU <- add_contig_id(res_GUvsUU$significant, genome_position_map)
+DMPs_CHG_GUvsGC <- add_contig_id(res_GUvsGC$significant, genome_position_map)
+DMPs_CHG_UUvsUC <- add_contig_id(res_UUvsUC$significant, genome_position_map)
+
+
+# Export results as tab-delimited text files
+write.table(DMPs_CHG_GUvsUU, "DMPs_CHG_GUvsUU.txt", sep = "\t", quote = FALSE, row.names = FALSE)
+write.table(DMPs_CHG_GUvsGC, "DMPs_CHG_GUvsGC.txt", sep = "\t", quote = FALSE, row.names = FALSE)
+write.table(DMPs_CHG_UUvsUC, "DMPs_CHG_UUvsUC.txt", sep = "\t", quote = FALSE, row.names = FALSE)
+
 ```
 
 ```{r CHG VOLCANO PLOTS FOR VISUALIZING DMPs, echo=FALSE, results='hold', warning=FALSE, message=FALSE}
@@ -1155,9 +1204,9 @@ plot_volcano <- function(diff_obj, min_diff = 10, q_cutoff = 0.05, title = "") {
 }
 
 # Generate volcano plots
-p1 <- plot_volcano(res_GUvsUU$all, title = "Ungrazed")
-p2 <- plot_volcano(res_GUvsGC$all, title = "Clipped")
-p3 <- plot_volcano(res_GUvsUC$all, title = "Ungrazed + Clipped")
+p1 <- plot_volcano(res_GUvsUU$all, title = "Ungrazed (Unclipped)")
+p2 <- plot_volcano(res_GUvsGC$all, title = "Clipping (Grazed)")
+p3 <- plot_volcano(res_UUvsUC$all, title = "Clipping (Ungrazed)")
 
 
 grid.arrange(
@@ -1172,7 +1221,7 @@ grid.arrange(
 # Extract the significant results
 sigUngrazed <- res_GUvsUU$significant
 sigClipped <- res_GUvsGC$significant
-sigUngrazedClipped <- res_GUvsUC$significant
+sigUngrazedClipped <- res_UUvsUC$significant
 
 # Count positives and negatives
 n_posUngrazed <- sum(sigUngrazed$meth.diff > 0)
@@ -1188,9 +1237,9 @@ n_negUngrazedClipped <- sum(sigUngrazedClipped$meth.diff < 0)
 # Build the table
 meth_table <- data.frame(
   Condition = c("Hypermethylated", "Hypomethylated"),
-  Ungrazed = c(n_posUngrazed, n_negUngrazed),
-  Clipped = c(n_posClipped, n_negClipped),
-  `Ungrazed + Clipped` = c(n_posUngrazedClipped, n_negUngrazedClipped)
+  UngrazedU = c(n_posUngrazed, n_negUngrazed),
+  ClippingG = c(n_posClipped, n_negClipped),
+  ClippingU = c(n_posUngrazedClipped, n_negUngrazedClipped)
 )
 
 # Show nice table in R Markdown
