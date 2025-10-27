@@ -1206,9 +1206,9 @@ n_negUngrazedClipped <- sum(sigUngrazedClipped$meth.diff < 0)
 # Build the table
 meth_table <- data.frame(
   Condition = c("Hypermethylated", "Hypomethylated"),
-  Ungrazed = c(n_posUngrazed, n_negUngrazed),
-  Clipped = c(n_posClipped, n_negClipped),
-  `Ungrazed + Clipped` = c(n_posUngrazedClipped, n_negUngrazedClipped)
+  UngrazedU = c(n_posUngrazed, n_negUngrazed),
+  ClippingG = c(n_posClipped, n_negClipped),
+  ClippingU = c(n_posUngrazedClipped, n_negUngrazedClipped)
 )
 
 # Show nice table in R Markdown

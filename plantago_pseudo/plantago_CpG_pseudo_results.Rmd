@@ -5,7 +5,7 @@ date: "2025-09-12"
 output: html_document
 ---
 
-En este documento presento algunos resultados sobre los patrones de metilación de P.lagopus bajo distintos tratamientos de herbivoría. 
+En este documento presento algunos resultados sobre los patrones de metilación de P.lagopus bajo distintos tratamientos de herbivoría. Este informe se centra en las citosinas en contexto CpG.
 
 
 ## PREPROCESSING
@@ -38,21 +38,21 @@ En este documento presento algunos resultados sobre los patrones de metilación 
 bam.list <- readRDS("bam_list.rds")
 
 
-library("methylKit")
-library(ggplot2)
-library(dplyr)      # tidy
-library(tidyr)      # tidy 
-library(pheatmap)   # Correlogram
-library(dendextend) # Dendrogram
-library(reshape2)   # melt function (tidy)
-library(adegenet)   # DAPC
-library(stringr)    # str_detect (tidy)
-library(kableExtra) # Tables
-library(emmeans)    # Post-hoc
-library(glmmTMB)    # Beta-Binomial modelling
-library(gridExtra)  # Plotting many plots together
-library(grid)       # Plotting many plots together
-library(here)       # Reproducibility of working directory
+# --- Core packages ---
+library(here)        # Reproducibilidad de rutas
+library(methylKit)   # Análisis de metilación
+library(tidyverse)   # Incluye ggplot2, dplyr, tidyr, readr, purrr, stringr, forcats, tibble
+
+# --- Visualización y clustering ---
+library(pheatmap)    # Mapas de calor y correlaciones
+library(dendextend)  # Manipulación y mejora de dendrogramas
+library(gridExtra)   # Combinar varios plots (más potente que grid)
+library(grid)        # Gráficos base de R (necesario a veces para layout)
+library(kableExtra)  # Tablas bonitas en RMarkdown
+
+# --- Genética ---
+library(adegenet)    # DAPC y análisis genético
+
 ```
 
 ```{r EXTRACTING COMMON INFORMATION FOR ALL CONTEXT, include=FALSE}
@@ -63,6 +63,8 @@ sample.id <- as.list(gsub("_R1_trimmed_bismark_bt2_pe.sorted\\.bam$", "", bam.li
 # Usually methylKit is designed for binary treatment designs
 # so i will need to encode both factors into a single one
 treatment_table <- read.table(file = here("plantago_treatment.csv"), header = T, sep = ";")
+genome_position_map <- read.table(file = here("Plantago_genome_position_map.txt"), header = F, sep = "\t")
+
 
 # # CHECKING THAT TREATMENT TABLE AND SAMPLE LIST ARE THE SAME
 # GET THE VECTORS
@@ -138,18 +140,112 @@ treatment_multi <- as.numeric(treatment_table$combined) - 1
 #  saveRDS(plantago_CpG_obj, file = "plantago_pseudo_CpG.rds")
 ```
 
-```{r CpG LOADING METHYLOBJECT AND UNITING, include=FALSE}
+```{r CpG LOADING, FILTERING, UNITING, include=FALSE}
+
+# --- 1. Cargar y unir ---
 plantago_CpG_obj <- readRDS(here("plantago_pseudo", "plantago_pseudo_CpG.rds"))
 
-# Número de CpGs en cada muestra
-sapply(plantago_CpG_obj, nrow)
 
-# Número total de CpGs (no único, porque diferentes muestras pueden no compartirlos)
-sum(sapply(plantago_CpG_obj, nrow))
+# --- 1. Unificar muestras ---
+CpG_meth_pre_filter <- methylKit::unite(plantago_CpG_obj, min.per.group = 0L)
+meth_pre <- getData(CpG_meth_pre_filter)
 
-# Unite all samples into one object to compare methylation across samples at common CpG sites
-CpG_meth <- methylKit::unite(plantago_CpG_obj)
+# --- 1b. Filtro de cobertura máxima ---
+# Definir umbral máximo de cobertura
+maximum_coverage <- 1000
+
+
+# Identificar columnas de cobertura
+cov_cols <- grep("^coverage", names(meth_pre))
+
+# Calcular cuántos sitios tienen coverage > 1000 en al menos una muestra
+n_sites_over_1000 <- sum(apply(meth_pre[, cov_cols], 1, function(x) any(x > 1000, na.rm = TRUE)))
+
+# Mantener solo sitios con cobertura <= maximum_coverage en todas las muestras
+CpG_meth_coverage <- CpG_meth_pre_filter[rowMeans(getData(CpG_meth_pre_filter)[, cov_cols] > maximum_coverage, na.rm = TRUE) == 0, ]
+
+
+# --- 2. Filtrado de sitios polimórficos ---
+meth_cov <- getData(CpG_meth_coverage)
+
+numC_cols <- grep("^numC", names(meth_cov))
+numT_cols <- grep("^numT", names(meth_cov))
+
+meth_cov <- meth_pre %>%
+  mutate(
+    has_C = rowSums(across(all_of(numC_cols), ~ .x > 0), na.rm = TRUE) > 0,
+    has_T = rowSums(across(all_of(numT_cols), ~ .x > 0), na.rm = TRUE) > 0,
+    polymorphic = has_C & has_T
+  )
+
+CpG_meth_filtered_polymorphic <- CpG_meth_coverage[meth_cov$polymorphic, ]
+
+# --- 3. Filtrado por MEF (Minor Epiallele Frequency) ---
+mef_threshold <- 0.01
+meth <- getData(CpG_meth_filtered_polymorphic)
+
+numCs <- as.matrix(dplyr::select(meth, starts_with("numC")))
+numTs <- as.matrix(dplyr::select(meth, starts_with("numT")))
+
+minor_counts <- pmin(numCs, numTs, na.rm = TRUE)
+total_counts <- numCs + numTs
+
+mef <- rowSums(minor_counts, na.rm = TRUE) / rowSums(total_counts, na.rm = TRUE)
+
+keep_mef <- mef >= mef_threshold
+keep_mef[is.na(keep_mef)] <- FALSE
+CpG_meth_filtered_mef <- CpG_meth_filtered_polymorphic[keep_mef, ]
+
+# --- 4. Filtrado por missingness dentro de cada grupo ---
+meth <- getData(CpG_meth_filtered_mef)
+treatment <- CpG_meth_filtered_mef@treatment
+cov_cols <- grep("^coverage", names(meth))
+
+# Agrupar índices de columnas por tratamiento
+cov_groups <- split(cov_cols, treatment)
+
+# Calcular proporción de sitios con datos (no NA) por grupo
+group_prop_df <- map_dfc(cov_groups, function(cols) {
+  tibble(prop = rowMeans(!is.na(meth[, cols, drop = FALSE])))
+}) %>%
+  set_names(paste0("group_", names(cov_groups)))
+
+# --- 5. Aplicar filtro de cobertura mínima ---
+threshold <- 0.8
+keep <- group_prop_df %>%
+  mutate(pass = apply(., 1, function(x) all(x >= threshold))) %>%
+  pull(pass)
+
+CpG_meth_80_by_group <- CpG_meth_filtered_mef[keep, ]
+CpG_meth <- CpG_meth_80_by_group
+
+# Objeto final
+meth <- getData(CpG_meth)
+
+# IDs de las muestras
+sample_ids <- CpG_meth@sample.ids
+
+# columnas de interés para sacar el porcentaje de NAs en cada muestra
+cov_cols <- grep("^coverage", names(meth))
+
+# porcentaje de NAs en cada muestra
+na_percent <- sapply(cov_cols, function(col) {
+  mean(is.na(meth[, col])) * 100  # porcentaje de filas con NA
+})
+
+# Asociarlo a los sample IDs
+na_percent_df <- data.frame(
+  sample_id = sample_ids,
+  pct_missing = na_percent
+)
+
+
 ```
+
+## SMP Calling
+
+We used "processBismarkAln" function of the methylKit R package to call all the cytosines in CpG position reported in the bam files with a minimum coverage of 5 reads. `r n_sites_over_1000` Positions with coverage above `r maximum_coverage` were removed, since such high values likely reflect artifacts from collapsed repetitive regions. From a total of **`r nrow(CpG_meth_pre_filter) `** positions, **`r nrow(CpG_meth_filtered_polymorphic) `** were polymorphic and therefore included in our SMP dataset. Additionally, SMPs with Minor Allele Frequency (MAF) ≤ `r mef_threshold * 100`% were removed as rare, uninformative, and potentially unreliable. Finally, we filtered the resulting **`r nrow(CpG_meth_filtered_mef) `** SMPs to keep only those present in at least `r threshold * 100`% of the individuals of every treatment (i.e., combinations of maternal environment and herbivory simulation treatments). After all the filters, we checked the missing data for every sample and the maximum was `r round(max(na_percent_df$pct_missing), 1)`%. Thus, we considered unnecessary to filter by sample, resulting in **`r nrow(CpG_meth_80_by_group) `** SMPs ready to be analysed.
+
 
 ## CLUSTERING METHYLATION PROFILES
 
@@ -216,8 +312,18 @@ rownames(CpG_meth_matrix) <- coords
 grp <- as.factor(treatments)
 
 
+# VAMOS A IMPUTAR VALORES PARA SUSTITUIR NAs QUE DAPC NO PUEDE MANEJAR
+# USAMOS LA MEDIANA DE CADA FILA PARA RELLENAR LOS NAs DE ESA FILA
+CpG_meth_matrix_imputed <- CpG_meth_matrix
+for (i in 1:nrow(CpG_meth_matrix_imputed)) {
+  CpG_meth_matrix_imputed[i, is.na(CpG_meth_matrix_imputed[i, ])] <- 
+    median(CpG_meth_matrix_imputed[i, ], na.rm = TRUE)
+}
+
+
+
 # Run DAPC keeping 14 principal components (and all possible discriminant functions). I used 14 because it's a safe maximum: 42/3
-dapc_res <- dapc(t(CpG_meth_matrix), grp, n.pca = 14, n.da = length(levels(grp)) - 1)
+dapc_res <- dapc(t(CpG_meth_matrix_imputed), grp, n.pca = 14, n.da = length(levels(grp)) - 1)
 
 # Optimize the number of PCs using the alpha-score method (balances discrimination vs overfitting).
 optim_a <- optim.a.score(dapc_res)
@@ -227,7 +333,7 @@ cat("Optimal number of PCs (alpha-score):", optim_a$best, "\n")
 
 # Re-run DAPC using the optimal number of PCs suggested automatically
 dapc_res <- dapc(
-  t(CpG_meth_matrix), 
+  t(CpG_meth_matrix_imputed), 
   grp,
   n.pca = max(2, optim_a$best),
   n.da  = length(levels(grp)) - 1
@@ -237,7 +343,7 @@ dapc_res <- dapc(
 loadings <- dapc_res$var.contr  
 
 # Convert to tidy data frame: CpG, LD, Loading
-loadings_df <- melt(loadings,
+loadings_df <- reshape2::melt(loadings,
                     varnames = c("CpG", "LD"),
                     value.name = "Loading")
 
@@ -309,796 +415,15 @@ Utilizando un Loading plot podemos visualizar cuáles son las posiciones CpG má
 loadings <- loadingplot(dapc_res$var.contr, axis = 1, thres = 0.003, lab.jitter = 1)
 ```
 
-```{r CpG Top CpG Sites contributing to LD1 separation, echo=FALSE, results='hold', warning=FALSE, message=FALSE}
-# Extraer loadings solo para LD1
-loading_ld1 <- dapc_res$var.contr[,1]  
 
-# Crear dataframe ordenado por magnitud
-loading_df <- data.frame(
-  CpG = names(loading_ld1),
-  Contribution = loading_ld1
-)
-
-loading_df <- loading_df[order(abs(loading_df$Contribution), decreasing = TRUE), ]
-
-# PLOT
-top_plot <- 
-  ggplot(loading_df[1:50, ], aes(x = reorder(CpG, Contribution), y = Contribution)) +
-  geom_bar(stat = "identity") +
-  coord_flip() +
-  theme_minimal() +
-  labs(title = "Top CpGs contributing to LD1",
-       x = "CpG site", y = "Contribution")
-
-top_plot
-```
-
-```{r CpG1 Preparing data for modeling with GLM BETAbinomial, include=FALSE}
-# Get top 9 CpGs
-top_CpGs <- loading_df$CpG[1:9]
-
-# Matriz de metilación
-CpG_meth_top <- CpG_meth_matrix[top_CpGs, ]
-
-# Transponer para que filas = muestras, columnas = CpGs
-CpG_meth_top_t <- as.data.frame(t(CpG_meth_top))
-
-# Create a matrix to relate positions to rankings
-position_to_ranking <- data.frame(
-  position = top_CpGs,
-  ranking = paste0("CpG", seq_along(top_CpGs))
-)
-
-# Add 3 new columns based on ranking
-position_to_ranking$percent <- paste0(position_to_ranking$ranking, "_%")
-position_to_ranking$Cs      <- paste0(position_to_ranking$ranking, "_Cs")
-position_to_ranking$Ts      <- paste0(position_to_ranking$ranking, "_Ts")
-
-
-# Rename column names using rankings instead of positions to make easier for modeling
-CpG_meth_top_t <- CpG_meth_top_t %>%
-  rename_with(
-    ~ position_to_ranking$percent[match(., position_to_ranking$position)],
-    .cols = position_to_ranking$position
-  )
-
-# Añadir información de grupo
-treatment_table <- treatment_table[match(colnames(CpG_meth_matrix), treatment_table$id), ]
-CpG_meth_top_t$sample_id <- rownames(CpG_meth_top_t)
-CpG_meth_top_t <- merge(CpG_meth_top_t, treatment_table[, c("id","combined")], by.x="sample_id", by.y="id")
-
-# Add the treatment variables
-CpG_meth_top_t <- CpG_meth_top_t %>%
-  mutate(
-    maternal = if_else(str_detect(combined, "ungraz"), "ungraz", "graz"),
-    simulation = if_else(str_detect(combined, "unclip"), "unclip", "clip")
-  )
-
-# ADDING METHYLATED AND UNMETHYLATED COUNTS TO %METHYLATION MATRIX FOR BETABINOMIAL MODELLING
-
-# Extract a matrix with the number of methylated cytosines for each position
-numCs_matrix <- as.matrix(getData(CpG_meth)[ , CpG_meth@numCs.index])
-
-# Sample ids as column names
-colnames(numCs_matrix) <- CpG_meth@sample.ids
-
-# extract genomic positions
-coords <- getData(CpG_meth)$start
-
-# assign them as rownames to meth_matrix
-rownames(numCs_matrix) <- coords
-
-# Matriz de metilación 
-numCs_top <- numCs_matrix[top_CpGs, ] 
-
-# Transponer para que filas = muestras, columnas = CpGs 
-numCs_top_t <- as.data.frame(t(numCs_top))
-
-# Rename column names using rankings instead of positions to make easier for modeling
-numCs_top_t <- numCs_top_t %>%
-  rename_with(
-    ~ position_to_ranking$Cs[match(., position_to_ranking$position)],
-    .cols = position_to_ranking$position
-  )
-
-
-
-# Extract a matrix with the number of methylated cytosines for each position
-numTs_matrix <- as.matrix(getData(CpG_meth)[ , CpG_meth@numTs.index])
-
-# Sample ids as column names
-colnames(numTs_matrix) <- CpG_meth@sample.ids
-
-# extract genomic positions
-coords <- getData(CpG_meth)$start
-
-# assign them as rownames to meth_matrix
-rownames(numTs_matrix) <- coords
-
-# Matriz de metilación 
-numTs_top <- numTs_matrix[top_CpGs, ] 
-
-# Transponer para que filas = muestras, columnas = CpGs 
-numTs_top_t <- as.data.frame(t(numTs_top))
-
-# Rename column names using rankings instead of positions to make easier for modeling
-numTs_top_t <- numTs_top_t %>%
-  rename_with(
-    ~ position_to_ranking$Ts[match(., position_to_ranking$position)],
-    .cols = position_to_ranking$position
-  )
-
-# MAKING SURE ROWNAMES ARE IDENTICAL IN CONTENT AND ORDER BEFORE BINDING ALL DATAFRAMES
-identical(rownames(numTs_top_t), rownames(numCs_top_t)) &&
-  identical(rownames(numTs_top_t), rownames(CpG_meth_top_t))
-
-CpG_model_data <- cbind(CpG_meth_top_t, numCs_top_t, numTs_top_t)
-
-
-
-```
-
-## HERBIVORY AND METHYLATION
-
-Una vez hemos identificado los sitios de interés, podemos visualizar los porcentajes de metilación según tratamiento y ajustar modelos de regresión.
-
-```{r CpG BOXPLOTS METHYLATION percent IN 9 TOP CpGs FOR LD1 SEPARATION, echo=FALSE, results='hold', warning=FALSE, message=FALSE}
-ggplot(
-  CpG_meth_top_t %>% 
-    pivot_longer(cols = starts_with("CpG"), names_to = "CpG", values_to = "methylation")%>%
-    mutate(CpG = sub("_%", "", CpG)),
-  aes(x = combined, y = methylation, fill = combined)
-) +
-  geom_boxplot() +
-  facet_wrap(~CpG, scales = "free_y") +
-  scale_fill_manual(values = c(
-    "graz-unclip" = "#8B3A62",
-    "graz-clip" = "#FF69B4",
-    "ungraz-unclip" = "#008B45",
-    "ungraz-clip" = "#00FF7F"
-  )) +
-  theme_minimal() +
-  theme(axis.text.x = element_blank()) +  # <-- esto quita los labels
-  labs(
-    title = "Methylation of the 9 top CpGs separating LD1",
-    x = "Treatment", 
-    y = "% Methylation"
-  )
-```
-
-```{r CpG OUTLIERS IN BOXPLOTS METHYLATION percent IN 9 TOP CpGs FOR LD1 SEPARATION, echo=FALSE, results='hold', warning=FALSE, message=FALSE}
-# library(ggrepel)
-# 
-# # Reshape data
-# df_long <- CpG_meth_top_t %>%
-#   pivot_longer(cols = starts_with("CpG"),
-#                names_to = "CpG",
-#                values_to = "methylation") %>%
-#   mutate(CpG = sub("_%", "", CpG))
-# 
-# # Function to flag outliers per CpG x treatment group
-# find_outliers <- function(x) {
-#   q1 <- quantile(x, 0.25, na.rm = TRUE)
-#   q3 <- quantile(x, 0.75, na.rm = TRUE)
-#   iqr <- q3 - q1
-#   lower <- q1 - 1.5 * iqr
-#   upper <- q3 + 1.5 * iqr
-#   x < lower | x > upper
-# }
-# 
-# df_long <- df_long %>%
-#   group_by(CpG, combined) %>%
-#   mutate(outlier = find_outliers(methylation)) %>%
-#   ungroup()
-# 
-# # Plot
-# ggplot(df_long, aes(x = combined, y = methylation, fill = combined)) +
-#   geom_boxplot(outlier.shape = NA) + # don't draw default outliers
-#   geom_point(data = df_long %>% filter(outlier),
-#              aes(x = combined, y = methylation),
-#              shape = 21, fill = "black", color = "black", size = 2) +
-#   geom_text_repel(
-#     data = df_long %>% filter(outlier),
-#     aes(label = sample_id),
-#     size = 3,
-#     max.overlaps = 10
-#   ) +
-#   facet_wrap(~CpG, scales = "free_y") +
-#   scale_fill_manual(values = c(
-#     "graz-unclip" = "#8B3A62",
-#     "graz-clip"   = "#FF69B4",
-#     "ungraz-unclip" = "#008B45",
-#     "ungraz-clip" = "#00FF7F"
-#   )) +
-#   theme_minimal() +
-#   theme(axis.text.x = element_blank()) +
-#   labs(
-#     title = "Methylation of the 9 top CpGs separating LD1",
-#     x = "Treatment",
-#     y = "% Methylation"
-#   )
-
-```
-
-## BETA-BINOMIAL REGRESSION MODEL
-
-Para evaluar el efecto individual e interactivo de los dos tratamientos sobre el porcentaje de metilación de cada CpG, utilizamos modelos de regresión con distribución beta-binomial.
-
-Los porcentajes de metilación de cada CpG para cada muestra se calculan en base al conteo de citosinas metiladas y el conteo de citosinas sin metilar en ese sitio CpG.
-
-Por ello, la distribución de nuestra variable respuesta tiene una distribución binomial. No obstante, las proporciones obtenidas tienen una variabilidad enorme y muchos 0s. Esto genera sobredispersión y los modelos con distribución binomial o quasibinomial no son buenos.
-
-En cambio, la familia beta-binomial del paquete glmmTMB es la más adecuada para hacer regresiones con este tipo de datos.
-
-Aquí doy una idea de cómo son los modelos que estoy haciendo. CpG1 es el nombre que le he puesto al principal CpG causando la separación entre tratamientos en el eje LD1. Abajo indico la posición que ocupa ese CpG en el pseudogenoma que he creado.
-
-```{r CpG1 Modeling linear regression with BETAbinomial family, include=FALSE}
-# Model
-CpG1model_bb <- glmmTMB(
-  cbind(CpG1_Cs, CpG1_Ts) 
-  ~ simulation + maternal + simulation:maternal,
-  family = betabinomial, 
-  data = CpG_model_data)
-
-# extract N
-sample_size <- nrow(CpG_model_data)
-
-# Extract formula
-model_formula <- formula(CpG1model_bb)
-model_formula_clean <- deparse(model_formula)
-
-
-# Get position from lookup table
-CpG1_position <- position_to_ranking$position[position_to_ranking$ranking == "CpG1"]
-
-```
-
-**`r model_formula_clean`**\
-CpG1 position = **`r CpG1_position`**\
-n = **`r sample_size`**
-
-```{r CpG1 Post-hoc Comparisons with Tukeys HSD, echo=FALSE, include=FALSE}
-# This will compare maternal levels within each level of simulation
-posthoc_maternal <- emmeans(CpG1model_bb, pairwise ~ maternal | simulation, adjust = "tukey")
-print(posthoc_maternal)
-
-# This will compare simulation levels within each maternal
-posthoc_simulation <- emmeans(CpG1model_bb, pairwise ~ simulation | maternal, adjust = "tukey")
-print(posthoc_simulation)
-
-# Visualizing results
-
-# Plot treatment differences within each grazer
-plot(posthoc_maternal$emmeans)  
-
-# Plot grazer differences within each treatment
-plot(posthoc_simulation$emmeans)
-
-```
-
-### [CpG1 Post-hoc Comparisons with Tukeys HSD]{.underline}
-
-```{r Post-hoc CpG1, echo=FALSE, results='hold', warning=FALSE, message=FALSE}
-# Format simulation contrasts
-sim_contrasts <- as.data.frame(posthoc_simulation$contrasts) %>%
-  mutate(p.value = ifelse(p.value < 0.001, "<0.001",
-                          sprintf("%.3f", p.value)))
-
-kable(sim_contrasts, digits = 2, escape = FALSE)
-
-# Format maternal contrasts
-maternal_contrasts <- as.data.frame(posthoc_maternal$contrasts) %>%
-  mutate(p.value = ifelse(p.value < 0.001, "<0.001",
-                          sprintf("%.3f", p.value)))
-
-kable(maternal_contrasts, digits = 2, escape = FALSE)
-```
-
-```{r CpG2 Modeling linear regression with BETAbinomial family, include=FALSE}
-# Model
-CpG2model_bb <- glmmTMB(
-  cbind(CpG2_Cs, CpG2_Ts) 
-  ~ simulation + maternal + simulation:maternal,
-  family = betabinomial, 
-  data = CpG_model_data)
-
-# extract N
-sample_size <- nrow(CpG_model_data)
-
-# Extract formula
-model_formula <- formula(CpG2model_bb)
-model_formula_clean <- deparse(model_formula)
-
-
-# Get position from lookup table
-CpG2_position <- position_to_ranking$position[position_to_ranking$ranking == "CpG2"]
-
-```
-
-**`r model_formula_clean`**\
-CpG2 position = **`r CpG2_position`**\
-n = **`r sample_size`**
-
-```{r CpG2 Post-hoc Comparisons with Tukeys HSD, echo=FALSE, include=FALSE}
-# This will compare maternal levels within each level of simulation
-posthoc_maternal <- emmeans(CpG2model_bb, pairwise ~ maternal | simulation, adjust = "tukey")
-print(posthoc_maternal)
-
-# This will compare simulation levels within each maternal
-posthoc_simulation <- emmeans(CpG2model_bb, pairwise ~ simulation | maternal, adjust = "tukey")
-print(posthoc_simulation)
-
-# Visualizing results
-
-# Plot treatment differences within each grazer
-plot(posthoc_maternal$emmeans)  
-
-# Plot grazer differences within each treatment
-plot(posthoc_simulation$emmeans)
-
-```
-
-### [CpG2 Post-hoc Comparisons with Tukeys HSD]{.underline}
-
-```{r Post-hoc CpG2, echo=FALSE, results='hold', warning=FALSE, message=FALSE}
-# Format simulation contrasts
-sim_contrasts <- as.data.frame(posthoc_simulation$contrasts) %>%
-  mutate(p.value = ifelse(p.value < 0.001, "<0.001",
-                          sprintf("%.3f", p.value)))
-
-kable(sim_contrasts, digits = 2, escape = FALSE)
-
-# Format maternal contrasts
-maternal_contrasts <- as.data.frame(posthoc_maternal$contrasts) %>%
-  mutate(p.value = ifelse(p.value < 0.001, "<0.001",
-                          sprintf("%.3f", p.value)))
-
-kable(maternal_contrasts, digits = 2, escape = FALSE)
-```
-
-```{r CpG3 Modeling linear regression with BETAbinomial family, include=FALSE}
-# Model
-CpG3model_bb <- glmmTMB(
-  cbind(CpG3_Cs, CpG3_Ts) 
-  ~ simulation + maternal + simulation:maternal,
-  family = betabinomial, 
-  data = CpG_model_data)
-
-# extract N
-sample_size <- nrow(CpG_model_data)
-
-# Extract formula
-model_formula <- formula(CpG3model_bb)
-model_formula_clean <- deparse(model_formula)
-
-
-# Get position from lookup table
-CpG3_position <- position_to_ranking$position[position_to_ranking$ranking == "CpG3"]
-
-```
-
-**`r model_formula_clean`**\
-CpG3 position = **`r CpG3_position`**\
-n = **`r sample_size`**
-
-```{r CpG3 Post-hoc Comparisons with Tukeys HSD, echo=FALSE, include=FALSE}
-# This will compare maternal levels within each level of simulation
-posthoc_maternal <- emmeans(CpG3model_bb, pairwise ~ maternal | simulation, adjust = "tukey")
-print(posthoc_maternal)
-
-# This will compare simulation levels within each maternal
-posthoc_simulation <- emmeans(CpG3model_bb, pairwise ~ simulation | maternal, adjust = "tukey")
-print(posthoc_simulation)
-
-# Visualizing results
-
-# Plot treatment differences within each grazer
-plot(posthoc_maternal$emmeans)  
-
-# Plot grazer differences within each treatment
-plot(posthoc_simulation$emmeans)
-
-```
-
-### [CpG3 Post-hoc Comparisons with Tukeys HSD]{.underline}
-
-```{r Post-hoc CpG3, echo=FALSE, results='hold', warning=FALSE, message=FALSE}
-# Format simulation contrasts
-sim_contrasts <- as.data.frame(posthoc_simulation$contrasts) %>%
-  mutate(p.value = ifelse(p.value < 0.001, "<0.001",
-                          sprintf("%.3f", p.value)))
-
-kable(sim_contrasts, digits = 2, escape = FALSE)
-
-# Format maternal contrasts
-maternal_contrasts <- as.data.frame(posthoc_maternal$contrasts) %>%
-  mutate(p.value = ifelse(p.value < 0.001, "<0.001",
-                          sprintf("%.3f", p.value)))
-
-kable(maternal_contrasts, digits = 2, escape = FALSE)
-```
-
-```{r CpG4 Modeling linear regression with BETAbinomial family, include=FALSE}
-# Model
-CpG4model_bb <- glmmTMB(
-  cbind(CpG4_Cs, CpG4_Ts) 
-  ~ simulation + maternal + simulation:maternal,
-  family = betabinomial, 
-  data = CpG_model_data)
-
-# extract N
-sample_size <- nrow(CpG_model_data)
-
-# Extract formula
-model_formula <- formula(CpG4model_bb)
-model_formula_clean <- deparse(model_formula)
-
-
-# Get position from lookup table
-CpG4_position <- position_to_ranking$position[position_to_ranking$ranking == "CpG4"]
-
-```
-
-**`r model_formula_clean`**\
-CpG4 position = **`r CpG4_position`**\
-n = **`r sample_size`**
-
-```{r CpG4 Post-hoc Comparisons with Tukeys HSD, echo=FALSE, include=FALSE}
-# This will compare maternal levels within each level of simulation
-posthoc_maternal <- emmeans(CpG4model_bb, pairwise ~ maternal | simulation, adjust = "tukey")
-print(posthoc_maternal)
-
-# This will compare simulation levels within each maternal
-posthoc_simulation <- emmeans(CpG4model_bb, pairwise ~ simulation | maternal, adjust = "tukey")
-print(posthoc_simulation)
-
-# Visualizing results
-
-# Plot treatment differences within each grazer
-plot(posthoc_maternal$emmeans)  
-
-# Plot grazer differences within each treatment
-plot(posthoc_simulation$emmeans)
-
-```
-
-### [CpG4 Post-hoc Comparisons with Tukeys HSD]{.underline}
-
-```{r Post-hoc CpG4, echo=FALSE, results='hold', warning=FALSE, message=FALSE}
-# Format simulation contrasts
-sim_contrasts <- as.data.frame(posthoc_simulation$contrasts) %>%
-  mutate(p.value = ifelse(p.value < 0.001, "<0.001",
-                          sprintf("%.3f", p.value)))
-
-kable(sim_contrasts, digits = 2, escape = FALSE)
-
-# Format maternal contrasts
-maternal_contrasts <- as.data.frame(posthoc_maternal$contrasts) %>%
-  mutate(p.value = ifelse(p.value < 0.001, "<0.001",
-                          sprintf("%.3f", p.value)))
-
-kable(maternal_contrasts, digits = 2, escape = FALSE)
-```
-
-```{r CpG5 Modeling linear regression with BETAbinomial family, include=FALSE}
-# Model
-CpG5model_bb <- glmmTMB(
-  cbind(CpG5_Cs, CpG5_Ts) 
-  ~ simulation + maternal + simulation:maternal,
-  family = betabinomial, 
-  data = CpG_model_data)
-
-# extract N
-sample_size <- nrow(CpG_model_data)
-
-# Extract formula
-model_formula <- formula(CpG5model_bb)
-model_formula_clean <- deparse(model_formula)
-
-
-# Get position from lookup table
-CpG5_position <- position_to_ranking$position[position_to_ranking$ranking == "CpG5"]
-
-```
-
-**`r model_formula_clean`**\
-CpG5 position = **`r CpG5_position`**\
-n = **`r sample_size`**
-
-```{r CpG5 Post-hoc Comparisons with Tukeys HSD, echo=FALSE, include=FALSE}
-# This will compare maternal levels within each level of simulation
-posthoc_maternal <- emmeans(CpG5model_bb, pairwise ~ maternal | simulation, adjust = "tukey")
-print(posthoc_maternal)
-
-# This will compare simulation levels within each maternal
-posthoc_simulation <- emmeans(CpG5model_bb, pairwise ~ simulation | maternal, adjust = "tukey")
-print(posthoc_simulation)
-
-# Visualizing results
-
-# Plot treatment differences within each grazer
-plot(posthoc_maternal$emmeans)  
-
-# Plot grazer differences within each treatment
-plot(posthoc_simulation$emmeans)
-
-```
-
-### [CpG5 Post-hoc Comparisons with Tukeys HSD]{.underline}
-
-```{r Post-hoc CpG5, echo=FALSE, results='hold', warning=FALSE, message=FALSE}
-# Format simulation contrasts
-sim_contrasts <- as.data.frame(posthoc_simulation$contrasts) %>%
-  mutate(p.value = ifelse(p.value < 0.001, "<0.001",
-                          sprintf("%.3f", p.value)))
-
-kable(sim_contrasts, digits = 2, escape = FALSE)
-
-# Format maternal contrasts
-maternal_contrasts <- as.data.frame(posthoc_maternal$contrasts) %>%
-  mutate(p.value = ifelse(p.value < 0.001, "<0.001",
-                          sprintf("%.3f", p.value)))
-
-kable(maternal_contrasts, digits = 2, escape = FALSE)
-```
-
-```{r CpG6 Modeling linear regression with BETAbinomial family, include=FALSE}
-# Model
-CpG6model_bb <- glmmTMB(
-  cbind(CpG6_Cs, CpG6_Ts) 
-  ~ simulation + maternal + simulation:maternal,
-  family = betabinomial, 
-  data = CpG_model_data)
-
-# extract N
-sample_size <- nrow(CpG_model_data)
-
-# Extract formula
-model_formula <- formula(CpG6model_bb)
-model_formula_clean <- deparse(model_formula)
-
-
-# Get position from lookup table
-CpG6_position <- position_to_ranking$position[position_to_ranking$ranking == "CpG6"]
-
-```
-
-**`r model_formula_clean`**\
-CpG6 position = **`r CpG6_position`**\
-n = **`r sample_size`**
-
-```{r CpG6 Post-hoc Comparisons with Tukeys HSD, echo=FALSE, include=FALSE}
-# This will compare maternal levels within each level of simulation
-posthoc_maternal <- emmeans(CpG6model_bb, pairwise ~ maternal | simulation, adjust = "tukey")
-print(posthoc_maternal)
-
-# This will compare simulation levels within each maternal
-posthoc_simulation <- emmeans(CpG6model_bb, pairwise ~ simulation | maternal, adjust = "tukey")
-print(posthoc_simulation)
-
-# Visualizing results
-
-# Plot treatment differences within each grazer
-plot(posthoc_maternal$emmeans)  
-
-# Plot grazer differences within each treatment
-plot(posthoc_simulation$emmeans)
-
-```
-
-### [CpG6 Post-hoc Comparisons with Tukeys HSD]{.underline}
-
-```{r Post-hoc CpG6, echo=FALSE, results='hold', warning=FALSE, message=FALSE}
-# Format simulation contrasts
-sim_contrasts <- as.data.frame(posthoc_simulation$contrasts) %>%
-  mutate(p.value = ifelse(p.value < 0.001, "<0.001",
-                          sprintf("%.3f", p.value)))
-
-kable(sim_contrasts, digits = 2, escape = FALSE)
-
-# Format maternal contrasts
-maternal_contrasts <- as.data.frame(posthoc_maternal$contrasts) %>%
-  mutate(p.value = ifelse(p.value < 0.001, "<0.001",
-                          sprintf("%.3f", p.value)))
-
-kable(maternal_contrasts, digits = 2, escape = FALSE)
-```
-
-```{r CpG7 Modeling linear regression with BETAbinomial family, include=FALSE}
-# Model
-CpG7model_bb <- glmmTMB(
-  cbind(CpG7_Cs, CpG7_Ts) 
-  ~ simulation + maternal + simulation:maternal,
-  family = betabinomial, 
-  data = CpG_model_data)
-
-# extract N
-sample_size <- nrow(CpG_model_data)
-
-# Extract formula
-model_formula <- formula(CpG7model_bb)
-model_formula_clean <- deparse(model_formula)
-
-
-# Get position from lookup table
-CpG7_position <- position_to_ranking$position[position_to_ranking$ranking == "CpG7"]
-
-```
-
-**`r model_formula_clean`**\
-CpG7 position = **`r CpG7_position`**\
-n = **`r sample_size`**
-
-```{r CpG7 Post-hoc Comparisons with Tukeys HSD, echo=FALSE, include=FALSE}
-# This will compare maternal levels within each level of simulation
-posthoc_maternal <- emmeans(CpG7model_bb, pairwise ~ maternal | simulation, adjust = "tukey")
-print(posthoc_maternal)
-
-# This will compare simulation levels within each maternal
-posthoc_simulation <- emmeans(CpG7model_bb, pairwise ~ simulation | maternal, adjust = "tukey")
-print(posthoc_simulation)
-
-# Visualizing results
-
-# Plot treatment differences within each grazer
-plot(posthoc_maternal$emmeans)  
-
-# Plot grazer differences within each treatment
-plot(posthoc_simulation$emmeans)
-
-```
-
-### [CpG7 Post-hoc Comparisons with Tukeys HSD]{.underline}
-
-```{r Post-hoc CpG7, echo=FALSE, results='hold', warning=FALSE, message=FALSE}
-# Format simulation contrasts
-sim_contrasts <- as.data.frame(posthoc_simulation$contrasts) %>%
-  mutate(p.value = ifelse(p.value < 0.001, "<0.001",
-                          sprintf("%.3f", p.value)))
-
-kable(sim_contrasts, digits = 2, escape = FALSE)
-
-# Format maternal contrasts
-maternal_contrasts <- as.data.frame(posthoc_maternal$contrasts) %>%
-  mutate(p.value = ifelse(p.value < 0.001, "<0.001",
-                          sprintf("%.3f", p.value)))
-
-kable(maternal_contrasts, digits = 2, escape = FALSE)
-```
-
-```{r CpG8 Modeling linear regression with BETAbinomial family, include=FALSE}
-# Model
-CpG8model_bb <- glmmTMB(
-  cbind(CpG8_Cs, CpG8_Ts) 
-  ~ simulation + maternal + simulation:maternal,
-  family = betabinomial, 
-  data = CpG_model_data)
-
-# extract N
-sample_size <- nrow(CpG_model_data)
-
-# Extract formula
-model_formula <- formula(CpG8model_bb)
-model_formula_clean <- deparse(model_formula)
-
-
-# Get position from lookup table
-CpG8_position <- position_to_ranking$position[position_to_ranking$ranking == "CpG8"]
-
-```
-
-**`r model_formula_clean`**\
-CpG8 position = **`r CpG8_position`**\
-n = **`r sample_size`**
-
-```{r CpG8 Post-hoc Comparisons with Tukeys HSD, echo=FALSE, include=FALSE}
-# This will compare maternal levels within each level of simulation
-posthoc_maternal <- emmeans(CpG8model_bb, pairwise ~ maternal | simulation, adjust = "tukey")
-print(posthoc_maternal)
-
-# This will compare simulation levels within each maternal
-posthoc_simulation <- emmeans(CpG8model_bb, pairwise ~ simulation | maternal, adjust = "tukey")
-print(posthoc_simulation)
-
-# Visualizing results
-
-# Plot treatment differences within each grazer
-plot(posthoc_maternal$emmeans)  
-
-# Plot grazer differences within each treatment
-plot(posthoc_simulation$emmeans)
-
-```
-
-### [CpG8 Post-hoc Comparisons with Tukeys HSD]{.underline}
-
-```{r Post-hoc CpG8, echo=FALSE, results='hold', warning=FALSE, message=FALSE}
-# Format simulation contrasts
-sim_contrasts <- as.data.frame(posthoc_simulation$contrasts) %>%
-  mutate(p.value = ifelse(p.value < 0.001, "<0.001",
-                          sprintf("%.3f", p.value)))
-
-kable(sim_contrasts, digits = 2, escape = FALSE)
-
-# Format maternal contrasts
-maternal_contrasts <- as.data.frame(posthoc_maternal$contrasts) %>%
-  mutate(p.value = ifelse(p.value < 0.001, "<0.001",
-                          sprintf("%.3f", p.value)))
-
-kable(maternal_contrasts, digits = 2, escape = FALSE)
-```
-
-```{r CpG9 Modeling linear regression with BETAbinomial family, include=FALSE}
-# Model
-CpG9model_bb <- glmmTMB(
-  cbind(CpG9_Cs, CpG9_Ts) 
-  ~ simulation + maternal + simulation:maternal,
-  family = betabinomial, 
-  data = CpG_model_data)
-
-# extract N
-sample_size <- nrow(CpG_model_data)
-
-# Extract formula
-model_formula <- formula(CpG9model_bb)
-model_formula_clean <- deparse(model_formula)
-
-
-# Get position from lookup table
-CpG9_position <- position_to_ranking$position[position_to_ranking$ranking == "CpG9"]
-
-```
-
-**`r model_formula_clean`**\
-CpG9 position = **`r CpG9_position`**\
-n = **`r sample_size`**
-
-```{r CpG9 Post-hoc Comparisons with Tukeys HSD, echo=FALSE, include=FALSE}
-# This will compare maternal levels within each level of simulation
-posthoc_maternal <- emmeans(CpG9model_bb, pairwise ~ maternal | simulation, adjust = "tukey")
-print(posthoc_maternal)
-
-# This will compare simulation levels within each maternal
-posthoc_simulation <- emmeans(CpG9model_bb, pairwise ~ simulation | maternal, adjust = "tukey")
-print(posthoc_simulation)
-
-# Visualizing results
-
-# Plot treatment differences within each grazer
-plot(posthoc_maternal$emmeans)  
-
-# Plot grazer differences within each treatment
-plot(posthoc_simulation$emmeans)
-
-```
-
-### [CpG9 Post-hoc Comparisons with Tukeys HSD]{.underline}
-
-```{r Post-hoc CpG9, echo=FALSE, results='hold', warning=FALSE, message=FALSE}
-# Format simulation contrasts
-sim_contrasts <- as.data.frame(posthoc_simulation$contrasts) %>%
-  mutate(p.value = ifelse(p.value < 0.001, "<0.001",
-                          sprintf("%.3f", p.value)))
-
-kable(sim_contrasts, digits = 2, escape = FALSE)
-
-# Format maternal contrasts
-maternal_contrasts <- as.data.frame(posthoc_maternal$contrasts) %>%
-  mutate(p.value = ifelse(p.value < 0.001, "<0.001",
-                          sprintf("%.3f", p.value)))
-
-kable(maternal_contrasts, digits = 2, escape = FALSE)
-```
-
-## DIFFERENTIAL METHYLATION ANALYSIS
-
-Con la función "pairwise_diff()" de methylKit, podemos comparar la población de cada tratamiento con la población control (en este caso el control es Grazed+Unclipped). Obtenemos hipo- e hiper- metilaciones con respecto al control, y cada una de estas diferencias está asociada a un p-valor. En este caso hemos considerado como Differentially Methylated Points (**DMPs**) cuando la **diferencia de metilación \> 10%** y el **p-valor \< 0.05**
 
 ```{r CpG DIFFERENTIAL METHYLATION ANALYSIS, include=FALSE}
 # I will create a function to then compare all against all
 
 # Function for pairwise comparison
-pairwise_diff <- function(meth_obj, g1, g2, min_diff = 10, q_cutoff = 0.05) {
+meth_diff <- 10
+p_value <- 0.05
+pairwise_diff <- function(meth_obj, g1, g2, min_diff = meth_diff, q_cutoff = p_value) {
   
   # Subset the object to only keep the two groups of interest
   sub_obj <- reorganize(
@@ -1123,7 +448,6 @@ pairwise_diff <- function(meth_obj, g1, g2, min_diff = 10, q_cutoff = 0.05) {
 
 # MAKE COMPARISONS
 
-# FIRST 3 ARE USING GU AS CONTROL AND COMPARED TO THE 2 TREATMENTS AND THE COMBINATION OF BOTH TREATMENTS
 # GRAZED VS. UNGRAZED (WITHIN UNCLIPPED)
 res_GUvsUU <- pairwise_diff(CpG_meth, g1 = 2, g2 = 3)
 # UNCLIPPED VS. CLIPPED (WITHIN GRAZED)
@@ -1131,6 +455,60 @@ res_GUvsGC <- pairwise_diff(CpG_meth, g1 = 2, g2 = 0)
  # UNCLIPPED VS. CLIPPED (WITHIN UNGRAZED)
  res_UUvsUC <- pairwise_diff(CpG_meth, g1 = 3, g2 = 1)
 ```
+
+## DIFFERENTIAL METHYLATION ANALYSIS
+
+Con la función "pairwise_diff()" de methylKit, podemos comparar el estado de metilación de cada citosina entre la población de cada tratamiento y la población control (Grazed es el control de Ungrazed y Unclipped es el control de Clipped). Obtenemos hipo- e hiper- metilaciones con respecto al control, y cada una de estas diferencias está asociada a un p-valor. En este caso hemos considerado como Differentially Methylated Positions (**DMPs**) cuando la **diferencia de metilación \> `r meth_diff`%** y el **p-valor \< `r p_value`**
+
+```{r CpG mapping genome position and exporting table of DMPs, include=FALSE}
+# Helper function to map each CpG position to its contig
+add_contig_id <- function(sig_df, genome_map) {
+  # Ensure data frames
+  sig_df <- as.data.frame(getData(sig_df))
+  genome_map <- as.data.frame(genome_map)
+  colnames(genome_map) <- c("contig_id", "start_pos", "end_pos")
+  
+  # Convert to data.table for fast range joins
+  library(data.table)
+  sig_dt <- data.table(start = sig_df$start)
+  map_dt <- data.table(genome_map)
+  
+  # Set key for range join
+  setkey(map_dt, start_pos, end_pos)
+  
+  # Perform non-equi join to find the contig where start is between start_pos and end_pos
+  sig_dt <- foverlaps(
+    x = data.table(start = sig_df$start, end = sig_df$start),  # single-point intervals
+    y = map_dt,
+    by.x = c("start", "end"),
+    by.y = c("start_pos", "end_pos"),
+    nomatch = 0L
+  )
+  
+  # foverlaps returns both matched info and the original start positions
+  # Keep only necessary columns
+  sig_dt <- sig_dt[, .(start, contig_id)]
+  
+  # Merge contig_id back into the original significant table
+  sig_df <- merge(sig_df, sig_dt, by = "start", all.x = TRUE)
+  
+  return(sig_df)
+}
+
+
+# Apply function to all your result objects
+DMPs_CpG_GUvsUU <- add_contig_id(res_GUvsUU$significant, genome_position_map)
+DMPs_CpG_GUvsGC <- add_contig_id(res_GUvsGC$significant, genome_position_map)
+DMPs_CpG_UUvsUC <- add_contig_id(res_UUvsUC$significant, genome_position_map)
+
+
+# Export results as tab-delimited text files
+write.table(DMPs_CpG_GUvsUU, "DMPs_CpG_GUvsUU.txt", sep = "\t", quote = FALSE, row.names = FALSE)
+write.table(DMPs_CpG_GUvsGC, "DMPs_CpG_GUvsGC.txt", sep = "\t", quote = FALSE, row.names = FALSE)
+write.table(DMPs_CpG_UUvsUC, "DMPs_CpG_UUvsUC.txt", sep = "\t", quote = FALSE, row.names = FALSE)
+
+```
+
 
 ```{r CpG VOLCANO PLOTS FOR VISUALIZING DMPs, echo=FALSE, results='hold', warning=FALSE, message=FALSE}
 # Volcano plot function
@@ -1163,7 +541,7 @@ plot_volcano <- function(diff_obj, min_diff = 10, q_cutoff = 0.05, title = "") {
 }
 
 # Generate volcano plots
-p1 <- plot_volcano(res_GUvsUU$all, title = "Ungrazed")
+p1 <- plot_volcano(res_GUvsUU$all, title = "Ungrazed (Unclipped)")
 p2 <- plot_volcano(res_GUvsGC$all, title = "Clipping (Grazed)")
 p3 <- plot_volcano(res_UUvsUC$all, title = "Clipping (Ungrazed)")
 
@@ -1196,9 +574,9 @@ n_negUngrazedClipped <- sum(sigUngrazedClipped$meth.diff < 0)
 # Build the table
 meth_table <- data.frame(
   Condition = c("Hypermethylated", "Hypomethylated"),
-  Ungrazed = c(n_posUngrazed, n_negUngrazed),
-  Clipped = c(n_posClipped, n_negClipped),
-  `Ungrazed + Clipped` = c(n_posUngrazedClipped, n_negUngrazedClipped)
+  UngrazedU = c(n_posUngrazed, n_negUngrazed),
+  ClippingG = c(n_posClipped, n_negClipped),
+  ClippingU = c(n_posUngrazedClipped, n_negUngrazedClipped)
 )
 
 # Show nice table in R Markdown
