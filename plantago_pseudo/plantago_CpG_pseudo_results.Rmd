@@ -8,7 +8,7 @@ output: html_document
 En este documento presento algunos resultados sobre los patrones de metilación de P.lagopus bajo distintos tratamientos de herbivoría. Este informe se centra en las citosinas en contexto CpG.
 
 
-## PREPROCESSING
+## Preprocessing
 
 #### Brevemente resumo los pasos previos al análisis:
 
@@ -103,7 +103,7 @@ treatment_multi <- as.numeric(treatment_table$combined) - 1
 ```
 
 ```{r CpG CREATING and SAVING METHYLKIT OBJECT, include=FALSE}
-# THIS STEP TAKES TOO LONG SO I WILL ONLY RUN IT WHEN I NEED TO CHANGE IT
+#THIS STEP TAKES TOO LONG SO I WILL ONLY RUN IT WHEN I NEED TO CHANGE IT
 # # full paths → required by processBismarkAln
 # bam.path <- file.path(bam_dir, bam.list)
 # bam.path  <- as.character(bam.path)
@@ -119,7 +119,7 @@ treatment_multi <- as.numeric(treatment_table$combined) - 1
 #       sample.id  = id,
 #       assembly   = "mock",
 #       treatment  = tr,
-#       mincov     = 5,
+#       mincov = 0,
 #       read.context = "CpG"
 #     )
 #   },
@@ -151,18 +151,27 @@ CpG_meth_pre_filter <- methylKit::unite(plantago_CpG_obj, min.per.group = 0L)
 meth_pre <- getData(CpG_meth_pre_filter)
 
 # --- 1b. Filtro de cobertura máxima ---
-# Definir umbral máximo de cobertura
+# Definir umbrales de cobertura
+minimum_coverage <- 5
 maximum_coverage <- 1000
 
 
 # Identificar columnas de cobertura
 cov_cols <- grep("^coverage", names(meth_pre))
 
-# Calcular cuántos sitios tienen coverage > 1000 en al menos una muestra
-n_sites_over_1000 <- sum(apply(meth_pre[, cov_cols], 1, function(x) any(x > 1000, na.rm = TRUE)))
+# Calcular cuántos sitios se quedan fuera de los filtros de cobertura
+n_sites_under_cov <- sum(apply(meth_pre[, cov_cols], 1, function(x) any(x < minimum_coverage, na.rm = TRUE)))
+n_sites_over_cov <- sum(apply(meth_pre[, cov_cols], 1, function(x) any(x > maximum_coverage, na.rm = TRUE)))
 
-# Mantener solo sitios con cobertura <= maximum_coverage en todas las muestras
-CpG_meth_coverage <- CpG_meth_pre_filter[rowMeans(getData(CpG_meth_pre_filter)[, cov_cols] > maximum_coverage, na.rm = TRUE) == 0, ]
+
+# Mantener solo sitios con cobertura entre minimum_coverage y maximum_coverage en todas las muestras
+CpG_meth_coverage <- CpG_meth_pre_filter[
+  rowMeans(
+    getData(CpG_meth_pre_filter)[, cov_cols] > maximum_coverage |
+    getData(CpG_meth_pre_filter)[, cov_cols] < minimum_coverage,
+    na.rm = TRUE
+  ) == 0,
+]
 
 
 # --- 2. Filtrado de sitios polimórficos ---
@@ -171,7 +180,7 @@ meth_cov <- getData(CpG_meth_coverage)
 numC_cols <- grep("^numC", names(meth_cov))
 numT_cols <- grep("^numT", names(meth_cov))
 
-meth_cov <- meth_pre %>%
+meth_cov <- meth_cov %>%
   mutate(
     has_C = rowSums(across(all_of(numC_cols), ~ .x > 0), na.rm = TRUE) > 0,
     has_T = rowSums(across(all_of(numT_cols), ~ .x > 0), na.rm = TRUE) > 0,
@@ -180,21 +189,40 @@ meth_cov <- meth_pre %>%
 
 CpG_meth_filtered_polymorphic <- CpG_meth_coverage[meth_cov$polymorphic, ]
 
-# --- 3. Filtrado por MEF (Minor Epiallele Frequency) ---
+# --- 3. Filtrado por MEF (Minor Epiallele Frequency, a nivel poblacional) ---
 mef_threshold <- 0.01
 meth <- getData(CpG_meth_filtered_polymorphic)
 
-numCs <- as.matrix(dplyr::select(meth, starts_with("numC")))
-numTs <- as.matrix(dplyr::select(meth, starts_with("numT")))
+# --- Seleccionar columnas numC y numT ---
+numC_cols <- grep("^numC", names(meth), value = TRUE)
+numT_cols <- grep("^numT", names(meth), value = TRUE)
 
-minor_counts <- pmin(numCs, numTs, na.rm = TRUE)
-total_counts <- numCs + numTs
+numC_mat <- as.matrix(meth[, numC_cols])
+numT_mat <- as.matrix(meth[, numT_cols])
 
-mef <- rowSums(minor_counts, na.rm = TRUE) / rowSums(total_counts, na.rm = TRUE)
+# --- Calcular sumas globales (por CpG) ---
+sum_C <- rowSums(numC_mat, na.rm = TRUE)
+sum_T <- rowSums(numT_mat, na.rm = TRUE)
 
-keep_mef <- mef >= mef_threshold
+# --- Minoritario global y total global ---
+minor_global <- pmin(sum_C, sum_T)
+total_global <- sum_C + sum_T
+
+# --- Calcular MEF poblacional ---
+mef_pop <- minor_global / total_global
+
+# --- Crear vector lógico con el umbral ---
+keep_mef <- mef_pop >= mef_threshold
 keep_mef[is.na(keep_mef)] <- FALSE
+
+# --- Filtrar objeto original ---
 CpG_meth_filtered_mef <- CpG_meth_filtered_polymorphic[keep_mef, ]
+
+# --- Reporte resumen ---
+message("Sitios totales antes del filtrado: ", nrow(CpG_meth_filtered_polymorphic))
+message("Sitios retenidos tras el filtrado MEF >= ", mef_threshold, ": ", sum(keep_mef))
+message("Porcentaje retenido: ", round(100 * mean(keep_mef), 2), "%")
+
 
 # --- 4. Filtrado por missingness dentro de cada grupo ---
 meth <- getData(CpG_meth_filtered_mef)
@@ -242,12 +270,71 @@ na_percent_df <- data.frame(
 
 ```
 
-## SMP Calling
+## SMP calling and filtering 
 
-We used "processBismarkAln" function of the methylKit R package to call all the cytosines in CpG position reported in the bam files with a minimum coverage of 5 reads. `r n_sites_over_1000` Positions with coverage above `r maximum_coverage` were removed, since such high values likely reflect artifacts from collapsed repetitive regions. From a total of **`r nrow(CpG_meth_pre_filter) `** positions, **`r nrow(CpG_meth_filtered_polymorphic) `** were polymorphic and therefore included in our SMP dataset. Additionally, SMPs with Minor Allele Frequency (MAF) ≤ `r mef_threshold * 100`% were removed as rare, uninformative, and potentially unreliable. Finally, we filtered the resulting **`r nrow(CpG_meth_filtered_mef) `** SMPs to keep only those present in at least `r threshold * 100`% of the individuals of every treatment (i.e., combinations of maternal environment and herbivory simulation treatments). After all the filters, we checked the missing data for every sample and the maximum was `r round(max(na_percent_df$pct_missing), 1)`%. Thus, we considered unnecessary to filter by sample, resulting in **`r nrow(CpG_meth_80_by_group) `** SMPs ready to be analysed.
+We used "processBismarkAln" function of the methylKit R package to call all the cytosines in CpG position reported in the bam files. We removed `r n_sites_under_cov` positions with coverage under `r minimum_coverage` and `r n_sites_over_cov` positions with coverage above `r maximum_coverage`. This filtering step eliminated CpG sites with insufficient coverage to provide reliable methylation estimates, as well as sites with excessively high coverage likely arising from artifacts such as collapsed repetitive regions. From a total of **`r nrow(CpG_meth_coverage) `** positions, **`r nrow(CpG_meth_filtered_polymorphic) `** were polymorphic and therefore included in our SMP dataset. Additionally, SMPs with Minor Epiallele Frequency (MEF) ≤ `r mef_threshold * 100`% were removed as rare, uninformative, and potentially unreliable. Finally, we filtered the resulting **`r nrow(CpG_meth_filtered_mef) `** SMPs to keep only those present in at least `r threshold * 100`% of the individuals of every treatment (i.e., combinations of maternal environment and herbivory simulation treatments). After all the filters, we checked the missing data for every sample and the maximum was `r round(max(na_percent_df$pct_missing), 1)`%. Thus, we considered unnecessary to filter by sample, resulting in **`r nrow(CpG_meth_80_by_group) `** SMPs ready to be analysed.
+
+```{r CpG Plotting coverage, echo=FALSE, results='hold', warning=FALSE, message=FALSE}
+# Extraer los datos de cobertura
+meth_pre <- getData(CpG_meth_pre_filter)
+cov_cols <- grep("^coverage", names(meth_pre), value = TRUE)
+
+# Pasar a formato largo para ggplot
+coverage_long <- meth_pre[, cov_cols] %>%
+  reshape2::melt(variable.name = "sample", value.name = "coverage") %>%
+  filter(!is.na(coverage), coverage > 0)
+
+# Gráfico de densidad con líneas verticales y sin leyenda
+ggplot(coverage_long, aes(x = coverage, color = sample)) +
+  geom_density(size = 1) +
+  geom_vline(xintercept = minimum_coverage, linetype = "dashed", linewidth = 0.8) +
+  geom_vline(xintercept = maximum_coverage, linetype = "dashed", linewidth = 0.8) +
+  scale_x_log10(
+    breaks = c(1, 5, 10, 50, 100, 500, 1000, 5000, 10000),
+    labels = scales::comma_format(accuracy = 1)
+  ) +
+  labs(
+    x = "Coverage",
+    y = "Density",
+    title = "Distribution of coverage across samples"
+  ) +
+  theme_minimal() +
+  theme(
+    legend.position = "none",    # quita la leyenda
+    plot.title = element_text(hjust = 0.5)
+  )
+
+```
+
+```{r CpG Plotting epiallele frequency, echo=FALSE, results='hold', warning=FALSE, message=FALSE}
+mef_df <- data.frame(MEF_pop = mef_pop) %>%
+  filter(!is.na(MEF_pop)) %>%
+  mutate(mef_percent = MEF_pop * 100)
+
+# --- PLOT ---
+ggplot(mef_df, aes(x = mef_percent)) +
+  geom_density(size = 0.8, color = "#0072B2", fill = "#0072B2", alpha = 0.3) +
+  geom_vline(xintercept = mef_threshold * 100, linetype = "dashed", linewidth = 0.8, color = "black") +
+  scale_x_continuous(
+    trans = scales::pseudo_log_trans(base = 10),
+    limits = c(0, 50),
+    breaks = c(0, 0.5, 1, 2, 5, 10, 20, 50),
+    labels = function(x) paste0(x, "%")
+  ) +
+  labs(
+    x = "Minor Epiallele Frequency (%)",
+    y = "Density",
+    title = "Distribución global de MEF (poblacional)"
+  ) +
+  theme_minimal() +
+  theme(
+    plot.title = element_text(hjust = 0.5)
+  )
+
+```
 
 
-## CLUSTERING METHYLATION PROFILES
+## Clustering methylation profiles
 
 El primer paso en el análisis ha sido explorar visualmente las diferencias en los perfiles de metilación entre tratamientos. Para ello hemos utilizado los porcentajes de metilación de cada una de las posiciones CpG (posiciones del genoma con una Citosina seguida de una Guanina). Hemos evaluado un total de **`r nrow(CpG_meth)`** posiciones compartidas por las **`r (ncol(CpG_meth) - 4)/3 `** muestras, separando por tratamientos para ver posibles agrupaciones. Aquí muestro un Correlograma, un Dendograma y un DAPC (Discriminant Analysis of Principal Components), que es un análisis multivariante usado en genética de poblaciones para describir y visualizar la estructura genética entre grupos.Utiliza el PCA y luego maximiza la separación entre grupos predefinidos (los tratamientos).
 
@@ -406,7 +493,7 @@ ggplot(dapc_scores, aes(x = LD1, y = LD2, color = combined)) +
 
 ```
 
-## IDENTIFYING IMPORTANT CpG SITES
+## Identifying important CpG sites
 
 Utilizando un Loading plot podemos visualizar cuáles son las posiciones CpG más importantes en la separación entre grupos en el eje LD1.
 
@@ -456,9 +543,10 @@ res_GUvsGC <- pairwise_diff(CpG_meth, g1 = 2, g2 = 0)
  res_UUvsUC <- pairwise_diff(CpG_meth, g1 = 3, g2 = 1)
 ```
 
-## DIFFERENTIAL METHYLATION ANALYSIS
+## Differential methylation analysis
 
 Con la función "pairwise_diff()" de methylKit, podemos comparar el estado de metilación de cada citosina entre la población de cada tratamiento y la población control (Grazed es el control de Ungrazed y Unclipped es el control de Clipped). Obtenemos hipo- e hiper- metilaciones con respecto al control, y cada una de estas diferencias está asociada a un p-valor. En este caso hemos considerado como Differentially Methylated Positions (**DMPs**) cuando la **diferencia de metilación \> `r meth_diff`%** y el **p-valor \< `r p_value`**
+
 
 ```{r CpG mapping genome position and exporting table of DMPs, include=FALSE}
 # Helper function to map each CpG position to its contig
