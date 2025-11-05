@@ -543,7 +543,11 @@ res_GUvsGC <- pairwise_diff(CpG_meth, g1 = 2, g2 = 0)
  res_UUvsUC <- pairwise_diff(CpG_meth, g1 = 3, g2 = 1)
 ```
 
+<<<<<<< HEAD
 ## Differential methylation analysis
+=======
+## DIFFERENTIAL METHYLATION ANALYSIS
+>>>>>>> 599c351f803d46d7f4aefe16b1b6c24f3cc0c1d4
 
 Con la función "pairwise_diff()" de methylKit, podemos comparar el estado de metilación de cada citosina entre la población de cada tratamiento y la población control (Grazed es el control de Ungrazed y Unclipped es el control de Clipped). Obtenemos hipo- e hiper- metilaciones con respecto al control, y cada una de estas diferencias está asociada a un p-valor. En este caso hemos considerado como Differentially Methylated Positions (**DMPs**) cuando la **diferencia de metilación \> `r meth_diff`%** y el **p-valor \< `r p_value`**
 
