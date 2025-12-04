@@ -1,8 +1,5 @@
 Plantago_224340
-Plantago_235834
-Plantago_265632
 Plantago_268152
-Plantago_328769
-Plantago_357449
+Plantago_473195
+Plantago_732503
 Plantago_745913
-Plantago_780813

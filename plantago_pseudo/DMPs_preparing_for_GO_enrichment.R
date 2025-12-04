@@ -1,4 +1,4 @@
-# I wrote this script to:
+﻿# I wrote this script to:
 # 1) combine CpG/CHG/CHH files into DMPs_all_<comparison>.txt (rbind + add CTXT)
 # 2) for EVERY DMPs_*.txt file in the folder (the 9 context files + the 3 combined),
 #    create:
@@ -10,7 +10,7 @@
 
 # Load packages
 library(here)
-library(tidyverse)  # for bind_rows, readr helpers (I like it for clarity)
+library(tidyverse)  # for bind_rows, readr helpers
 
 setwd(here("plantago_pseudo"))
 
