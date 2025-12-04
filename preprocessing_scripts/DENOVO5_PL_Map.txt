@@ -1,0 +1,5 @@
+PL54_2_joined	EX
+PL22_2_joined	HX
+PL30_2_joined	HX
+PL26_2_joined	HX
+PL11_2_joined	HC
