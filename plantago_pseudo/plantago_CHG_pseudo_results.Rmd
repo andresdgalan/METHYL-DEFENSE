@@ -51,7 +51,8 @@ library(kableExtra)  # Tablas bonitas en RMarkdown
 
 # --- Genética ---
 library(adegenet)    # DAPC y análisis genético
-
+library(vcfR)        # read and manipulate VCF files
+library(vegan)       # Procrustes analysis
 ```
 
 ```{r EXTRACTING COMMON INFORMATION FOR ALL CONTEXT, include=FALSE}
@@ -346,6 +347,8 @@ coords <- getData(CHG_meth)$start
 
 # assign them as rownames to meth_matrix
 rownames(CHG_meth_matrix) <- coords
+write.table(CHG_meth_matrix, "plantago_pseudo_CHG_meth_matrix.csv", sep = ";", row.names = TRUE, col.names = TRUE)
+saveRDS(CHG_meth_matrix, "plantago_pseudo_CHG_meth_matrix.rds")
 ```
 
 ```{r CHG CORRELOGRAM, echo=FALSE, results='hold', warning=FALSE, message=FALSE}
@@ -439,6 +442,9 @@ loadings_df <- reshape2::melt(loadings,
 write.table(loadings_df, "plantago_pseudo_CHG_loadings_with_positions.csv",
             sep = ";", quote = FALSE, row.names = FALSE)
 
+# ---- PCA instead of DAPC ----
+pca_res <- prcomp(t(CHG_meth_matrix_imputed), scale. = TRUE)
+
 ```
 
 ```{r CHG PLOTTING DAPC, echo=FALSE, message=FALSE, warning=FALSE, results='hold'}
@@ -493,6 +499,353 @@ ggplot(dapc_scores, aes(x = LD1, y = LD2, color = combined)) +
   )
 
 ```
+
+```{r CHG PLOTTING PCA, echo=FALSE, message=FALSE, warning=FALSE, results='hold'}
+# Create dataframe with PCA scores
+pca_scores <- as.data.frame(pca_res$x)
+pca_scores$id <- sample_ids
+pca_scores$combined <- grp
+
+# Correct factor levels and labels
+pca_scores$combined <- factor(pca_scores$combined,
+                               levels = c("0", "2", "1", "3"),
+                               labels = c("Grazed + Clipped",
+                                          "Grazed + Unclipped",
+                                          "Ungrazed + Clipped",
+                                          "Ungrazed + Unclipped"))
+
+# ---- Compute group centroids ----
+centroids <- pca_scores %>%
+  group_by(combined) %>%
+  summarise(PC1 = mean(PC1), PC2 = mean(PC2))
+
+# ---- Plot PCA with centroids and segments ----
+ggplot(pca_scores, aes(x = PC1, y = PC2, color = combined)) +
+  
+  # Segments from centroid → each point
+  geom_segment(data = pca_scores %>%
+                 left_join(centroids, by = "combined"),
+               aes(x = PC1.y, y = PC2.y,
+                   xend = PC1.x, yend = PC2.x,
+                   color = combined),
+               alpha = 0.4, size = 0.6, inherit.aes = FALSE) +
+
+  # Points
+  geom_point(size = 1.8) +
+  
+  # Ellipses
+  stat_ellipse(type = "norm", level = 0.67, size = 0.6) +
+  
+  # Colors
+  scale_color_manual(values = c(
+    "Grazed + Clipped" = "#FF69B4",
+    "Grazed + Unclipped" = "#8B3A62",
+    "Ungrazed + Clipped" = "#00FF7F",
+    "Ungrazed + Unclipped" = "#008B45"
+  )) +
+
+  # Labels with explained variance
+  labs(title = "PCA of CHG Methylation in P. lagopus",
+       x = paste0("PC1 (", round(summary(pca_res)$importance[2,1]*100, 1), "%)"),
+       y = paste0("PC2 (", round(summary(pca_res)$importance[2,2]*100, 1), "%)"),
+       color = "Herbivory treatment") +
+  
+  theme_minimal(base_size = 14) +
+  theme(
+    legend.position = "right",
+    panel.grid = element_blank(),
+    panel.background = element_blank(),
+    panel.border = element_rect(color = "black", fill = NA, size = 1),
+    aspect.ratio = 1
+  )
+```
+
+## SNP to SMP correlation
+Patterns of epigenetic variation (SMPs) among individuals and populations could be similar to those of genetic variation (SNPs). To evaluate this we plot a similar DAPC with SNP data and look at the correlation between both DAPCs using procrustes analysis.
+
+```{r CHG PREPARING SNP DAPC, include=FALSE}
+# read VCF
+vcf <- read.vcfR(here("plantago_pseudo", "filtered_variants_cov5-1000_biallelic_MAF0.01_80pct.vcf.gz"))
+
+# Convert to genlight (handles large SNP sets efficiently)
+gl <- vcfR2genlight(vcf)    # converts to genlight; ploidy defaults to 2
+indNames(gl) <- sub("_R1_trimmed_bismark_bt2_pe\\.sorted$", "", indNames(gl))
+
+# set population/factors for samples
+pop(gl) <- treatments
+
+# 3) missing data handling / imputation (replace NA by locus median)
+# compute allele dosage matrix
+dos <- as.matrix(gl)  # genlight -> numeric matrix (0/1/2), NAs remain
+# Remove some monomorphic positions
+keep <- apply(dos, 2, function(x) {
+    u <- unique(na.omit(x))
+    length(u) > 1
+})
+sum(!keep)    # should show 79
+dos_filtered <- dos[, keep]
+
+# impute by median allele dosage per SNP:
+for(j in seq_len(ncol(dos_filtered))){
+  nas <- is.na(dos_filtered[,j])
+  if(any(nas)) dos_filtered[nas,j] <- median(dos_filtered[,j], na.rm=TRUE)
+}
+
+
+
+# put back into a genlight
+gl_imputed <- new("genlight", dos_filtered)
+ploidy(gl_imputed) <- 2
+pop(gl_imputed) <- pop(gl)
+
+# Run DAPC keeping 14 principal components (and all possible discriminant functions). I used 14 because it's a safe maximum: 42/3
+dapc_snp <- dapc(gl_imputed, grp, n.pca = 14, n.da = length(levels(grp)) - 1)
+
+# Optimize the number of PCs using the alpha-score method (balances discrimination vs overfitting).
+optim_a <- optim.a.score(dapc_snp)
+
+# Print the optimal number of PCs suggested by optim.a.score
+cat("Optimal number of PCs (alpha-score):", optim_a$best, "\n")
+
+# Re-run DAPC using the optimal number of PCs suggested automatically
+dapc_snp <- dapc(
+  gl_imputed, 
+  grp,
+  n.pca = max(2, optim_a$best),
+  n.da  = length(levels(grp)) - 1
+)
+
+# ---- PCA instead of DAPC ----
+pca_snp_res <- prcomp(dos_filtered, scale. = TRUE)
+
+
+```
+
+
+```{r CHG PLOTTING SNP DAPC, echo=FALSE, message=FALSE, warning=FALSE, results='hold'}
+# cREATING A DATAFRAME WITH DAPC, TREATMENT AND SAMPLE ID
+dapc_snp_scores <- as.data.frame(dapc_snp$ind.coord)
+dapc_snp_scores$id <- sample_ids
+dapc_snp_scores$combined <- grp
+
+# Correct factor levels and labels (matching your desired order and names)
+dapc_snp_scores$combined <- factor(dapc_snp_scores$combined,
+                               levels = c("0", "2", "1", "3"),
+                               labels = c("Grazed + Clipped",
+                                          "Grazed + Unclipped",
+                                          "Ungrazed + Clipped",
+                                          "Ungrazed + Unclipped"))
+
+# Compute group centroids
+centroids <- dapc_snp_scores %>%
+  group_by(combined) %>%
+  summarise(LD1 = mean(LD1), LD2 = mean(LD2))
+
+# Plot
+ggplot(dapc_snp_scores, aes(x = LD1, y = LD2, color = combined)) +
+  # Vectors from centroid to each point
+  geom_segment(data = dapc_snp_scores %>%
+                 left_join(centroids, by = "combined"),
+               aes(x = LD1.y, y = LD2.y, xend = LD1.x, yend = LD2.x, color = combined),
+               alpha = 0.4, size = 0.6, inherit.aes = FALSE) +
+  # Points
+  geom_point(size = 1.8) +
+  # Open inertia/confidence ellipses
+  stat_ellipse(type = "norm", level = 0.67, size = 0.6) +
+  # Colors for each group
+  scale_color_manual(values = c(
+    "Grazed + Clipped" = "#FF69B4",
+    "Grazed + Unclipped" = "#8B3A62",
+    "Ungrazed + Clipped" = "#00FF7F",
+    "Ungrazed + Unclipped" = "#008B45"
+  )) +
+  # Legend title
+  labs(title = "DAPC of SNPs in P.lagopus",
+       x = "LD1", y = "LD2",
+       color = "Herbivory treatment") +
+  # Theme adjustments
+  theme_minimal(base_size = 14) +
+  theme(
+    legend.position = "right",
+    panel.grid = element_blank(),   # remove grid
+    panel.background = element_blank(),
+    panel.border = element_rect(color = "black", fill = NA, size = 1), # box around plot
+    aspect.ratio = 1  # make the plot square
+  )
+```
+
+```{r CHG PLOTTING SNP PCA, echo=FALSE, message=FALSE, warning=FALSE, results='hold'}
+# Create dataframe with PCA scores
+pca_snp_scores <- as.data.frame(pca_snp_res$x)
+pca_snp_scores$id <- sample_ids
+pca_snp_scores$combined <- grp
+
+# Correct factor levels and labels
+pca_snp_scores$combined <- factor(pca_snp_scores$combined,
+                               levels = c("0", "2", "1", "3"),
+                               labels = c("Grazed + Clipped",
+                                          "Grazed + Unclipped",
+                                          "Ungrazed + Clipped",
+                                          "Ungrazed + Unclipped"))
+
+# ---- Compute group centroids ----
+centroids <- pca_snp_scores %>%
+  group_by(combined) %>%
+  summarise(PC1 = mean(PC1), PC2 = mean(PC2))
+
+# ---- Plot PCA with centroids and segments ----
+ggplot(pca_snp_scores, aes(x = PC1, y = PC2, color = combined)) +
+  
+  # Segments from centroid → each point
+  geom_segment(data = pca_snp_scores %>%
+                 left_join(centroids, by = "combined"),
+               aes(x = PC1.y, y = PC2.y,
+                   xend = PC1.x, yend = PC2.x,
+                   color = combined),
+               alpha = 0.4, size = 0.6, inherit.aes = FALSE) +
+
+  # Points
+  geom_point(size = 1.8) +
+  
+  # Ellipses
+  stat_ellipse(type = "norm", level = 0.67, size = 0.6) +
+  
+  # Colors
+  scale_color_manual(values = c(
+    "Grazed + Clipped" = "#FF69B4",
+    "Grazed + Unclipped" = "#8B3A62",
+    "Ungrazed + Clipped" = "#00FF7F",
+    "Ungrazed + Unclipped" = "#008B45"
+  )) +
+
+  # Labels with explained variance
+  labs(title = "PCA of SNPs in P. lagopus",
+       x = paste0("PC1 (", round(summary(pca_snp_res)$importance[2,1]*100, 1), "%)"),
+       y = paste0("PC2 (", round(summary(pca_snp_res)$importance[2,2]*100, 1), "%)"),
+       color = "Herbivory treatment") +
+  
+  theme_minimal(base_size = 14) +
+  theme(
+    legend.position = "right",
+    panel.grid = element_blank(),
+    panel.background = element_blank(),
+    panel.border = element_rect(color = "black", fill = NA, size = 1),
+    aspect.ratio = 1
+  )
+```
+
+```{r CHG PROCRUSTES ANALYSIS, include=FALSE}
+# Select only numeric LD axes
+dapc_axes <- dapc_scores[, grep("^LD", colnames(dapc_scores))]
+dapc_snp_axes <- dapc_snp_scores[, grep("^LD", colnames(dapc_snp_scores))]
+
+# Make sure row order is identical
+all(rownames(dapc_axes) == rownames(dapc_snp_axes))  # should be TRUE
+
+# Run Procrustes
+proc <- procrustes(dapc_axes, dapc_snp_axes, scale = TRUE)
+
+# Summary
+summary(proc)
+
+# Statistical test
+proc_test <- protest(dapc_axes, dapc_snp_axes, permutations = 999)
+proc_test
+```
+
+```{r CHG PROCRUSTES PLOT, echo=FALSE, message=FALSE, warning=FALSE, results='hold'}
+# Extract coordinates
+X <- proc$X       # SMP (fitted)
+Y <- proc$Yrot    # SNP (rotated)
+
+# Plot empty frame with desired axis labels
+plot(
+  X[,1], X[,2],
+  type = "n",                 # don't plot points yet
+  xlab = "Dimension 1",
+  ylab = "Dimension 2",
+  axes = FALSE,               # remove axes
+  frame.plot = TRUE           # draws box around plot
+)
+
+# Add points
+points(X[,1], X[,2], pch = 16, col = "blue")   # SMP
+points(Y[,1], Y[,2], pch = 17, col = "red")    # SNP
+
+# Add arrows connecting SMP → SNP
+arrows(X[,1], X[,2], Y[,1], Y[,2], length = 0.1, col = "gray")
+
+# Add legend
+legend(
+  "topright",
+  legend = c("SMP", "SNP"),
+  pch = c(16,17),
+  col = c("blue","red")
+)
+
+# Add Procrustes correlation and p-value
+corr_text <- paste0("Procrustes DAPC correlation = ", round(proc_test[["t0"]], 3),
+                    ", p = ", proc_test[["signif"]])
+mtext(corr_text, side = 3, line = 0.5, adj = 0)  # top-left corner
+
+```
+
+```{r CHG PROCRUSTES PCA ANALYSIS, include=FALSE}
+# Select only numeric PC axes
+pca_axes <- pca_scores[, grep("^PC", colnames(pca_scores))]
+pca_snp_axes <- pca_snp_scores[, grep("^PC", colnames(pca_snp_scores))]
+
+# Make sure row order is identical
+all(rownames(pca_axes) == rownames(pca_snp_axes))  # should be TRUE
+
+# Run Procrustes
+proc_pca <- procrustes(pca_axes, pca_snp_axes, scale = TRUE)
+
+# Summary
+summary(proc_pca)
+
+# Statistical test
+proc_pca_test <- protest(pca_axes, pca_snp_axes, permutations = 999)
+proc_pca_test
+```
+
+```{r CHG PROCRUSTES PCA PLOT, echo=FALSE, message=FALSE, warning=FALSE, results='hold'}
+# Extract coordinates
+X <- proc_pca$X       # SMP (fitted)
+Y <- proc_pca$Yrot    # SNP (rotated)
+
+# Plot empty frame with desired axis labels
+plot(
+  X[,1], X[,2],
+  type = "n",                 # don't plot points yet
+  xlab = "Dimension 1",
+  ylab = "Dimension 2",
+  axes = FALSE,               # remove axes
+  frame.plot = TRUE           # draws box around plot
+)
+
+# Add points
+points(X[,1], X[,2], pch = 16, col = "blue")   # SMP
+points(Y[,1], Y[,2], pch = 17, col = "red")    # SNP
+
+# Add arrows connecting SMP → SNP
+arrows(X[,1], X[,2], Y[,1], Y[,2], length = 0.1, col = "gray")
+
+# Add legend
+legend(
+  "topright",
+  legend = c("SMP", "SNP"),
+  pch = c(16,17),
+  col = c("blue","red")
+)
+
+# Add Procrustes correlation and p-value
+corr_text <- paste0("Procrustes PCA correlation = ", round(proc_pca_test[["t0"]], 3),
+                    ", p = ", proc_pca_test[["signif"]])
+mtext(corr_text, side = 3, line = 0.5, adj = 0)  # top-left corner
+
+```
+
 
 ## Identifying important CHG sites
 

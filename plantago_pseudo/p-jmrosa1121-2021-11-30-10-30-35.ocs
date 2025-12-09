@@ -1,0 +1,1542 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<REQUEST>
+  <CONTENT>
+    <ACCESSLOG>
+      <LOGDATE>2022-08-17 13:01:54</LOGDATE>
+    </ACCESSLOG>
+    <BIOS>
+      <ASSETTAG>6146-4510-1589-4622-9157-5321-63</ASSETTAG>
+      <BDATE>12/17/2019</BDATE>
+      <BMANUFACTURER>Microsoft Corporation</BMANUFACTURER>
+      <BVERSION>Hyper-V UEFI Release v4.0</BVERSION>
+      <MMANUFACTURER>Microsoft Corporation</MMANUFACTURER>
+      <MMODEL>Virtual Machine</MMODEL>
+      <MSN>6146-4510-1589-4622-9157-5321-63</MSN>
+      <SKUNUMBER />  <SMANUFACTURER>Microsoft Corporation</SMANUFACTURER>
+      <SMODEL>Virtual Machine</SMODEL>
+      <SSN>6146-4510-1589-4622-9157-5321-63</SSN>
+    </BIOS>
+    <CPUS>
+      <CORE>16</CORE>
+      <DESCRIPTION>Intel64 Family 6 Model 106 Stepping 6</DESCRIPTION>
+      <FAMILYNUMBER>6</FAMILYNUMBER>
+      <ID>00 00 00 00 00 00 00 00</ID>
+      <MANUFACTURER>Intel</MANUFACTURER>
+      <MODEL>106</MODEL>
+      <NAME>Intel(R) Xeon(R) Gold 6342 CPU @ 2.80GHz</NAME>
+      <SERIAL>None</SERIAL>
+      <SPEED>2800</SPEED>
+      <STEPPING>6</STEPPING>
+      <THREAD>1</THREAD>
+    </CPUS>
+    <DRIVES>
+      <DESCRIPTION>Disco fijo local</DESCRIPTION>
+      <FILESYSTEM>NTFS</FILESYSTEM>
+      <FREE>1636461</FREE>
+      <LABEL></LABEL>
+      <LETTER>C:</LETTER>
+      <SERIAL>E4835E62</SERIAL>
+      <SYSTEMDRIVE>1</SYSTEMDRIVE>
+      <TOTAL>2096535</TOTAL>
+      <TYPE>Local Disk</TYPE>
+      <VOLUMN></VOLUMN>
+    </DRIVES>
+    <DRIVES>
+      <FILESYSTEM>NTFS</FILESYSTEM>
+      <FREE>69</FREE>
+      <LABEL>Recuperación</LABEL>
+      <LETTER>Recuperación</LETTER>
+      <SERIAL>44819F70</SERIAL>
+      <SYSTEMDRIVE></SYSTEMDRIVE>
+      <TOTAL>498</TOTAL>
+      <TYPE>Local Disk</TYPE>
+      <VOLUMN>Recuperación</VOLUMN>
+    </DRIVES>
+    <DRIVES>
+      <FILESYSTEM>FAT32</FILESYSTEM>
+      <FREE>69</FREE>
+      <SERIAL>A0821091</SERIAL>
+      <SYSTEMDRIVE></SYSTEMDRIVE>
+      <TOTAL>95</TOTAL>
+      <TYPE>Local Disk</TYPE>
+    </DRIVES>
+    <ENVS>
+      <KEY>ComSpec</KEY>
+      <VAL>%SystemRoot%\system32\cmd.exe</VAL>
+    </ENVS>
+    <ENVS>
+      <KEY>DriverData</KEY>
+      <VAL>C:\Windows\System32\Drivers\DriverData</VAL>
+    </ENVS>
+    <ENVS>
+      <KEY>OS</KEY>
+      <VAL>Windows_NT</VAL>
+    </ENVS>
+    <ENVS>
+      <KEY>Path</KEY>
+      <VAL>C:\Program Files (x86)\Common Files\Oracle\Java\javapath;%SystemRoot%\system32;%SystemRoot%;%SystemRoot%\System32\Wbem;%SYSTEMROOT%\System32\WindowsPowerShell\v1.0\;%SYSTEMROOT%\System32\OpenSSH\;C:\Program Files\Inkscape\bin;C:\Program Files\Git\cmd</VAL>
+    </ENVS>
+    <ENVS>
+      <KEY>PATHEXT</KEY>
+      <VAL>.COM;.EXE;.BAT;.CMD;.VBS;.VBE;.JS;.JSE;.WSF;.WSH;.MSC</VAL>
+    </ENVS>
+    <ENVS>
+      <KEY>PROCESSOR_ARCHITECTURE</KEY>
+      <VAL>AMD64</VAL>
+    </ENVS>
+    <ENVS>
+      <KEY>PSModulePath</KEY>
+      <VAL>%ProgramFiles%\WindowsPowerShell\Modules;%SystemRoot%\system32\WindowsPowerShell\v1.0\Modules</VAL>
+    </ENVS>
+    <ENVS>
+      <KEY>TEMP</KEY>
+      <VAL>%SystemRoot%\TEMP</VAL>
+    </ENVS>
+    <ENVS>
+      <KEY>TMP</KEY>
+      <VAL>%SystemRoot%\TEMP</VAL>
+    </ENVS>
+    <ENVS>
+      <KEY>USERNAME</KEY>
+      <VAL>SYSTEM</VAL>
+    </ENVS>
+    <ENVS>
+      <KEY>windir</KEY>
+      <VAL>%SystemRoot%</VAL>
+    </ENVS>
+    <ENVS>
+      <KEY>NUMBER_OF_PROCESSORS</KEY>
+      <VAL>16</VAL>
+    </ENVS>
+    <ENVS>
+      <KEY>PROCESSOR_LEVEL</KEY>
+      <VAL>6</VAL>
+    </ENVS>
+    <ENVS>
+      <KEY>PROCESSOR_IDENTIFIER</KEY>
+      <VAL>Intel64 Family 6 Model 106 Stepping 6, GenuineIntel</VAL>
+    </ENVS>
+    <ENVS>
+      <KEY>PROCESSOR_REVISION</KEY>
+      <VAL>6a06</VAL>
+    </ENVS>
+    <FIREWALL>
+      <DESCRIPTION>Microsoft Hyper-V Network Adapter</DESCRIPTION>
+      <IPADDRESS>161.111.158.217</IPADDRESS>
+      <PROFILE>DomainProfile</PROFILE>
+      <STATUS>on</STATUS>
+    </FIREWALL>
+    <FIREWALL>
+      <DESCRIPTION>Microsoft Hyper-V Network Adapter</DESCRIPTION>
+      <IPADDRESS6>fe80::5073:7ad4:5b1:d9a5</IPADDRESS6>
+      <PROFILE>DomainProfile</PROFILE>
+      <STATUS>on</STATUS>
+    </FIREWALL>
+    <FIREWALL>
+      <PROFILE>PublicProfile</PROFILE>
+      <STATUS>on</STATUS>
+    </FIREWALL>
+    <FIREWALL>
+      <PROFILE>StandardProfile</PROFILE>
+      <STATUS>on</STATUS>
+    </FIREWALL>
+    <HARDWARE>
+      <CHASSIS_TYPE>Desktop</CHASSIS_TYPE>
+      <CHECKSUM>131071</CHECKSUM>
+      <DEFAULTGATEWAY>161.111.158.193</DEFAULTGATEWAY>
+      <DNS>161.111.4.182</DNS>
+      <ETIME>26</ETIME>
+      <IPADDR>161.111.158.217</IPADDR>
+      <LASTLOGGEDUSER>Administrador</LASTLOGGEDUSER>
+      <MEMORY>65258</MEMORY>
+      <NAME>S-Lorena-vmLorena</NAME>
+      <OSNAME>Microsoft Windows Server 2019 Standard</OSNAME>
+      <OSVERSION>10.0.17763</OSVERSION>
+      <PROCESSORN>1</PROCESSORN>
+      <PROCESSORS>2800</PROCESSORS>
+      <PROCESSORT>Intel(R) Xeon(R) Gold 6342 CPU @ 2.80GHz</PROCESSORT>
+      <USERID>Administrador</USERID>
+      <UUID>127FBF71-1690-42DE-9B17-8A0C5E84F748</UUID>
+      <VMSYSTEM>Hyper-V</VMSYSTEM>
+      <WINLANG>3082</WINLANG>
+      <WINOWNER>Usuario de Windows</WINOWNER>
+      <WINPRODID>00429-10031-91324-AAOEM</WINPRODID>
+      <WINPRODKEY>V2JQT-8NJ6V-GYP92-QBRGQ-YBKQ4</WINPRODKEY>
+      <WORKGROUP>irnase.csic.es</WORKGROUP>
+    </HARDWARE>
+    <INPUTS>
+      <CAPTION>Mejorado (101 ó 102 teclas)</CAPTION>
+      <DESCRIPTION>Teclado virtual de Microsoft Hyper-V</DESCRIPTION>
+      <LAYOUT>0000040A</LAYOUT>
+      <NAME>Mejorado (101 ó 102 teclas)</NAME>
+    </INPUTS>
+    <INPUTS>
+      <CAPTION>Mouse compatible con HID</CAPTION>
+      <DESCRIPTION>Mouse compatible con HID</DESCRIPTION>
+      <INTERFACE>USB</INTERFACE>
+      <MANUFACTURER>Microsoft</MANUFACTURER>
+      <NAME>Mouse compatible con HID</NAME>
+      <POINTINGTYPE>2</POINTINGTYPE>
+    </INPUTS>
+    <LICENSEINFOS>
+      <COMPONENTS>Access/AccessRuntime/Excel/Groove/InfoPath/Lync/LyncEntry/LyncVdi/OneNote/Outlook/OutlookStandard/PowerPoint/Project/ProjectPro/ProjectStd/Publisher/SharePointDesigner/Visio/VisioPro/VisioSDK/VisioStd/Word</COMPONENTS>
+      <FULLNAME>Microsoft Office Profesional 2016</FULLNAME>
+      <KEY>XQNVK-8JYDB-WJ9W3-YJ8YR-WFG99</KEY>
+      <NAME>Microsoft Office 2016</NAME>
+      <PRODUCTID>00339-10000-00000-AA083</PRODUCTID>
+      <TRIAL>0</TRIAL>
+    </LICENSEINFOS>
+    <LOCAL_GROUPS>
+      <ID>S-1-5-32-574</ID>
+      <NAME>Acceso DCOM a Serv. de certif.</NAME>
+    </LOCAL_GROUPS>
+    <LOCAL_GROUPS>
+      <ID>S-1-5-32-544</ID>
+      <NAME>Administradores</NAME>
+    </LOCAL_GROUPS>
+    <LOCAL_GROUPS>
+      <ID>S-1-5-32-578</ID>
+      <NAME>Administradores de Hyper-V</NAME>
+    </LOCAL_GROUPS>
+    <LOCAL_GROUPS>
+      <ID>S-1-5-32-552</ID>
+      <NAME>Duplicadores</NAME>
+    </LOCAL_GROUPS>
+    <LOCAL_GROUPS>
+      <ID>S-1-5-32-568</ID>
+      <NAME>IIS_IUSRS</NAME>
+    </LOCAL_GROUPS>
+    <LOCAL_GROUPS>
+      <ID>S-1-5-32-546</ID>
+      <NAME>Invitados</NAME>
+    </LOCAL_GROUPS>
+    <LOCAL_GROUPS>
+      <ID>S-1-5-32-573</ID>
+      <NAME>Lectores del registro de eventos</NAME>
+    </LOCAL_GROUPS>
+    <LOCAL_GROUPS>
+      <ID>S-1-5-32-569</ID>
+      <NAME>Operadores criptográficos</NAME>
+    </LOCAL_GROUPS>
+    <LOCAL_GROUPS>
+      <ID>S-1-5-32-579</ID>
+      <NAME>Operadores de asistencia de control de acceso</NAME>
+    </LOCAL_GROUPS>
+    <LOCAL_GROUPS>
+      <ID>S-1-5-32-556</ID>
+      <NAME>Operadores de configuración de red</NAME>
+    </LOCAL_GROUPS>
+    <LOCAL_GROUPS>
+      <ID>S-1-5-32-551</ID>
+      <NAME>Operadores de copia de seguridad</NAME>
+    </LOCAL_GROUPS>
+    <LOCAL_GROUPS>
+      <ID>S-1-5-32-550</ID>
+      <NAME>Opers. de impresión</NAME>
+    </LOCAL_GROUPS>
+    <LOCAL_GROUPS>
+      <ID>S-1-5-32-583</ID>
+      <NAME>Propietarios del dispositivo</NAME>
+    </LOCAL_GROUPS>
+    <LOCAL_GROUPS>
+      <ID>S-1-5-32-575</ID>
+      <NAME>Servidores de acceso remoto RDS</NAME>
+    </LOCAL_GROUPS>
+    <LOCAL_GROUPS>
+      <ID>S-1-5-32-577</ID>
+      <NAME>Servidores de administración RDS</NAME>
+    </LOCAL_GROUPS>
+    <LOCAL_GROUPS>
+      <ID>S-1-5-32-576</ID>
+      <NAME>Servidores de extremo RDS</NAME>
+    </LOCAL_GROUPS>
+    <LOCAL_GROUPS>
+      <ID>S-1-5-32-582</ID>
+      <NAME>Storage Replica Administrators</NAME>
+    </LOCAL_GROUPS>
+    <LOCAL_GROUPS>
+      <ID>S-1-5-32-581</ID>
+      <NAME>System Managed Accounts Group</NAME>
+    </LOCAL_GROUPS>
+    <LOCAL_GROUPS>
+      <ID>S-1-5-32-545</ID>
+      <NAME>Usuarios</NAME>
+    </LOCAL_GROUPS>
+    <LOCAL_GROUPS>
+      <ID>S-1-5-32-547</ID>
+      <NAME>Usuarios avanzados</NAME>
+    </LOCAL_GROUPS>
+    <LOCAL_GROUPS>
+      <ID>S-1-5-32-562</ID>
+      <NAME>Usuarios COM distribuidos</NAME>
+    </LOCAL_GROUPS>
+    <LOCAL_GROUPS>
+      <ID>S-1-5-32-580</ID>
+      <NAME>Usuarios de administración remota</NAME>
+    </LOCAL_GROUPS>
+    <LOCAL_GROUPS>
+      <ID>S-1-5-32-555</ID>
+      <NAME>Usuarios de escritorio remoto</NAME>
+    </LOCAL_GROUPS>
+    <LOCAL_GROUPS>
+      <ID>S-1-5-32-558</ID>
+      <NAME>Usuarios del monitor de sistema</NAME>
+    </LOCAL_GROUPS>
+    <LOCAL_GROUPS>
+      <ID>S-1-5-32-559</ID>
+      <NAME>Usuarios del registro de rendimiento</NAME>
+    </LOCAL_GROUPS>
+    <LOCAL_GROUPS>
+      <ID>S-1-5-21-2167923032-2178765394-1139069949-1002</ID>
+      <NAME>SophosFimDataReaders</NAME>
+    </LOCAL_GROUPS>
+    <LOCAL_USERS>
+      <ID>S-1-5-21-2167923032-2178765394-1139069949-500</ID>
+      <NAME>Administrador</NAME>
+    </LOCAL_USERS>
+    <LOCAL_USERS>
+      <ID>S-1-5-21-2167923032-2178765394-1139069949-1000</ID>
+      <NAME>iglorena</NAME>
+    </LOCAL_USERS>
+    <LOCAL_USERS>
+      <ID>S-1-5-21-2167923032-2178765394-1139069949-1001</ID>
+      <NAME>marta.gil</NAME>
+    </LOCAL_USERS>
+    <MEMORIES>
+      <CAPACITY>3968</CAPACITY>
+      <CAPTION>M0001</CAPTION>
+      <MANUFACTURER>Microsoft Corporation</MANUFACTURER>
+      <NUMSLOTS>1</NUMSLOTS>
+    </MEMORIES>
+    <MEMORIES>
+      <CAPACITY>28800</CAPACITY>
+      <CAPTION>M0002</CAPTION>
+      <MANUFACTURER>Microsoft Corporation</MANUFACTURER>
+      <NUMSLOTS>2</NUMSLOTS>
+    </MEMORIES>
+    <MONITORS>
+      <BASE64>AP///////wA2aC4GAAAAAP8VAQSAAAB4Iu6Vo1RMmSYPUFQAAAABAQEBAQEBAQEBAQEBAQEBbCAAMEIAMjBAwBMAAAAAAAAeAAAA/ABIeXBlclZNb25pdG9yAAAAEAAAAAAAAAAAAAAAAAAAAAAAEAAAAAAAAAAAAAAAAAAAAMY=</BASE64>
+      <CAPTION>HyperVMonitor</CAPTION>
+      <DESCRIPTION>2011</DESCRIPTION>
+      <MANUFACTURER>MSH</MANUFACTURER>
+      <NAME>Monitor PnP genérico</NAME>
+      <PORT>Other</PORT>
+      <SERIAL>00000000</SERIAL>
+      <TYPE>Monitor PnP genérico</TYPE>
+    </MONITORS>
+    <NETWORKS>
+      <DESCRIPTION>Microsoft Hyper-V Network Adapter</DESCRIPTION>
+      <IPADDRESS>161.111.158.217</IPADDRESS>
+      <IPDHCP>161.111.159.10</IPDHCP>
+      <IPGATEWAY>161.111.158.193</IPGATEWAY>
+      <IPMASK>255.255.255.192</IPMASK>
+      <IPSUBNET>161.111.158.192</IPSUBNET>
+      <MACADDR>00:15:5D:9E:C7:00</MACADDR>
+      <PNPDEVICEID>VMBUS\{f8615163-df3e-46c5-913f-f2d2f965ed0e}\{1a3490ae-fa1a-408a-a44d-540691ac4e10}</PNPDEVICEID>
+      <SPEED>1000</SPEED>
+      <STATUS>Up</STATUS>
+      <VIRTUALDEV>0</VIRTUALDEV>
+    </NETWORKS>
+    <NETWORKS>
+      <DESCRIPTION>Microsoft Hyper-V Network Adapter</DESCRIPTION>
+      <IPADDRESS6>fe80::5073:7ad4:5b1:d9a5</IPADDRESS6>
+      <IPMASK6>ffff:ffff:ffff:ffff::</IPMASK6>
+      <IPSUBNET6>fe80::</IPSUBNET6>
+      <MACADDR>00:15:5D:9E:C7:00</MACADDR>
+      <PNPDEVICEID>VMBUS\{f8615163-df3e-46c5-913f-f2d2f965ed0e}\{1a3490ae-fa1a-408a-a44d-540691ac4e10}</PNPDEVICEID>
+      <SPEED>1000</SPEED>
+      <STATUS>Up</STATUS>
+      <VIRTUALDEV>0</VIRTUALDEV>
+    </NETWORKS>
+    <OPERATINGSYSTEM>
+      <ARCH>64-bit</ARCH>
+      <BOOT_TIME>2022-04-06 13:46:44</BOOT_TIME>
+      <DNS_DOMAIN>irnase.csic.es</DNS_DOMAIN>
+      <FQDN>S-Lorena-vmLorena.irnase.csic.es</FQDN>
+      <FULL_NAME>Microsoft Windows Server 2019 Standard</FULL_NAME>
+      <INSTALL_DATE>2022-01-19 09:48:33</INSTALL_DATE>
+      <KERNEL_NAME>MSWin32</KERNEL_NAME>
+      <KERNEL_VERSION>10.0.17763</KERNEL_VERSION>
+      <NAME>Windows</NAME>
+      <SERVICE_PACK />  <TIMEZONE>
+        <NAME>Europe/Paris</NAME>
+        <OFFSET>+0200</OFFSET>
+      </TIMEZONE>
+      <VERSION>1809</VERSION>
+    </OPERATINGSYSTEM>
+    <PRINTERS>
+      <DRIVER>Microsoft XPS Document Writer v4</DRIVER>
+      <NAME>Microsoft XPS Document Writer</NAME>
+      <NETWORK>0</NETWORK>
+      <PORT>PORTPROMPT:</PORT>
+      <PRINTPROCESSOR>winprint</PRINTPROCESSOR>
+      <RESOLUTION>600x600</RESOLUTION>
+      <SHARED>0</SHARED>
+      <STATUS>Idle</STATUS>
+    </PRINTERS>
+    <PRINTERS>
+      <DRIVER>Microsoft Print To PDF</DRIVER>
+      <NAME>Microsoft Print to PDF</NAME>
+      <NETWORK>0</NETWORK>
+      <PORT>PORTPROMPT:</PORT>
+      <PRINTPROCESSOR>winprint</PRINTPROCESSOR>
+      <RESOLUTION>600x600</RESOLUTION>
+      <SHARED>0</SHARED>
+      <STATUS>Idle</STATUS>
+    </PRINTERS>
+    <PRINTERS>
+      <DRIVER>Send to Microsoft OneNote 16 Driver</DRIVER>
+      <NAME>Enviar a OneNote 16</NAME>
+      <NETWORK>0</NETWORK>
+      <PORT>nul:</PORT>
+      <PRINTPROCESSOR>winprint</PRINTPROCESSOR>
+      <RESOLUTION>600x600</RESOLUTION>
+      <SHARED>0</SHARED>
+      <STATUS>Idle</STATUS>
+    </PRINTERS>
+    <SOFTWARES>
+      <ARCH>x86_64</ARCH>
+      <FROM>registry</FROM>
+      <GUID>7-Zip</GUID>
+      <INSTALLDATE>20/01/2022</INSTALLDATE>
+      <NAME>7-Zip 21.07 (x64)</NAME>
+      <PUBLISHER>Igor Pavlov</PUBLISHER>
+      <SYSTEM_CATEGORY>application</SYSTEM_CATEGORY>
+      <UNINSTALL_STRING>&quot;C:\Program Files\7-Zip\Uninstall.exe&quot;</UNINSTALL_STRING>
+      <VERSION>21.07</VERSION>
+    </SOFTWARES>
+    <SOFTWARES>
+      <ARCH>x86_64</ARCH>
+      <FROM>registry</FROM>
+      <GUID>Git_is1</GUID>
+      <HELPLINK>https://github.com/git-for-windows/git/wiki/Contact</HELPLINK>
+      <INSTALLDATE>07/04/2022</INSTALLDATE>
+      <NAME>Git</NAME>
+      <PUBLISHER>The Git Development Community</PUBLISHER>
+      <SYSTEM_CATEGORY>application</SYSTEM_CATEGORY>
+      <UNINSTALL_STRING>&quot;C:\Program Files\Git\unins000.exe&quot;</UNINSTALL_STRING>
+      <URL_INFO_ABOUT>https://gitforwindows.org/</URL_INFO_ABOUT>
+      <VERSION>2.35.1.2</VERSION>
+      <VERSION_MAJOR>2</VERSION_MAJOR>
+      <VERSION_MINOR>35</VERSION_MINOR>
+    </SOFTWARES>
+    <SOFTWARES>
+      <ARCH>x86_64</ARCH>
+      <FROM>registry</FROM>
+      <GUID>Miniconda3 py39_4.11.0 (Python 3.9.7 64-bit)</GUID>
+      <INSTALLDATE>06/04/2022</INSTALLDATE>
+      <NAME>Miniconda3 py39_4.11.0 (Python 3.9.7 64-bit)</NAME>
+      <PUBLISHER>Anaconda, Inc.</PUBLISHER>
+      <SYSTEM_CATEGORY>application</SYSTEM_CATEGORY>
+      <UNINSTALL_STRING>&quot;C:\ProgramData\Miniconda3\Uninstall-Miniconda3.exe&quot;</UNINSTALL_STRING>
+      <VERSION>py39_4.11.0</VERSION>
+    </SOFTWARES>
+    <SOFTWARES>
+      <ARCH>x86_64</ARCH>
+      <FROM>registry</FROM>
+      <GUID>Office16.PROPLUS</GUID>
+      <INSTALLDATE>20/01/2022</INSTALLDATE>
+      <NAME>Microsoft Office Professional Plus 2016</NAME>
+      <NO_REMOVE>0</NO_REMOVE>
+      <PUBLISHER>Microsoft Corporation</PUBLISHER>
+      <SYSTEM_CATEGORY>application</SYSTEM_CATEGORY>
+      <UNINSTALL_STRING>&quot;C:\Program Files\Common Files\Microsoft Shared\OFFICE16\Office Setup Controller\setup.exe&quot; /uninstall PROPLUS /dll OSETUP.DLL</UNINSTALL_STRING>
+      <VERSION>16.0.4266.1001</VERSION>
+    </SOFTWARES>
+    <SOFTWARES>
+      <ARCH>x86_64</ARCH>
+      <FROM>registry</FROM>
+      <GUID>R for Windows 4.1.2_is1</GUID>
+      <HELPLINK>https://www.r-project.org</HELPLINK>
+      <INSTALLDATE>31/01/2022</INSTALLDATE>
+      <NAME>R for Windows 4.1.2</NAME>
+      <PUBLISHER>R Core Team</PUBLISHER>
+      <SYSTEM_CATEGORY>application</SYSTEM_CATEGORY>
+      <UNINSTALL_STRING>&quot;C:\Program Files\R\R-4.1.2\unins000.exe&quot;</UNINSTALL_STRING>
+      <URL_INFO_ABOUT>https://www.r-project.org</URL_INFO_ABOUT>
+      <VERSION>4.1.2</VERSION>
+      <VERSION_MAJOR>4</VERSION_MAJOR>
+      <VERSION_MINOR>1</VERSION_MINOR>
+    </SOFTWARES>
+    <SOFTWARES>
+      <ARCH>x86_64</ARCH>
+      <FROM>registry</FROM>
+      <GUID>R for Windows 4.2.0_is1</GUID>
+      <HELPLINK>https://www.r-project.org</HELPLINK>
+      <INSTALLDATE>02/06/2022</INSTALLDATE>
+      <NAME>R for Windows 4.2.0</NAME>
+      <PUBLISHER>R Core Team</PUBLISHER>
+      <SYSTEM_CATEGORY>application</SYSTEM_CATEGORY>
+      <UNINSTALL_STRING>&quot;C:\Program Files\R\R-4.2.0\unins000.exe&quot;</UNINSTALL_STRING>
+      <URL_INFO_ABOUT>https://www.r-project.org</URL_INFO_ABOUT>
+      <VERSION>4.2.0</VERSION>
+      <VERSION_MAJOR>4</VERSION_MAJOR>
+      <VERSION_MINOR>2</VERSION_MINOR>
+    </SOFTWARES>
+    <SOFTWARES>
+      <ARCH>x86_64</ARCH>
+      <FROM>registry</FROM>
+      <GUID>Sophos Endpoint Agent</GUID>
+      <INSTALLDATE>17/08/2022</INSTALLDATE>
+      <NAME>Sophos Endpoint Agent</NAME>
+      <PUBLISHER>Sophos Limited</PUBLISHER>
+      <SYSTEM_CATEGORY>application</SYSTEM_CATEGORY>
+      <UNINSTALL_STRING>&quot;C:\Program Files\Sophos\Sophos Endpoint Agent\uninstallgui.exe&quot;</UNINSTALL_STRING>
+      <URL_INFO_ABOUT>http://www.sophos.com</URL_INFO_ABOUT>
+      <VERSION>2022.2.1.9</VERSION>
+    </SOFTWARES>
+    <SOFTWARES>
+      <ARCH>x86_64</ARCH>
+      <COMMENTS>Protects your Sophos Endpoint</COMMENTS>
+      <FROM>registry</FROM>
+      <GUID>Sophos Endpoint Defense</GUID>
+      <HELPLINK>http://www.sophos.com/support</HELPLINK>
+      <INSTALLDATE>17/08/2022</INSTALLDATE>
+      <NAME>Sophos Endpoint Defense</NAME>
+      <PUBLISHER>Sophos Limited</PUBLISHER>
+      <SYSTEM_CATEGORY>system_component</SYSTEM_CATEGORY>
+      <UNINSTALL_STRING>&quot;C:\Program Files\Sophos\Endpoint Defense\SEDuninstall.exe&quot;</UNINSTALL_STRING>
+      <URL_INFO_ABOUT>http://www.sophos.com</URL_INFO_ABOUT>
+      <VERSION>3.1.1.270</VERSION>
+    </SOFTWARES>
+    <SOFTWARES>
+      <ARCH>x86_64</ARCH>
+      <FROM>registry</FROM>
+      <GUID>Sophos Live Query</GUID>
+      <INSTALLDATE>17/08/2022</INSTALLDATE>
+      <NAME>Sophos Live Query</NAME>
+      <PUBLISHER>Sophos Limited</PUBLISHER>
+      <SYSTEM_CATEGORY>system_component</SYSTEM_CATEGORY>
+      <UNINSTALL_STRING>&quot;C:\Program Files\Sophos\Live Query\SophosLiveQueryUninstall.exe&quot;</UNINSTALL_STRING>
+      <VERSION>3.5.0.418</VERSION>
+    </SOFTWARES>
+    <SOFTWARES>
+      <ARCH>x86_64</ARCH>
+      <FROM>registry</FROM>
+      <GUID>Sophos Live Terminal</GUID>
+      <HELPLINK>http://www.sophos.com/support</HELPLINK>
+      <INSTALLDATE>17/08/2022</INSTALLDATE>
+      <NAME>Sophos Live Terminal</NAME>
+      <PUBLISHER>Sophos Limited</PUBLISHER>
+      <SYSTEM_CATEGORY>system_component</SYSTEM_CATEGORY>
+      <UNINSTALL_STRING>&quot;C:\Program Files\Sophos\Live Terminal\Uninstall.exe&quot;</UNINSTALL_STRING>
+      <VERSION>1.5.245.0</VERSION>
+    </SOFTWARES>
+    <SOFTWARES>
+      <ARCH>x86_64</ARCH>
+      <FROM>registry</FROM>
+      <GUID>Sophos ML Engine</GUID>
+      <INSTALLDATE>17/08/2022</INSTALLDATE>
+      <NAME>Sophos ML Engine</NAME>
+      <PUBLISHER>Sophos Limited</PUBLISHER>
+      <SYSTEM_CATEGORY>system_component</SYSTEM_CATEGORY>
+      <UNINSTALL_STRING>&quot;C:\Program Files\Sophos\Sophos ML Engine\SophosSMEUninstall.exe&quot;</UNINSTALL_STRING>
+      <VERSION>1.8.13.1</VERSION>
+    </SOFTWARES>
+    <SOFTWARES>
+      <ARCH>x86_64</ARCH>
+      <FROM>registry</FROM>
+      <GUID>Sophos Standalone Engine</GUID>
+      <INSTALLDATE>17/08/2022</INSTALLDATE>
+      <NAME>Sophos Standalone Engine</NAME>
+      <PUBLISHER>Sophos Limited</PUBLISHER>
+      <SYSTEM_CATEGORY>system_component</SYSTEM_CATEGORY>
+      <UNINSTALL_STRING>&quot;C:\Program Files\Sophos\Sophos Standalone Engine\SophosSSEUninstall.exe&quot;</UNINSTALL_STRING>
+      <VERSION>1.8.13.1</VERSION>
+    </SOFTWARES>
+    <SOFTWARES>
+      <ARCH>x86_64</ARCH>
+      <COMMENTS>Sophos AMSI Protection</COMMENTS>
+      <FROM>registry</FROM>
+      <GUID>{0EA5323F-DE1B-480C-911E-7827E5EA20E9}</GUID>
+      <HELPLINK>http://www.sophos.com/support</HELPLINK>
+      <INSTALLDATE>17/08/2022</INSTALLDATE>
+      <NAME>Sophos AMSI Protection</NAME>
+      <PUBLISHER>Sophos Limited</PUBLISHER>
+      <SYSTEM_CATEGORY>system_component</SYSTEM_CATEGORY>
+      <UNINSTALL_STRING>&quot;C:\Program Files\Sophos\Sophos AMSI Protection\Uninstall.exe&quot;</UNINSTALL_STRING>
+      <URL_INFO_ABOUT>http://www.sophos.com</URL_INFO_ABOUT>
+      <VERSION>1.9.244</VERSION>
+    </SOFTWARES>
+    <SOFTWARES>
+      <ARCH>x86_64</ARCH>
+      <COMMENTS>Sophos Endpoint Agent</COMMENTS>
+      <FROM>registry</FROM>
+      <GUID>{258F3C41-B03D-478A-8972-50F14E02841E}</GUID>
+      <HELPLINK>https://www.sophos.com/support</HELPLINK>
+      <INSTALLDATE>17/08/2022</INSTALLDATE>
+      <NAME>Sophos Endpoint Agent</NAME>
+      <PUBLISHER>Sophos Limited</PUBLISHER>
+      <SYSTEM_CATEGORY>system_component</SYSTEM_CATEGORY>
+      <UNINSTALL_STRING>&quot;C:\Program Files\Sophos\Sophos UI\SophosUIUninstall.exe&quot;</UNINSTALL_STRING>
+      <URL_INFO_ABOUT>https://www.sophos.com</URL_INFO_ABOUT>
+      <VERSION>2.6.83.0</VERSION>
+    </SOFTWARES>
+    <SOFTWARES>
+      <ARCH>x86_64</ARCH>
+      <FROM>registry</FROM>
+      <GUID>{26A24AE4-039D-4CA4-87B4-2F64180333F0}</GUID>
+      <HELPLINK>https://java.com/help</HELPLINK>
+      <INSTALLDATE>07/06/2022</INSTALLDATE>
+      <NAME>Java 8 Update 333 (64-bit)</NAME>
+      <PUBLISHER>Oracle Corporation</PUBLISHER>
+      <SYSTEM_CATEGORY>application</SYSTEM_CATEGORY>
+      <UNINSTALL_STRING>MsiExec.exe /X{26A24AE4-039D-4CA4-87B4-2F64180333F0}</UNINSTALL_STRING>
+      <URL_INFO_ABOUT>https://java.com</URL_INFO_ABOUT>
+      <VERSION>8.0.3330.2</VERSION>
+    </SOFTWARES>
+    <SOFTWARES>
+      <ARCH>x86_64</ARCH>
+      <COMMENTS>Sophos Endpoint Firewall</COMMENTS>
+      <FROM>registry</FROM>
+      <GUID>{2831282D-8519-4910-B339-2302840ABEF3}</GUID>
+      <HELPLINK>https://www.sophos.com/support</HELPLINK>
+      <INSTALLDATE>17/08/2022</INSTALLDATE>
+      <NAME>Sophos Endpoint Firewall</NAME>
+      <PUBLISHER>Sophos Limited</PUBLISHER>
+      <SYSTEM_CATEGORY>system_component</SYSTEM_CATEGORY>
+      <UNINSTALL_STRING>&quot;C:\Program Files\Sophos\Endpoint Firewall\uninstall.exe&quot;</UNINSTALL_STRING>
+      <URL_INFO_ABOUT>https://www.sophos.com</URL_INFO_ABOUT>
+      <VERSION>2.1.43</VERSION>
+    </SOFTWARES>
+    <SOFTWARES>
+      <ARCH>x86_64</ARCH>
+      <COMMENTS>Network threat protection</COMMENTS>
+      <FROM>registry</FROM>
+      <GUID>{2D2A1891-4657-4E6F-9373-BFCE4C9AC5BA}</GUID>
+      <HELPLINK>http://www.sophos.com/support/</HELPLINK>
+      <INSTALLDATE>17/08/2022</INSTALLDATE>
+      <NAME>Sophos Network Threat Protection</NAME>
+      <PUBLISHER>Sophos Limited</PUBLISHER>
+      <SYSTEM_CATEGORY>system_component</SYSTEM_CATEGORY>
+      <UNINSTALL_STRING>&quot;C:\Program Files\Sophos\Sophos Network Threat Protection\SophosNtpUninstall.exe&quot;</UNINSTALL_STRING>
+      <URL_INFO_ABOUT>http://www.sophos.com/</URL_INFO_ABOUT>
+      <VERSION>1.16.2923</VERSION>
+    </SOFTWARES>
+    <SOFTWARES>
+      <ARCH>x86_64</ARCH>
+      <COMMENTS>Sophos File Integrity Monitoring</COMMENTS>
+      <FROM>registry</FROM>
+      <GUID>{425063CE-9566-43B8-AC61-F8D182828634}</GUID>
+      <HELPLINK>http://www.sophos.com/support</HELPLINK>
+      <INSTALLDATE>17/08/2022</INSTALLDATE>
+      <NAME>Sophos File Integrity Monitoring</NAME>
+      <PUBLISHER>Sophos Limited</PUBLISHER>
+      <SYSTEM_CATEGORY>system_component</SYSTEM_CATEGORY>
+      <UNINSTALL_STRING>MsiExec.exe /X{425063CE-9566-43B8-AC61-F8D182828634}</UNINSTALL_STRING>
+      <URL_INFO_ABOUT>https://www.sophos.com/</URL_INFO_ABOUT>
+      <VERSION>1.0.1.11</VERSION>
+    </SOFTWARES>
+    <SOFTWARES>
+      <ARCH>x86_64</ARCH>
+      <COMMENTS>Endpoint Self Help</COMMENTS>
+      <FROM>registry</FROM>
+      <GUID>{4EFCDD15-24A2-4D89-84A4-857D1BF68FA8}</GUID>
+      <HELPLINK>https://www.sophos.com/support/</HELPLINK>
+      <INSTALLDATE>17/08/2022</INSTALLDATE>
+      <NAME>Sophos Endpoint Self Help</NAME>
+      <PUBLISHER>Sophos Limited</PUBLISHER>
+      <SYSTEM_CATEGORY>system_component</SYSTEM_CATEGORY>
+      <UNINSTALL_STRING>MsiExec.exe /X{4EFCDD15-24A2-4D89-84A4-857D1BF68FA8}</UNINSTALL_STRING>
+      <URL_INFO_ABOUT>https://www.sophos.com/</URL_INFO_ABOUT>
+      <VERSION>3.2.339.0</VERSION>
+    </SOFTWARES>
+    <SOFTWARES>
+      <ARCH>x86_64</ARCH>
+      <FROM>registry</FROM>
+      <GUID>{6F320B93-EE3C-4826-85E0-ADF79F8D4C61}</GUID>
+      <INSTALLDATE>25/04/2022</INSTALLDATE>
+      <NAME>Microsoft Visual Studio Installer</NAME>
+      <PUBLISHER>Microsoft Corporation</PUBLISHER>
+      <SYSTEM_CATEGORY>application</SYSTEM_CATEGORY>
+      <UNINSTALL_STRING>&quot;C:\Program Files (x86)\Microsoft Visual Studio\Installer\setup.exe&quot; /uninstall</UNINSTALL_STRING>
+      <VERSION>3.1.2204.3969</VERSION>
+    </SOFTWARES>
+    <SOFTWARES>
+      <ARCH>x86_64</ARCH>
+      <COMMENTS>Sophos Diagnostic Utility</COMMENTS>
+      <FROM>registry</FROM>
+      <GUID>{8078549C-CFF0-48C5-9B77-6BA48A14673D}</GUID>
+      <HELPLINK>https://www.sophos.com/support</HELPLINK>
+      <INSTALLDATE>17/08/2022</INSTALLDATE>
+      <NAME>Sophos Diagnostic Utility</NAME>
+      <PUBLISHER>Sophos Limited</PUBLISHER>
+      <SYSTEM_CATEGORY>system_component</SYSTEM_CATEGORY>
+      <UNINSTALL_STRING>&quot;C:\Program Files\Sophos\Sophos Diagnostic Utility\uninstall.exe&quot;</UNINSTALL_STRING>
+      <URL_INFO_ABOUT>https://www.sophos.com</URL_INFO_ABOUT>
+      <VERSION>6.13.1014</VERSION>
+    </SOFTWARES>
+    <SOFTWARES>
+      <ARCH>x86_64</ARCH>
+      <COMMENTS>Sophos Exploit Prevention</COMMENTS>
+      <FROM>registry</FROM>
+      <GUID>{866151B2-E14E-40E0-B6D9-64B1D428F5CB}</GUID>
+      <HELPLINK>http://www.sophos.com/support</HELPLINK>
+      <INSTALLDATE>17/08/2022</INSTALLDATE>
+      <NAME>Sophos Exploit Prevention</NAME>
+      <PUBLISHER>Sophos Limited</PUBLISHER>
+      <SYSTEM_CATEGORY>system_component</SYSTEM_CATEGORY>
+      <UNINSTALL_STRING>&quot;C:\Program Files (x86)\HitmanPro.Alert\Uninstall.exe&quot;</UNINSTALL_STRING>
+      <URL_INFO_ABOUT>http://www.sophos.com</URL_INFO_ABOUT>
+      <VERSION>3.8.4.37</VERSION>
+    </SOFTWARES>
+    <SOFTWARES>
+      <ARCH>x86_64</ARCH>
+      <FROM>registry</FROM>
+      <GUID>{90160000-0015-0C0A-1000-0000000FF1CE}</GUID>
+      <INSTALLDATE>20/01/2022</INSTALLDATE>
+      <NAME>Microsoft Access MUI (Spanish) 2016</NAME>
+      <PUBLISHER>Microsoft Corporation</PUBLISHER>
+      <SYSTEM_CATEGORY>system_component</SYSTEM_CATEGORY>
+      <UNINSTALL_STRING>MsiExec.exe /X{90160000-0015-0C0A-1000-0000000FF1CE}</UNINSTALL_STRING>
+      <VERSION>16.0.4266.1001</VERSION>
+    </SOFTWARES>
+    <SOFTWARES>
+      <ARCH>x86_64</ARCH>
+      <FROM>registry</FROM>
+      <GUID>{90160000-0016-0C0A-1000-0000000FF1CE}</GUID>
+      <INSTALLDATE>20/01/2022</INSTALLDATE>
+      <NAME>Microsoft Excel MUI (Spanish) 2016</NAME>
+      <PUBLISHER>Microsoft Corporation</PUBLISHER>
+      <SYSTEM_CATEGORY>system_component</SYSTEM_CATEGORY>
+      <UNINSTALL_STRING>MsiExec.exe /X{90160000-0016-0C0A-1000-0000000FF1CE}</UNINSTALL_STRING>
+      <VERSION>16.0.4266.1001</VERSION>
+    </SOFTWARES>
+    <SOFTWARES>
+      <ARCH>x86_64</ARCH>
+      <FROM>registry</FROM>
+      <GUID>{90160000-0018-0C0A-1000-0000000FF1CE}</GUID>
+      <INSTALLDATE>20/01/2022</INSTALLDATE>
+      <NAME>Microsoft PowerPoint MUI (Spanish) 2016</NAME>
+      <PUBLISHER>Microsoft Corporation</PUBLISHER>
+      <SYSTEM_CATEGORY>system_component</SYSTEM_CATEGORY>
+      <UNINSTALL_STRING>MsiExec.exe /X{90160000-0018-0C0A-1000-0000000FF1CE}</UNINSTALL_STRING>
+      <VERSION>16.0.4266.1001</VERSION>
+    </SOFTWARES>
+    <SOFTWARES>
+      <ARCH>x86_64</ARCH>
+      <FROM>registry</FROM>
+      <GUID>{90160000-0019-0C0A-1000-0000000FF1CE}</GUID>
+      <INSTALLDATE>20/01/2022</INSTALLDATE>
+      <NAME>Microsoft Publisher MUI (Spanish) 2016</NAME>
+      <PUBLISHER>Microsoft Corporation</PUBLISHER>
+      <SYSTEM_CATEGORY>system_component</SYSTEM_CATEGORY>
+      <UNINSTALL_STRING>MsiExec.exe /X{90160000-0019-0C0A-1000-0000000FF1CE}</UNINSTALL_STRING>
+      <VERSION>16.0.4266.1001</VERSION>
+    </SOFTWARES>
+    <SOFTWARES>
+      <ARCH>x86_64</ARCH>
+      <FROM>registry</FROM>
+      <GUID>{90160000-001A-0C0A-1000-0000000FF1CE}</GUID>
+      <INSTALLDATE>20/01/2022</INSTALLDATE>
+      <NAME>Microsoft Outlook MUI (Spanish) 2016</NAME>
+      <PUBLISHER>Microsoft Corporation</PUBLISHER>
+      <SYSTEM_CATEGORY>system_component</SYSTEM_CATEGORY>
+      <UNINSTALL_STRING>MsiExec.exe /X{90160000-001A-0C0A-1000-0000000FF1CE}</UNINSTALL_STRING>
+      <VERSION>16.0.4266.1001</VERSION>
+    </SOFTWARES>
+    <SOFTWARES>
+      <ARCH>x86_64</ARCH>
+      <FROM>registry</FROM>
+      <GUID>{90160000-001B-0C0A-1000-0000000FF1CE}</GUID>
+      <INSTALLDATE>20/01/2022</INSTALLDATE>
+      <NAME>Microsoft Word MUI (Spanish) 2016</NAME>
+      <PUBLISHER>Microsoft Corporation</PUBLISHER>
+      <SYSTEM_CATEGORY>system_component</SYSTEM_CATEGORY>
+      <UNINSTALL_STRING>MsiExec.exe /X{90160000-001B-0C0A-1000-0000000FF1CE}</UNINSTALL_STRING>
+      <VERSION>16.0.4266.1001</VERSION>
+    </SOFTWARES>
+    <SOFTWARES>
+      <ARCH>x86_64</ARCH>
+      <FROM>registry</FROM>
+      <GUID>{90160000-001F-0403-1000-0000000FF1CE}</GUID>
+      <INSTALLDATE>20/01/2022</INSTALLDATE>
+      <NAME>Eines de correcció del Microsoft Office 2016: català</NAME>
+      <PUBLISHER>Microsoft Corporation</PUBLISHER>
+      <SYSTEM_CATEGORY>system_component</SYSTEM_CATEGORY>
+      <UNINSTALL_STRING>MsiExec.exe /X{90160000-001F-0403-1000-0000000FF1CE}</UNINSTALL_STRING>
+      <VERSION>16.0.4266.1001</VERSION>
+    </SOFTWARES>
+    <SOFTWARES>
+      <ARCH>x86_64</ARCH>
+      <FROM>registry</FROM>
+      <GUID>{90160000-001F-0409-1000-0000000FF1CE}</GUID>
+      <INSTALLDATE>20/01/2022</INSTALLDATE>
+      <NAME>Microsoft Office Proofing Tools 2016 - English</NAME>
+      <PUBLISHER>Microsoft Corporation</PUBLISHER>
+      <SYSTEM_CATEGORY>system_component</SYSTEM_CATEGORY>
+      <UNINSTALL_STRING>MsiExec.exe /X{90160000-001F-0409-1000-0000000FF1CE}</UNINSTALL_STRING>
+      <VERSION>16.0.4266.1001</VERSION>
+    </SOFTWARES>
+    <SOFTWARES>
+      <ARCH>x86_64</ARCH>
+      <FROM>registry</FROM>
+      <GUID>{90160000-001F-0416-1000-0000000FF1CE}</GUID>
+      <INSTALLDATE>20/01/2022</INSTALLDATE>
+      <NAME>Revisores de Texto do Microsoft Office 2016 – Português (Brasil)</NAME>
+      <PUBLISHER>Microsoft Corporation</PUBLISHER>
+      <SYSTEM_CATEGORY>system_component</SYSTEM_CATEGORY>
+      <UNINSTALL_STRING>MsiExec.exe /X{90160000-001F-0416-1000-0000000FF1CE}</UNINSTALL_STRING>
+      <VERSION>16.0.4266.1001</VERSION>
+    </SOFTWARES>
+    <SOFTWARES>
+      <ARCH>x86_64</ARCH>
+      <FROM>registry</FROM>
+      <GUID>{90160000-001F-042D-1000-0000000FF1CE}</GUID>
+      <INSTALLDATE>20/01/2022</INSTALLDATE>
+      <NAME>Microsoft Office zuzenketa-tresnak 2016 - Euskara</NAME>
+      <PUBLISHER>Microsoft Corporation</PUBLISHER>
+      <SYSTEM_CATEGORY>system_component</SYSTEM_CATEGORY>
+      <UNINSTALL_STRING>MsiExec.exe /X{90160000-001F-042D-1000-0000000FF1CE}</UNINSTALL_STRING>
+      <VERSION>16.0.4266.1001</VERSION>
+    </SOFTWARES>
+    <SOFTWARES>
+      <ARCH>x86_64</ARCH>
+      <FROM>registry</FROM>
+      <GUID>{90160000-001F-0456-1000-0000000FF1CE}</GUID>
+      <INSTALLDATE>20/01/2022</INSTALLDATE>
+      <NAME>Ferramentas de verificación de Microsoft Office 2016 - Galego</NAME>
+      <PUBLISHER>Microsoft Corporation</PUBLISHER>
+      <SYSTEM_CATEGORY>system_component</SYSTEM_CATEGORY>
+      <UNINSTALL_STRING>MsiExec.exe /X{90160000-001F-0456-1000-0000000FF1CE}</UNINSTALL_STRING>
+      <VERSION>16.0.4266.1001</VERSION>
+    </SOFTWARES>
+    <SOFTWARES>
+      <ARCH>x86_64</ARCH>
+      <FROM>registry</FROM>
+      <GUID>{90160000-001F-0C0A-1000-0000000FF1CE}</GUID>
+      <INSTALLDATE>20/01/2022</INSTALLDATE>
+      <NAME>Herramientas de corrección de Microsoft Office 2016: español</NAME>
+      <PUBLISHER>Microsoft Corporation</PUBLISHER>
+      <SYSTEM_CATEGORY>system_component</SYSTEM_CATEGORY>
+      <UNINSTALL_STRING>MsiExec.exe /X{90160000-001F-0C0A-1000-0000000FF1CE}</UNINSTALL_STRING>
+      <VERSION>16.0.4266.1001</VERSION>
+    </SOFTWARES>
+    <SOFTWARES>
+      <ARCH>x86_64</ARCH>
+      <FROM>registry</FROM>
+      <GUID>{90160000-002C-0C0A-1000-0000000FF1CE}</GUID>
+      <INSTALLDATE>20/01/2022</INSTALLDATE>
+      <NAME>Microsoft Office Proofing (Spanish) 2016</NAME>
+      <PUBLISHER>Microsoft Corporation</PUBLISHER>
+      <SYSTEM_CATEGORY>system_component</SYSTEM_CATEGORY>
+      <UNINSTALL_STRING>MsiExec.exe /X{90160000-002C-0C0A-1000-0000000FF1CE}</UNINSTALL_STRING>
+      <VERSION>16.0.4266.1001</VERSION>
+    </SOFTWARES>
+    <SOFTWARES>
+      <ARCH>x86_64</ARCH>
+      <FROM>registry</FROM>
+      <GUID>{90160000-0044-0C0A-1000-0000000FF1CE}</GUID>
+      <INSTALLDATE>20/01/2022</INSTALLDATE>
+      <NAME>Microsoft InfoPath MUI (Spanish) 2016</NAME>
+      <PUBLISHER>Microsoft Corporation</PUBLISHER>
+      <SYSTEM_CATEGORY>system_component</SYSTEM_CATEGORY>
+      <UNINSTALL_STRING>MsiExec.exe /X{90160000-0044-0C0A-1000-0000000FF1CE}</UNINSTALL_STRING>
+      <VERSION>16.0.4266.1001</VERSION>
+    </SOFTWARES>
+    <SOFTWARES>
+      <ARCH>x86_64</ARCH>
+      <FROM>registry</FROM>
+      <GUID>{90160000-006E-0C0A-1000-0000000FF1CE}</GUID>
+      <INSTALLDATE>20/01/2022</INSTALLDATE>
+      <NAME>Microsoft Office Shared MUI (Spanish) 2016</NAME>
+      <PUBLISHER>Microsoft Corporation</PUBLISHER>
+      <SYSTEM_CATEGORY>system_component</SYSTEM_CATEGORY>
+      <UNINSTALL_STRING>MsiExec.exe /X{90160000-006E-0C0A-1000-0000000FF1CE}</UNINSTALL_STRING>
+      <VERSION>16.0.4266.1001</VERSION>
+    </SOFTWARES>
+    <SOFTWARES>
+      <ARCH>x86_64</ARCH>
+      <FROM>registry</FROM>
+      <GUID>{90160000-0090-0C0A-1000-0000000FF1CE}</GUID>
+      <INSTALLDATE>20/01/2022</INSTALLDATE>
+      <NAME>Microsoft DCF MUI (Spanish) 2016</NAME>
+      <PUBLISHER>Microsoft Corporation</PUBLISHER>
+      <SYSTEM_CATEGORY>system_component</SYSTEM_CATEGORY>
+      <UNINSTALL_STRING>MsiExec.exe /X{90160000-0090-0C0A-1000-0000000FF1CE}</UNINSTALL_STRING>
+      <VERSION>16.0.4266.1001</VERSION>
+    </SOFTWARES>
+    <SOFTWARES>
+      <ARCH>x86_64</ARCH>
+      <FROM>registry</FROM>
+      <GUID>{90160000-00A1-0C0A-1000-0000000FF1CE}</GUID>
+      <INSTALLDATE>20/01/2022</INSTALLDATE>
+      <NAME>Microsoft OneNote MUI (Spanish) 2016</NAME>
+      <PUBLISHER>Microsoft Corporation</PUBLISHER>
+      <SYSTEM_CATEGORY>system_component</SYSTEM_CATEGORY>
+      <UNINSTALL_STRING>MsiExec.exe /X{90160000-00A1-0C0A-1000-0000000FF1CE}</UNINSTALL_STRING>
+      <VERSION>16.0.4266.1001</VERSION>
+    </SOFTWARES>
+    <SOFTWARES>
+      <ARCH>x86_64</ARCH>
+      <FROM>registry</FROM>
+      <GUID>{90160000-00BA-0C0A-1000-0000000FF1CE}</GUID>
+      <INSTALLDATE>20/01/2022</INSTALLDATE>
+      <NAME>Microsoft Groove MUI (Spanish) 2016</NAME>
+      <PUBLISHER>Microsoft Corporation</PUBLISHER>
+      <SYSTEM_CATEGORY>system_component</SYSTEM_CATEGORY>
+      <UNINSTALL_STRING>MsiExec.exe /X{90160000-00BA-0C0A-1000-0000000FF1CE}</UNINSTALL_STRING>
+      <VERSION>16.0.4266.1001</VERSION>
+    </SOFTWARES>
+    <SOFTWARES>
+      <ARCH>x86_64</ARCH>
+      <FROM>registry</FROM>
+      <GUID>{90160000-00C1-0000-1000-0000000FF1CE}</GUID>
+      <INSTALLDATE>20/01/2022</INSTALLDATE>
+      <NAME>Microsoft Office 32-bit Components 2016</NAME>
+      <PUBLISHER>Microsoft Corporation</PUBLISHER>
+      <SYSTEM_CATEGORY>system_component</SYSTEM_CATEGORY>
+      <UNINSTALL_STRING>MsiExec.exe /X{90160000-00C1-0000-1000-0000000FF1CE}</UNINSTALL_STRING>
+      <VERSION>16.0.4266.1001</VERSION>
+    </SOFTWARES>
+    <SOFTWARES>
+      <ARCH>x86_64</ARCH>
+      <FROM>registry</FROM>
+      <GUID>{90160000-00C1-0C0A-1000-0000000FF1CE}</GUID>
+      <INSTALLDATE>20/01/2022</INSTALLDATE>
+      <NAME>Microsoft Office Shared 32-bit MUI (Spanish) 2016</NAME>
+      <PUBLISHER>Microsoft Corporation</PUBLISHER>
+      <SYSTEM_CATEGORY>system_component</SYSTEM_CATEGORY>
+      <UNINSTALL_STRING>MsiExec.exe /X{90160000-00C1-0C0A-1000-0000000FF1CE}</UNINSTALL_STRING>
+      <VERSION>16.0.4266.1001</VERSION>
+    </SOFTWARES>
+    <SOFTWARES>
+      <ARCH>x86_64</ARCH>
+      <FROM>registry</FROM>
+      <GUID>{90160000-00E1-0C0A-1000-0000000FF1CE}</GUID>
+      <INSTALLDATE>20/01/2022</INSTALLDATE>
+      <NAME>Microsoft Office OSM MUI (Spanish) 2016</NAME>
+      <PUBLISHER>Microsoft Corporation</PUBLISHER>
+      <SYSTEM_CATEGORY>system_component</SYSTEM_CATEGORY>
+      <UNINSTALL_STRING>MsiExec.exe /X{90160000-00E1-0C0A-1000-0000000FF1CE}</UNINSTALL_STRING>
+      <VERSION>16.0.4266.1001</VERSION>
+    </SOFTWARES>
+    <SOFTWARES>
+      <ARCH>x86_64</ARCH>
+      <FROM>registry</FROM>
+      <GUID>{90160000-00E2-0C0A-1000-0000000FF1CE}</GUID>
+      <INSTALLDATE>20/01/2022</INSTALLDATE>
+      <NAME>Microsoft Office OSM UX MUI (Spanish) 2016</NAME>
+      <PUBLISHER>Microsoft Corporation</PUBLISHER>
+      <SYSTEM_CATEGORY>system_component</SYSTEM_CATEGORY>
+      <UNINSTALL_STRING>MsiExec.exe /X{90160000-00E2-0C0A-1000-0000000FF1CE}</UNINSTALL_STRING>
+      <VERSION>16.0.4266.1001</VERSION>
+    </SOFTWARES>
+    <SOFTWARES>
+      <ARCH>x86_64</ARCH>
+      <FROM>registry</FROM>
+      <GUID>{90160000-012B-0C0A-1000-0000000FF1CE}</GUID>
+      <INSTALLDATE>20/01/2022</INSTALLDATE>
+      <NAME>Microsoft Skype for Business MUI (Spanish) 2016</NAME>
+      <PUBLISHER>Microsoft Corporation</PUBLISHER>
+      <SYSTEM_CATEGORY>system_component</SYSTEM_CATEGORY>
+      <UNINSTALL_STRING>MsiExec.exe /X{90160000-012B-0C0A-1000-0000000FF1CE}</UNINSTALL_STRING>
+      <VERSION>16.0.4266.1001</VERSION>
+    </SOFTWARES>
+    <SOFTWARES>
+      <ARCH>x86_64</ARCH>
+      <FROM>registry</FROM>
+      <GUID>{ADE9ADC1-596C-4F76-A120-495B52398782}_is1</GUID>
+      <HELPLINK>http://www.s2grupo.es/</HELPLINK>
+      <INSTALLDATE>23/06/2022</INSTALLDATE>
+      <NAME>microclaudia versión 1.8.2</NAME>
+      <PUBLISHER>S2 Grupo</PUBLISHER>
+      <SYSTEM_CATEGORY>application</SYSTEM_CATEGORY>
+      <UNINSTALL_STRING>&quot;C:\Program Files\microclaudia\unins000.exe&quot;</UNINSTALL_STRING>
+      <URL_INFO_ABOUT>http://www.s2grupo.es/</URL_INFO_ABOUT>
+      <VERSION>1.8.2</VERSION>
+      <VERSION_MAJOR>1</VERSION_MAJOR>
+      <VERSION_MINOR>8</VERSION_MINOR>
+    </SOFTWARES>
+    <SOFTWARES>
+      <ARCH>x86_64</ARCH>
+      <COMMENTS>Sophos File Scanner</COMMENTS>
+      <FROM>registry</FROM>
+      <GUID>{CD39E739-F480-4AC4-B0C9-68CA731D8AC6}</GUID>
+      <HELPLINK>http://www.sophos.com/support</HELPLINK>
+      <INSTALLDATE>17/08/2022</INSTALLDATE>
+      <NAME>Sophos File Scanner</NAME>
+      <PUBLISHER>Sophos Limited</PUBLISHER>
+      <SYSTEM_CATEGORY>system_component</SYSTEM_CATEGORY>
+      <UNINSTALL_STRING>&quot;C:\Program Files\Sophos\Sophos File Scanner\Uninstall.exe&quot;</UNINSTALL_STRING>
+      <URL_INFO_ABOUT>http://www.sophos.com</URL_INFO_ABOUT>
+      <VERSION>1.9.24.1</VERSION>
+    </SOFTWARES>
+    <SOFTWARES>
+      <ARCH>x86_64</ARCH>
+      <FROM>registry</FROM>
+      <GUID>{DE181B35-ACEF-4DB0-86D9-731D5767ABB1}</GUID>
+      <HELPLINK>https://www.google.com/earth/</HELPLINK>
+      <INSTALLDATE>01/06/2022</INSTALLDATE>
+      <NAME>Google Earth Pro</NAME>
+      <PUBLISHER>Google</PUBLISHER>
+      <SYSTEM_CATEGORY>application</SYSTEM_CATEGORY>
+      <UNINSTALL_STRING>MsiExec.exe /I{DE181B35-ACEF-4DB0-86D9-731D5767ABB1}</UNINSTALL_STRING>
+      <VERSION>7.3.4.8642</VERSION>
+    </SOFTWARES>
+    <SOFTWARES>
+      <ARCH>x86_64</ARCH>
+      <FROM>registry</FROM>
+      <INSTALLDATE>07/03/2022</INSTALLDATE>
+      <NAME>Internet Explorer (64bit)</NAME>
+      <PUBLISHER>Microsoft Corporation</PUBLISHER>
+      <VERSION>11.1790.17763.0</VERSION>
+    </SOFTWARES>
+    <SOFTWARES>
+      <ARCH>i586</ARCH>
+      <FROM>registry</FROM>
+      <GUID>Crimson Editor SVN286M</GUID>
+      <INSTALLDATE>09/02/2022</INSTALLDATE>
+      <NAME>Crimson Editor SVN286M</NAME>
+      <PUBLISHER>Emerald Editor Community</PUBLISHER>
+      <SYSTEM_CATEGORY>application</SYSTEM_CATEGORY>
+      <UNINSTALL_STRING>C:\Program Files (x86)\Emerald Editor Community\Crimson Editor SVN286M\uninst.exe</UNINSTALL_STRING>
+      <URL_INFO_ABOUT>http://crimson.emeraldeditor.com</URL_INFO_ABOUT>
+      <VERSION>SVN286M</VERSION>
+    </SOFTWARES>
+    <SOFTWARES>
+      <ARCH>i586</ARCH>
+      <FROM>registry</FROM>
+      <GUID>f584e2a7</GUID>
+      <INSTALLDATE>25/04/2022</INSTALLDATE>
+      <NAME>Visual Studio Community 2022</NAME>
+      <PUBLISHER>Microsoft Corporation</PUBLISHER>
+      <SYSTEM_CATEGORY>application</SYSTEM_CATEGORY>
+      <UNINSTALL_STRING>&quot;C:\Program Files (x86)\Microsoft Visual Studio\Installer\setup.exe&quot; uninstall --installPath &quot;C:\Program Files\Microsoft Visual Studio\2022\Community&quot;</UNINSTALL_STRING>
+      <VERSION>17.1.5</VERSION>
+    </SOFTWARES>
+    <SOFTWARES>
+      <ARCH>i586</ARCH>
+      <FROM>registry</FROM>
+      <GUID>FileZilla Client</GUID>
+      <HELPLINK>https://filezilla-project.org/</HELPLINK>
+      <INSTALLDATE>15/05/2022</INSTALLDATE>
+      <NAME>FileZilla Client 3.59.0</NAME>
+      <PUBLISHER>Tim Kosse</PUBLISHER>
+      <SYSTEM_CATEGORY>application</SYSTEM_CATEGORY>
+      <UNINSTALL_STRING>&quot;C:\Program Files\FileZilla FTP Client\uninstall.exe&quot;</UNINSTALL_STRING>
+      <URL_INFO_ABOUT>https://filezilla-project.org/</URL_INFO_ABOUT>
+      <VERSION>3.59.0</VERSION>
+    </SOFTWARES>
+    <SOFTWARES>
+      <ARCH>i586</ARCH>
+      <FROM>registry</FROM>
+      <GUID>Google Chrome</GUID>
+      <INSTALLDATE>17/08/2022</INSTALLDATE>
+      <NAME>Google Chrome</NAME>
+      <PUBLISHER>Google LLC</PUBLISHER>
+      <SYSTEM_CATEGORY>application</SYSTEM_CATEGORY>
+      <UNINSTALL_STRING>&quot;C:\Program Files\Google\Chrome\Application\104.0.5112.82\Installer\setup.exe&quot; --uninstall --channel=stable --system-level --verbose-logging</UNINSTALL_STRING>
+      <VERSION>104.0.5112.82</VERSION>
+    </SOFTWARES>
+    <SOFTWARES>
+      <ARCH>i586</ARCH>
+      <FROM>registry</FROM>
+      <GUID>Inkscape</GUID>
+      <HELPLINK>https://inkscape.org</HELPLINK>
+      <INSTALLDATE>09/02/2022</INSTALLDATE>
+      <NAME>Inkscape</NAME>
+      <PUBLISHER>Inkscape</PUBLISHER>
+      <SYSTEM_CATEGORY>application</SYSTEM_CATEGORY>
+      <UNINSTALL_STRING>&quot;C:\Program Files\Inkscape\Uninstall.exe&quot;</UNINSTALL_STRING>
+      <URL_INFO_ABOUT>https://inkscape.org</URL_INFO_ABOUT>
+      <VERSION>1.1.2-</VERSION>
+    </SOFTWARES>
+    <SOFTWARES>
+      <ARCH>i586</ARCH>
+      <FROM>registry</FROM>
+      <GUID>Microsoft Edge</GUID>
+      <INSTALLDATE>13/08/2022</INSTALLDATE>
+      <NAME>Microsoft Edge</NAME>
+      <PUBLISHER>Microsoft Corporation</PUBLISHER>
+      <SYSTEM_CATEGORY>application</SYSTEM_CATEGORY>
+      <UNINSTALL_STRING>&quot;C:\Program Files (x86)\Microsoft\Edge\Application\104.0.1293.54\Installer\setup.exe&quot; --uninstall --msedge --channel=stable --system-level --verbose-logging</UNINSTALL_STRING>
+      <VERSION>104.0.1293.54</VERSION>
+    </SOFTWARES>
+    <SOFTWARES>
+      <ARCH>i586</ARCH>
+      <FROM>registry</FROM>
+      <GUID>Microsoft Edge Update</GUID>
+      <INSTALLDATE>17/08/2022</INSTALLDATE>
+      <NAME>Microsoft Edge Update</NAME>
+      <SYSTEM_CATEGORY>application</SYSTEM_CATEGORY>
+      <VERSION>1.3.167.21</VERSION>
+    </SOFTWARES>
+    <SOFTWARES>
+      <ARCH>i586</ARCH>
+      <FROM>registry</FROM>
+      <GUID>RStudio</GUID>
+      <INSTALLDATE>02/06/2022</INSTALLDATE>
+      <NAME>RStudio</NAME>
+      <PUBLISHER>RStudio</PUBLISHER>
+      <SYSTEM_CATEGORY>application</SYSTEM_CATEGORY>
+      <UNINSTALL_STRING>C:\Program Files\RStudio\Uninstall.exe</UNINSTALL_STRING>
+      <VERSION>2022.02.3+492</VERSION>
+    </SOFTWARES>
+    <SOFTWARES>
+      <ARCH>i586</ARCH>
+      <COMMENTS>Management Communications System</COMMENTS>
+      <FROM>registry</FROM>
+      <GUID>{2C14E1A2-C4EB-466E-8374-81286D723D3A}</GUID>
+      <HELPLINK>http://www.sophos.com/support</HELPLINK>
+      <INSTALLDATE>17/08/2022</INSTALLDATE>
+      <NAME>Sophos Management Communications System</NAME>
+      <PUBLISHER>Sophos Limited</PUBLISHER>
+      <SYSTEM_CATEGORY>system_component</SYSTEM_CATEGORY>
+      <UNINSTALL_STRING>&quot;C:\Program Files (x86)\Sophos\Management Communications System\Endpoint\Uninstall.exe&quot;</UNINSTALL_STRING>
+      <URL_INFO_ABOUT>http://www.sophos.com</URL_INFO_ABOUT>
+      <VERSION>4.17.20</VERSION>
+    </SOFTWARES>
+    <SOFTWARES>
+      <ARCH>i586</ARCH>
+      <FROM>registry</FROM>
+      <GUID>{4A03706F-666A-4037-7777-5F2748764D10}</GUID>
+      <INSTALLDATE>07/06/2022</INSTALLDATE>
+      <NAME>Java Auto Updater</NAME>
+      <NO_REMOVE>1</NO_REMOVE>
+      <PUBLISHER>Oracle Corporation</PUBLISHER>
+      <SYSTEM_CATEGORY>system_component</SYSTEM_CATEGORY>
+      <VERSION>2.8.333.2</VERSION>
+    </SOFTWARES>
+    <SOFTWARES>
+      <ARCH>i586</ARCH>
+      <COMMENTS>Sophos Health</COMMENTS>
+      <FROM>registry</FROM>
+      <GUID>{5E8436D5-3688-4007-94C7-55D017275F89}</GUID>
+      <HELPLINK>http://www.sophos.com/support</HELPLINK>
+      <INSTALLDATE>17/08/2022</INSTALLDATE>
+      <NAME>Sophos Health</NAME>
+      <PUBLISHER>Sophos Limited</PUBLISHER>
+      <SYSTEM_CATEGORY>system_component</SYSTEM_CATEGORY>
+      <UNINSTALL_STRING>&quot;C:\Program Files (x86)\Sophos\Health\Uninstall.exe&quot;</UNINSTALL_STRING>
+      <URL_INFO_ABOUT>http://www.sophos.com</URL_INFO_ABOUT>
+      <VERSION>2.9.152</VERSION>
+    </SOFTWARES>
+    <SOFTWARES>
+      <ARCH>i586</ARCH>
+      <COMMENTS></COMMENTS>
+      <FROM>registry</FROM>
+      <GUID>{AC76BA86-7AD7-1034-7B44-AC0F074E4100}</GUID>
+      <HELPLINK>http://www.adobe.com/es/support/main.html</HELPLINK>
+      <INSTALLDATE>11/08/2022</INSTALLDATE>
+      <NAME>Adobe Acrobat Reader DC - Español</NAME>
+      <PUBLISHER>Adobe Systems Incorporated</PUBLISHER>
+      <SYSTEM_CATEGORY>application</SYSTEM_CATEGORY>
+      <UNINSTALL_STRING>MsiExec.exe /I{AC76BA86-7AD7-1034-7B44-AC0F074E4100}</UNINSTALL_STRING>
+      <URL_INFO_ABOUT>http://www.adobe.com</URL_INFO_ABOUT>
+      <VERSION>22.002.20191</VERSION>
+    </SOFTWARES>
+    <SOFTWARES>
+      <ARCH>i586</ARCH>
+      <FROM>registry</FROM>
+      <GUID>{AF6D9313-E338-48F0-9B0C-7DE20EDB99CF}</GUID>
+      <INSTALLDATE>09/02/2022</INSTALLDATE>
+      <NAME>BioEdit</NAME>
+      <PUBLISHER>Tom Hall</PUBLISHER>
+      <SYSTEM_CATEGORY>application</SYSTEM_CATEGORY>
+      <UNINSTALL_STRING>MsiExec.exe /I{AF6D9313-E338-48F0-9B0C-7DE20EDB99CF}</UNINSTALL_STRING>
+      <URL_INFO_ABOUT>http://www.mbio.ncsu.edu/BioEdit/bioedit.html</URL_INFO_ABOUT>
+      <VERSION>7.2.5.0</VERSION>
+    </SOFTWARES>
+    <SOFTWARES>
+      <ARCH>i586</ARCH>
+      <FROM>registry</FROM>
+      <GUID>{C0A10EDE-339D-4924-A381-EA937665A7A2}</GUID>
+      <INSTALLDATE>12/04/2022</INSTALLDATE>
+      <NAME>MobaXterm</NAME>
+      <PUBLISHER>Mobatek</PUBLISHER>
+      <SYSTEM_CATEGORY>application</SYSTEM_CATEGORY>
+      <UNINSTALL_STRING>MsiExec.exe /X{C0A10EDE-339D-4924-A381-EA937665A7A2}</UNINSTALL_STRING>
+      <VERSION>22.0.0.4858</VERSION>
+    </SOFTWARES>
+    <SOFTWARES>
+      <ARCH>i586</ARCH>
+      <FROM>registry</FROM>
+      <GUID>{E4EF0FD3-8A06-4394-B63B-0279A7C8173F}</GUID>
+      <INSTALLDATE>20/01/2022</INSTALLDATE>
+      <NAME>F-Secure Server Security</NAME>
+      <PUBLISHER>F-Secure Corporation</PUBLISHER>
+      <SYSTEM_CATEGORY>application</SYSTEM_CATEGORY>
+      <UNINSTALL_STRING>C:\Program Files (x86)\F-Secure\Server Security\fs_uninstall_32.exe</UNINSTALL_STRING>
+      <VERSION>15.10</VERSION>
+    </SOFTWARES>
+    <SOFTWARES>
+      <ARCH>i586</ARCH>
+      <COMMENTS>Keeps Sophos Anti-Virus and other Sophos components up to date</COMMENTS>
+      <FROM>registry</FROM>
+      <GUID>{FA203C29-393F-4247-A69D-6C93E6D685EB}</GUID>
+      <INSTALLDATE>17/08/2022</INSTALLDATE>
+      <NAME>Sophos AutoUpdate XG</NAME>
+      <PUBLISHER>Sophos Limited</PUBLISHER>
+      <SYSTEM_CATEGORY>system_component</SYSTEM_CATEGORY>
+      <UNINSTALL_STRING>MsiExec.exe /X{FA203C29-393F-4247-A69D-6C93E6D685EB}</UNINSTALL_STRING>
+      <VERSION>6.13.1014</VERSION>
+    </SOFTWARES>
+    <SOFTWARES>
+      <ARCH>i586</ARCH>
+      <FROM>registry</FROM>
+      <INSTALLDATE>07/03/2022</INSTALLDATE>
+      <NAME>Internet Explorer</NAME>
+      <PUBLISHER>Microsoft Corporation</PUBLISHER>
+      <VERSION>11.1790.17763.0</VERSION>
+    </SOFTWARES>
+    <SOFTWARES>
+      <ARCH>x86_64</ARCH>
+      <COMMENTS>Update</COMMENTS>
+      <FROM>WMI</FROM>
+      <INSTALLDATE>07/03/2022</INSTALLDATE>
+      <NAME>KB5009472</NAME>
+      <RELEASE_TYPE>Update</RELEASE_TYPE>
+      <SYSTEM_CATEGORY>update</SYSTEM_CATEGORY>
+    </SOFTWARES>
+    <SOFTWARES>
+      <ARCH>x86_64</ARCH>
+      <COMMENTS>Security Update</COMMENTS>
+      <FROM>WMI</FROM>
+      <INSTALLDATE>07/09/2019</INSTALLDATE>
+      <NAME>KB4512577</NAME>
+      <RELEASE_TYPE>Security Update</RELEASE_TYPE>
+      <SYSTEM_CATEGORY>security_update</SYSTEM_CATEGORY>
+    </SOFTWARES>
+    <SOFTWARES>
+      <ARCH>x86_64</ARCH>
+      <COMMENTS>Security Update</COMMENTS>
+      <FROM>WMI</FROM>
+      <INSTALLDATE>07/03/2022</INSTALLDATE>
+      <NAME>KB5010351</NAME>
+      <RELEASE_TYPE>Security Update</RELEASE_TYPE>
+      <SYSTEM_CATEGORY>security_update</SYSTEM_CATEGORY>
+    </SOFTWARES>
+    <SOFTWARES>
+      <ARCH>x86_64</ARCH>
+      <COMMENTS>Update</COMMENTS>
+      <FROM>WMI</FROM>
+      <INSTALLDATE>07/03/2022</INSTALLDATE>
+      <NAME>KB5009642</NAME>
+      <RELEASE_TYPE>Update</RELEASE_TYPE>
+      <SYSTEM_CATEGORY>update</SYSTEM_CATEGORY>
+    </SOFTWARES>
+    <SOFTWARES>
+      <ARCH>neutral</ARCH>
+      <FOLDER>C:\Windows\SystemApps\Microsoft.Windows.FilePicker_cw5n1h2txyewy</FOLDER>
+      <FROM>uwp</FROM>
+      <INSTALLDATE>31/01/2022</INSTALLDATE>
+      <NAME>1527c705-839a-4832-9118-54d4Bd6a0c89</NAME>
+      <PUBLISHER><![CDATA[Microsoft Corporation]]></PUBLISHER>
+      <SYSTEM_CATEGORY>system</SYSTEM_CATEGORY>
+      <VERSION>10.0.17763.1</VERSION>
+    </SOFTWARES>
+    <SOFTWARES>
+      <ARCH>neutral</ARCH>
+      <FOLDER>C:\Windows\SystemApps\Microsoft.Windows.FileExplorer_cw5n1h2txyewy</FOLDER>
+      <FROM>uwp</FROM>
+      <INSTALLDATE>31/01/2022</INSTALLDATE>
+      <NAME>Explorador de archivos</NAME>
+      <PUBLISHER><![CDATA[Microsoft Corporation]]></PUBLISHER>
+      <SYSTEM_CATEGORY>system</SYSTEM_CATEGORY>
+      <VERSION>10.0.17763.1</VERSION>
+    </SOFTWARES>
+    <SOFTWARES>
+      <ARCH>neutral</ARCH>
+      <FOLDER>C:\Windows\SystemApps\Microsoft.Windows.AppResolverUX_cw5n1h2txyewy</FOLDER>
+      <FROM>uwp</FROM>
+      <INSTALLDATE>31/01/2022</INSTALLDATE>
+      <NAME>Resolución de aplicaciones</NAME>
+      <PUBLISHER><![CDATA[Microsoft Corporation]]></PUBLISHER>
+      <SYSTEM_CATEGORY>system</SYSTEM_CATEGORY>
+      <VERSION>10.0.17763.1</VERSION>
+    </SOFTWARES>
+    <SOFTWARES>
+      <ARCH>neutral</ARCH>
+      <FOLDER>C:\Windows\SystemApps\Microsoft.Windows.AddSuggestedFoldersToLibraryDialog_cw5n1h2txyewy</FOLDER>
+      <FROM>uwp</FROM>
+      <INSTALLDATE>31/01/2022</INSTALLDATE>
+      <NAME>Agregar el cuadro de diálogo de sugerencias de carpeta</NAME>
+      <PUBLISHER><![CDATA[Microsoft Corporation]]></PUBLISHER>
+      <SYSTEM_CATEGORY>system</SYSTEM_CATEGORY>
+      <VERSION>10.0.17763.1</VERSION>
+    </SOFTWARES>
+    <SOFTWARES>
+      <ARCH>neutral</ARCH>
+      <FOLDER>C:\Windows\SystemApps\InputApp_cw5n1h2txyewy</FOLDER>
+      <FROM>uwp</FROM>
+      <INSTALLDATE>31/01/2022</INSTALLDATE>
+      <NAME><![CDATA[Shell Input Application]]></NAME>
+      <PUBLISHER><![CDATA[Microsoft Corporation]]></PUBLISHER>
+      <SYSTEM_CATEGORY>system</SYSTEM_CATEGORY>
+      <VERSION>1000.17763.1.0</VERSION>
+    </SOFTWARES>
+    <SOFTWARES>
+      <ARCH>neutral</ARCH>
+      <FOLDER>C:\Windows\SystemApps\Microsoft.AAD.BrokerPlugin_cw5n1h2txyewy</FOLDER>
+      <FROM>uwp</FROM>
+      <INSTALLDATE>31/01/2022</INSTALLDATE>
+      <NAME>Agregar una cuenta profesional o educativa</NAME>
+      <PUBLISHER><![CDATA[Microsoft Corporation]]></PUBLISHER>
+      <SYSTEM_CATEGORY>system</SYSTEM_CATEGORY>
+      <VERSION>1000.17763.1.0</VERSION>
+    </SOFTWARES>
+    <SOFTWARES>
+      <ARCH>neutral</ARCH>
+      <FOLDER>C:\Windows\SystemApps\Microsoft.AccountsControl_cw5n1h2txyewy</FOLDER>
+      <FROM>uwp</FROM>
+      <INSTALLDATE>31/01/2022</INSTALLDATE>
+      <NAME>Correo electrónico y cuentas</NAME>
+      <PUBLISHER><![CDATA[Microsoft Corporation]]></PUBLISHER>
+      <SYSTEM_CATEGORY>system</SYSTEM_CATEGORY>
+      <VERSION>10.0.17763.1</VERSION>
+    </SOFTWARES>
+    <SOFTWARES>
+      <ARCH>neutral</ARCH>
+      <FOLDER>C:\Windows\SystemApps\Microsoft.AsyncTextService_8wekyb3d8bbwe</FOLDER>
+      <FROM>uwp</FROM>
+      <INSTALLDATE>31/01/2022</INSTALLDATE>
+      <NAME>AsyncTextService</NAME>
+      <PUBLISHER>Microsoft Corporation</PUBLISHER>
+      <SYSTEM_CATEGORY>system</SYSTEM_CATEGORY>
+      <VERSION>10.0.17763.1</VERSION>
+    </SOFTWARES>
+    <SOFTWARES>
+      <ARCH>neutral</ARCH>
+      <FOLDER>C:\Windows\SystemApps\Microsoft.BioEnrollment_cw5n1h2txyewy</FOLDER>
+      <FROM>uwp</FROM>
+      <INSTALLDATE>31/01/2022</INSTALLDATE>
+      <NAME>Configuración de Windows Hello</NAME>
+      <PUBLISHER><![CDATA[Microsoft Corporation]]></PUBLISHER>
+      <SYSTEM_CATEGORY>system</SYSTEM_CATEGORY>
+      <VERSION>10.0.17763.1</VERSION>
+    </SOFTWARES>
+    <SOFTWARES>
+      <ARCH>neutral</ARCH>
+      <FOLDER>C:\Windows\SystemApps\microsoft.creddialoghost_cw5n1h2txyewy</FOLDER>
+      <FROM>uwp</FROM>
+      <INSTALLDATE>31/01/2022</INSTALLDATE>
+      <NAME>Credential Dialog</NAME>
+      <PUBLISHER><![CDATA[Microsoft Corporation]]></PUBLISHER>
+      <SYSTEM_CATEGORY>system</SYSTEM_CATEGORY>
+      <VERSION>10.0.17763.1</VERSION>
+    </SOFTWARES>
+    <SOFTWARES>
+      <ARCH>neutral</ARCH>
+      <FOLDER>C:\Windows\SystemApps\Microsoft.ECApp_8wekyb3d8bbwe</FOLDER>
+      <FROM>uwp</FROM>
+      <INSTALLDATE>31/01/2022</INSTALLDATE>
+      <NAME>Eye Control</NAME>
+      <PUBLISHER>Microsoft Corporation</PUBLISHER>
+      <SYSTEM_CATEGORY>system</SYSTEM_CATEGORY>
+      <VERSION>10.0.17763.1</VERSION>
+    </SOFTWARES>
+    <SOFTWARES>
+      <ARCH>neutral</ARCH>
+      <FOLDER>C:\Windows\SystemApps\Microsoft.LockApp_cw5n1h2txyewy</FOLDER>
+      <FROM>uwp</FROM>
+      <INSTALLDATE>31/01/2022</INSTALLDATE>
+      <NAME>Pantalla de bloqueo predeterminada de Windows</NAME>
+      <PUBLISHER><![CDATA[Microsoft Corporation]]></PUBLISHER>
+      <SYSTEM_CATEGORY>system</SYSTEM_CATEGORY>
+      <VERSION>10.0.17763.1</VERSION>
+    </SOFTWARES>
+    <SOFTWARES>
+      <ARCH>neutral</ARCH>
+      <COMMENTS>Visor web de aplicación de escritorio</COMMENTS>
+      <FOLDER>C:\Windows\SystemApps\Microsoft.Win32WebViewHost_cw5n1h2txyewy</FOLDER>
+      <FROM>uwp</FROM>
+      <INSTALLDATE>31/01/2022</INSTALLDATE>
+      <NAME>Visor web de aplicación de escritorio</NAME>
+      <PUBLISHER><![CDATA[Microsoft Corporation]]></PUBLISHER>
+      <SYSTEM_CATEGORY>system</SYSTEM_CATEGORY>
+      <VERSION>10.0.17763.1</VERSION>
+    </SOFTWARES>
+    <SOFTWARES>
+      <ARCH>neutral</ARCH>
+      <FOLDER>C:\Windows\SystemApps\Microsoft.Windows.AppRep.ChxApp_cw5n1h2txyewy</FOLDER>
+      <FROM>uwp</FROM>
+      <INSTALLDATE>31/01/2022</INSTALLDATE>
+      <NAME>SmartScreen de Windows Defender </NAME>
+      <PUBLISHER><![CDATA[Microsoft Corporation]]></PUBLISHER>
+      <SYSTEM_CATEGORY>system</SYSTEM_CATEGORY>
+      <VERSION>1000.17763.1.0</VERSION>
+    </SOFTWARES>
+    <SOFTWARES>
+      <ARCH>neutral</ARCH>
+      <FOLDER>C:\Windows\SystemApps\Microsoft.Windows.CapturePicker_cw5n1h2txyewy</FOLDER>
+      <FROM>uwp</FROM>
+      <INSTALLDATE>31/01/2022</INSTALLDATE>
+      <NAME><![CDATA[CapturePicker]]></NAME>
+      <PUBLISHER><![CDATA[Microsoft Corporation]]></PUBLISHER>
+      <SYSTEM_CATEGORY>system</SYSTEM_CATEGORY>
+      <VERSION>10.0.17763.1</VERSION>
+    </SOFTWARES>
+    <SOFTWARES>
+      <ARCH>neutral</ARCH>
+      <FOLDER>C:\Windows\SystemApps\Microsoft.Windows.CloudExperienceHost_cw5n1h2txyewy</FOLDER>
+      <FROM>uwp</FROM>
+      <INSTALLDATE>31/01/2022</INSTALLDATE>
+      <NAME>Tu cuenta</NAME>
+      <PUBLISHER><![CDATA[Microsoft Corporation]]></PUBLISHER>
+      <SYSTEM_CATEGORY>system</SYSTEM_CATEGORY>
+      <VERSION>10.0.17763.1</VERSION>
+    </SOFTWARES>
+    <SOFTWARES>
+      <ARCH>neutral</ARCH>
+      <COMMENTS>Buscar en la web y en Windows</COMMENTS>
+      <FOLDER>C:\Windows\SystemApps\Microsoft.Windows.Cortana_cw5n1h2txyewy</FOLDER>
+      <FROM>uwp</FROM>
+      <INSTALLDATE>31/01/2022</INSTALLDATE>
+      <NAME>Cortana</NAME>
+      <PUBLISHER><![CDATA[Microsoft Corporation]]></PUBLISHER>
+      <SYSTEM_CATEGORY>system</SYSTEM_CATEGORY>
+      <VERSION>1.11.6.17763</VERSION>
+    </SOFTWARES>
+    <SOFTWARES>
+      <ARCH>neutral</ARCH>
+      <COMMENTS>Inicio rápido del Narrador</COMMENTS>
+      <FOLDER>C:\Windows\SystemApps\microsoft.windows.narratorquickstart_8wekyb3d8bbwe</FOLDER>
+      <FROM>uwp</FROM>
+      <INSTALLDATE>31/01/2022</INSTALLDATE>
+      <NAME>Inicio rápido del Narrador</NAME>
+      <PUBLISHER>Microsoft Corporation</PUBLISHER>
+      <SYSTEM_CATEGORY>system</SYSTEM_CATEGORY>
+      <VERSION>10.0.17763.1</VERSION>
+    </SOFTWARES>
+    <SOFTWARES>
+      <ARCH>neutral</ARCH>
+      <FOLDER>C:\Windows\SystemApps\Microsoft.Windows.OOBENetworkCaptivePortal_cw5n1h2txyewy</FOLDER>
+      <FROM>uwp</FROM>
+      <INSTALLDATE>31/01/2022</INSTALLDATE>
+      <NAME>Flujo del portal cautivo</NAME>
+      <PUBLISHER><![CDATA[Microsoft Corporation]]></PUBLISHER>
+      <SYSTEM_CATEGORY>system</SYSTEM_CATEGORY>
+      <VERSION>10.0.17763.1</VERSION>
+    </SOFTWARES>
+    <SOFTWARES>
+      <ARCH>neutral</ARCH>
+      <FOLDER>C:\Windows\SystemApps\Microsoft.Windows.OOBENetworkConnectionFlow_cw5n1h2txyewy</FOLDER>
+      <FROM>uwp</FROM>
+      <INSTALLDATE>31/01/2022</INSTALLDATE>
+      <NAME>Flujo de conexión de red</NAME>
+      <PUBLISHER><![CDATA[Microsoft Corporation]]></PUBLISHER>
+      <SYSTEM_CATEGORY>system</SYSTEM_CATEGORY>
+      <VERSION>10.0.17763.1</VERSION>
+    </SOFTWARES>
+    <SOFTWARES>
+      <ARCH>neutral</ARCH>
+      <FOLDER>C:\Windows\SystemApps\Microsoft.Windows.PeopleExperienceHost_cw5n1h2txyewy</FOLDER>
+      <FROM>uwp</FROM>
+      <INSTALLDATE>31/01/2022</INSTALLDATE>
+      <NAME>Experiencia del shell de Windows</NAME>
+      <PUBLISHER><![CDATA[Microsoft Corporation]]></PUBLISHER>
+      <SYSTEM_CATEGORY>system</SYSTEM_CATEGORY>
+      <VERSION>10.0.17763.1</VERSION>
+    </SOFTWARES>
+    <SOFTWARES>
+      <ARCH>neutral</ARCH>
+      <FOLDER>C:\Windows\SystemApps\Microsoft.Windows.PinningConfirmationDialog_cw5n1h2txyewy</FOLDER>
+      <FROM>uwp</FROM>
+      <INSTALLDATE>31/01/2022</INSTALLDATE>
+      <NAME><![CDATA[PinningConfirmationDialog]]></NAME>
+      <PUBLISHER><![CDATA[Microsoft Corporation]]></PUBLISHER>
+      <SYSTEM_CATEGORY>system</SYSTEM_CATEGORY>
+      <VERSION>1000.17763.1.0</VERSION>
+    </SOFTWARES>
+    <SOFTWARES>
+      <ARCH>neutral</ARCH>
+      <COMMENTS>Seguridad de Windows</COMMENTS>
+      <FOLDER>C:\Windows\SystemApps\Microsoft.Windows.SecHealthUI_cw5n1h2txyewy</FOLDER>
+      <FROM>uwp</FROM>
+      <INSTALLDATE>31/01/2022</INSTALLDATE>
+      <NAME>Seguridad de Windows</NAME>
+      <PUBLISHER><![CDATA[Microsoft Corporation]]></PUBLISHER>
+      <SYSTEM_CATEGORY>system</SYSTEM_CATEGORY>
+      <VERSION>10.0.17763.1</VERSION>
+    </SOFTWARES>
+    <SOFTWARES>
+      <ARCH>neutral</ARCH>
+      <FOLDER>C:\Windows\SystemApps\Microsoft.Windows.XGpuEjectDialog_cw5n1h2txyewy</FOLDER>
+      <FROM>uwp</FROM>
+      <INSTALLDATE>31/01/2022</INSTALLDATE>
+      <NAME>Quitar el dispositivo de forma segura</NAME>
+      <PUBLISHER><![CDATA[Microsoft Corporation]]></PUBLISHER>
+      <SYSTEM_CATEGORY>system</SYSTEM_CATEGORY>
+      <VERSION>10.0.17763.1</VERSION>
+    </SOFTWARES>
+    <SOFTWARES>
+      <ARCH>neutral</ARCH>
+      <COMMENTS>Cuadro de diálogo de vista previa del código de barras de Windows</COMMENTS>
+      <FOLDER>C:\Windows\SystemApps\Windows.CBSPreview_cw5n1h2txyewy</FOLDER>
+      <FROM>uwp</FROM>
+      <INSTALLDATE>31/01/2022</INSTALLDATE>
+      <NAME>Vista previa del código de barras de Windows</NAME>
+      <PUBLISHER><![CDATA[Microsoft Corporation]]></PUBLISHER>
+      <SYSTEM_CATEGORY>system</SYSTEM_CATEGORY>
+      <VERSION>10.0.17763.1</VERSION>
+    </SOFTWARES>
+    <SOFTWARES>
+      <ARCH>neutral</ARCH>
+      <COMMENTS>Cambia la configuración y personaliza la forma en que usas el equipo.</COMMENTS>
+      <FOLDER>C:\Windows\ImmersiveControlPanel</FOLDER>
+      <FROM>uwp</FROM>
+      <INSTALLDATE>31/01/2022</INSTALLDATE>
+      <NAME>Configuración</NAME>
+      <PUBLISHER><![CDATA[Microsoft Corporation]]></PUBLISHER>
+      <SYSTEM_CATEGORY>system</SYSTEM_CATEGORY>
+      <VERSION>10.0.2.1000</VERSION>
+    </SOFTWARES>
+    <SOFTWARES>
+      <ARCH>neutral</ARCH>
+      <COMMENTS>Print Dialog</COMMENTS>
+      <FOLDER>C:\Windows\PrintDialog</FOLDER>
+      <FROM>uwp</FROM>
+      <INSTALLDATE>31/01/2022</INSTALLDATE>
+      <NAME>PrintDialog</NAME>
+      <PUBLISHER><![CDATA[Microsoft Corporation]]></PUBLISHER>
+      <SYSTEM_CATEGORY>system</SYSTEM_CATEGORY>
+      <VERSION>6.2.1.0</VERSION>
+    </SOFTWARES>
+    <STORAGES>
+      <DESCRIPTION>Unidad de disco</DESCRIPTION>
+      <DISKSIZE>2097149</DISKSIZE>
+      <FIRMWARE>1.0</FIRMWARE>
+      <INTERFACE>SCSI</INTERFACE>
+      <MANUFACTURER>(Unidades de disco estándar)</MANUFACTURER>
+      <MODEL>Disco virtual de Microsoft</MODEL>
+      <NAME>\\.\PHYSICALDRIVE0</NAME>
+      <SCSI_COID>0</SCSI_COID>
+      <SCSI_LUN>0</SCSI_LUN>
+      <SCSI_UNID>0</SCSI_UNID>
+      <SERIALNUMBER />  <TYPE>Fixed hard disk media</TYPE>
+    </STORAGES>
+    <USERS>
+      <DOMAIN>IRNASE</DOMAIN>
+      <LOGIN>marta.gil</LOGIN>
+    </USERS>
+    <USERS>
+      <DOMAIN>IRNASE</DOMAIN>
+      <LOGIN>iglorena</LOGIN>
+    </USERS>
+    <USERS>
+      <DOMAIN>IRNASE</DOMAIN>
+      <LOGIN>informatica</LOGIN>
+    </USERS>
+    <USERS>
+      <DOMAIN>IRNASE</DOMAIN>
+      <LOGIN>Administrador</LOGIN>
+    </USERS>
+    <VERSIONCLIENT>FusionInventory-Agent_v2.6</VERSIONCLIENT>
+    <VERSIONPROVIDER>
+      <COMMENTS>Provided by Fusioninventory</COMMENTS>
+      <COMMENTS>Installer built with Appveyor on Fri Nov 27 15:35:24 UTC 2020</COMMENTS>
+      <NAME>FusionInventory</NAME>
+      <PERL_EXE>C:\Users\iglorena\Desktop\FusionInventory-Agent\perl\bin\perl.exe</PERL_EXE>
+      <PERL_VERSION>v5.32.0</PERL_VERSION>
+      <PROGRAM>fusioninventory-agent</PROGRAM>
+      <VERSION>2.6</VERSION>
+    </VERSIONPROVIDER>
+    <VIDEOS>
+      <NAME>Vídeo de Microsoft Hyper-V</NAME>
+      <RESOLUTION>1024x768</RESOLUTION>
+    </VIDEOS>
+  </CONTENT>
+  <DEVICEID>p-jmrosa1121-2021-11-30-10-30-35</DEVICEID>
+  <QUERY>INVENTORY</QUERY>
+</REQUEST>
