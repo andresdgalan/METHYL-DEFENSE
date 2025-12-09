@@ -1,4 +1,4 @@
-﻿# I wrote this script to:
+# I wrote this script to:
 # 1) combine CpG/CHG/CHH files into DMPs_all_<comparison>.txt (rbind + add CTXT)
 # 2) for EVERY DMPs_*.txt file in the folder (the 9 context files + the 3 combined),
 #    create:
@@ -6,7 +6,6 @@
 #      - <basename>_up_ids.txt    (meth.diff > 0)
 #      - <basename>_down_ids.txt  (meth.diff < 0)
 #      - <basename>_ranked.txt    (contig_id <TAB> agg_meth.diff) -> suitable for GSEA
-
 
 # Load packages
 library(here)

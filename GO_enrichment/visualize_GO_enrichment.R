@@ -58,7 +58,7 @@ plot_bubble <- function(df, top_n_terms = 14, size_range = c(0, 60)) {
     color = Tag
   )) +
     geom_point(alpha = 0.8) +
-    scale_color_manual(values = c("OVER" = "#2b83ba", "UNDER" = "#d7191c")) +
+    scale_color_manual(values = c("OVER" = "#CD69C9", "UNDER" = "#008B45")) +
     scale_size(limits = size_range) +
     theme_bw(base_size = 14) +
     theme(
@@ -66,6 +66,7 @@ plot_bubble <- function(df, top_n_terms = 14, size_range = c(0, 60)) {
       axis.text.y = element_blank(),
       axis.ticks.y = element_blank()
     ) +
+    xlab(expression(-log[10](p))) +
     xlim(0, 36)  # fija escala X para todas las comparaciones
 }
 
@@ -84,21 +85,21 @@ plot_two_bar <- function(df, top_n_terms = 14) {
   
   long <- top_terms %>%
     select(`GO Name`, pct_Test, pct_Ref) %>%
-    pivot_longer(cols = c(pct_Test, pct_Ref), names_to = "Class", values_to = "Percent") %>%
+    pivot_longer(cols = c(pct_Test, pct_Ref), names_to = "Series", values_to = "% of sequences") %>%
     mutate(
-      Class = factor(Class, levels = c("pct_Ref","pct_Test"))  # Reference primero, Test segundo
+      Series = factor(Series, levels = c("pct_Ref","pct_Test"))  # Reference primero, Test segundo
     )
   
   long$`GO Name` <- factor(long$`GO Name`, levels = rev(unique(top_terms$`GO Name`)))
   
   ggplot(long, aes(
-    x = Percent,
+    x = `% of sequences`,
     y = `GO Name`,
-    fill = Class
+    fill = Series
   )) +
     geom_col(position = "dodge") +
     scale_fill_manual(
-      values = c("pct_Ref" = "#4daf4a", "pct_Test" = "#377eb8"),
+      values = c("pct_Ref" = "#008B45", "pct_Test" = "#CD69C9"),
       labels = c("Reference","Test")
     ) +
     xlim(0, 30) +  # fija escala para todas las barras
