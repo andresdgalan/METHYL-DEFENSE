@@ -1,0 +1,52 @@
+---
+title: "A.barbata dbRDA"
+author: "Andrés Delgado Galán"
+date: "2026-01-29"
+output: html_document
+---
+
+```{r LOADING DATA AND PACKAGES, include=FALSE}
+# --- Core packages ---
+library(here)        # Reproducibilidad de rutas
+library(tidyverse)   # Incluye ggplot2, dplyr, tidyr, readr, purrr, stringr, forcats, tibble
+library(cluster)     # Matriz de disimilaridad
+
+# --- Estadística ---
+library(vegan)       # dbRDA y Rsq
+
+
+# --- Visualización y clustering ---
+
+
+# --- Genética ---
+library(vcfR)        # read and manipulate VCF files
+
+# Cargamos SMPs de los tres contextos
+avena_CpG_obj <- readRDS(here("avena_ncbi", "avena_ncbi_CpG_meth_matrix.rds"))
+avena_CHG_obj <- readRDS(here("avena_ncbi", "avena_ncbi_CHG_meth_matrix.rds"))
+avena_CHH_obj <- readRDS(here("avena_ncbi", "avena_ncbi_CHH_meth_matrix.rds"))
+# plantago_CpG_obj <- readRDS(here("plantago_pseudo", "plantago_pseudo_CpG_meth_matrix.rds"))
+# plantago_CHG_obj <- readRDS(here("plantago_pseudo", "plantago_pseudo_CHG_meth_matrix.rds"))
+# plantago_CHH_obj <- readRDS(here("plantago_pseudo", "plantago_pseudo_CHH_meth_matrix.rds"))
+```
+
+```{r CpG distance MATRIX, include=FALSE}
+#Transpose methylation matrix (individuals have to be rows)
+CpG_meth_matrix <- t(avena_CpG_obj)
+
+# Create distance matrix
+CpG_dist_matrix <- 
+      daisy(CpG_meth_matrix, metric = c("euclidean"),
+      stand = FALSE) # si queremos estandarizar habría que usar TRUE
+D <- as.matrix(CpG_dist_matrix)
+heatmap(D, symm = TRUE)
+hc <- hclust(CpG_dist_matrix)
+plot(hc)
+heatmap(D, Rowv = as.dendrogram(hc), Colv = as.dendrogram(hc), symm = TRUE)
+
+```
+
+```{r CpG dbRDA, include=FALSE}
+
+```
+
