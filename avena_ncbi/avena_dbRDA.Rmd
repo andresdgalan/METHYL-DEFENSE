@@ -1,0 +1,39 @@
+---
+title: "A.barbata dbRDA"
+author: "Andrés Delgado Galán"
+date: "2026-01-29"
+output: html_document
+---
+
+```{r LOADING DATA AND PACKAGES, include=FALSE}
+# --- Core packages ---
+library(here)        # Reproducibilidad de rutas
+library(tidyverse)   # Incluye ggplot2, dplyr, tidyr, readr, purrr, stringr, forcats, tibble
+library(cluster)     # Matriz de disimilaridad
+
+# --- Estadística ---
+library(vegan)       # dbRDA y Rsq
+
+
+# --- Visualización y clustering ---
+
+
+# --- Genética ---
+library(vcfR)        # read and manipulate VCF files
+
+# Cargamos SMPs de los tres contextos
+avena_CpG_meth_matrix <- read.table(here("avena_ncbi", "avena_ncbi_CpG_meth_matrix.csv"))
+avena_CHG_meth_matrix <- read.table(here("avena_ncbi", "avena_ncbi_CHG_meth_matrix.csv"))
+avena_CHH_meth_matrix <- read.table(here("avena_ncbi", "avena_ncbi_CHH_meth_matrix.csv"))
+```
+
+```{r MATRIX, include=FALSE}
+#Transpose methylation matrix (individuals have to be rows)
+
+# Distance matrix
+daisy(avena_CpG_meth_matrix, metric = c("euclidean", "manhattan", "gower"),
+      stand = FALSE, type = list(), weights = rep.int(1, p),
+      warnBin = warnType, warnAsym = warnType, warnConst = warnType,
+      warnType = TRUE)
+
+```

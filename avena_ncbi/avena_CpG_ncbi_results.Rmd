@@ -356,8 +356,14 @@ coords <- getData(CpG_meth)$start
 
 # assign them as rownames to meth_matrix
 rownames(CpG_meth_matrix) <- coords
+<<<<<<< HEAD
 write.table(CpG_meth_matrix, "avena_ncbi_CpG_meth_matrix.csv", sep = ";", row.names = TRUE, col.names = TRUE)
 saveRDS(CpG_meth_matrix, "avena_ncbi_CpG_meth_matrix.rds")
+=======
+
+# Save object
+write.table(CpG_meth_matrix, "avena_ncbi_CpG_meth_matrix.csv", sep = ";", header = T, row.names = T)
+>>>>>>> 5f698fdd6ba57a9427cb233e7125405831e5297f
 ```
 
 ```{r CpG CORRELOGRAM, echo=FALSE, results='hold', warning=FALSE, message=FALSE}
