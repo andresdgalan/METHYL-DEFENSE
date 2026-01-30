@@ -12,7 +12,11 @@ library(tidyverse)   # Incluye ggplot2, dplyr, tidyr, readr, purrr, stringr, for
 library(cluster)     # Matriz de disimilaridad
 
 # --- Estadística ---
-library(vegan)       # dbRDA y Rsq
+library(vegan)       # dbRDA (capscale), permanova (adonis) y Rsq
+# install_github("pmartinezarbizu/pairwiseAdonis/pairwiseAdonis") # Para esto hay que tener la versión correcta de Rtools, cli, y devtools (mirar en la documentación)
+#library(pairwiseAdonis)  # adonis por pares
+
+
 
 
 # --- Visualización y clustering ---
@@ -20,6 +24,7 @@ library(vegan)       # dbRDA y Rsq
 
 # --- Genética ---
 library(vcfR)        # read and manipulate VCF files
+library(adegenet)
 
 # Cargamos SMPs de los tres contextos
 avena_CpG_obj <- readRDS(here("avena_ncbi", "avena_ncbi_CpG_meth_matrix.rds"))
@@ -28,6 +33,15 @@ avena_CHH_obj <- readRDS(here("avena_ncbi", "avena_ncbi_CHH_meth_matrix.rds"))
 # plantago_CpG_obj <- readRDS(here("plantago_pseudo", "plantago_pseudo_CpG_meth_matrix.rds"))
 # plantago_CHG_obj <- readRDS(here("plantago_pseudo", "plantago_pseudo_CHG_meth_matrix.rds"))
 # plantago_CHH_obj <- readRDS(here("plantago_pseudo", "plantago_pseudo_CHH_meth_matrix.rds"))
+
+# Cargamos la tabla de tratamientos
+treatment_table <- read.table(file = here("avena_treatment.csv"), header = T, sep = ";")
+# Quitamos las muestras que no vamos a usar (sin tratar o inexistentes)
+treatment_table <- treatment_table %>%
+  filter(!id %in% c(
+    "AV253_2", "AV243_2", "AV282_2",
+    "AV280_2", "AV297_2", "AV275", "AV296_2"
+  ))
 ```
 
 ```{r CpG distance MATRIX, include=FALSE}
@@ -44,9 +58,271 @@ hc <- hclust(CpG_dist_matrix)
 plot(hc)
 heatmap(D, Rowv = as.dendrogram(hc), Colv = as.dendrogram(hc), symm = TRUE)
 
+# Nos aseguramos de que el orden de las muestras es el mismo que en la matriz de metilación
+treatment <- treatment_table[match(attr(CpG_dist_matrix, "Labels"), treatment_table$id), ]
+
 ```
 
 ```{r CpG dbRDA, include=FALSE}
+# dbRDA
+mod <- capscale(
+  CpG_dist_matrix ~ maternal * simulation,
+  data = treatment,
+  add = FALSE
+)
+
+# Significancia global
+anova(mod, permutations = 9999)
+
+# Significancia por término (esto lo hacen en García-Seoane cuando el modelo global sale significativo)
+anova(mod, by = "term", permutations = 9999)
+
+# R² ajustado (En García-Seoane la reportan en el texto pero no en la tabla)
+# Boquete - "We also calculated individual adj. R2 for each predictorby modeling the effect of each predictor while accounting for the others using partial constrained dbRDA"
+RsquareAdj(mod)
+
+# FDR
+
+# PERMANOVA
+vegan::adonis2(CpG_dist_matrix ~ maternal * simulation,
+  data = treatment,
+  permutations = 9999,
+  method = "euclidean",
+  by = "terms")   # Probar a correr con by = NULL para ver la significación global
 
 ```
 
+```{r CpG RDA plot, echo=FALSE, results='hold', warning=FALSE, message=FALSE}
+# Gráfico (CAP axes = RDA axes)
+
+treatment$group <- with(treatment,
+  ifelse(maternal == "graz" & simulation == "clip", "0",
+  ifelse(maternal == "ungraz" & simulation == "clip", "1",
+  ifelse(maternal == "graz" & simulation == "unclip", "2", "3")))
+)
+
+treatment_colors <- c(
+  "0" = "#FF69B4",
+  "1" = "#00FF7F",
+  "2" = "#8B3A62",
+  "3" = "#008B45"
+)
+
+# % de varianza explicada por los ejes restringidos
+eig <- summary(mod)$cont$importance[2, 1:2] * 100
+
+# scores de las muestras
+sc <- scores(mod, display = "sites", choices = 1:2)
+
+# colores con transparencia
+cols_alpha <- adjustcolor(
+  treatment_colors[treatment$group],
+  alpha.f = 0.6
+)
+
+# límites ajustados
+xlim <- range(sc[,1]) * 1.1
+ylim <- range(sc[,2]) * 1.1
+
+# gráfico final
+plot(
+  sc,
+  type = "p",
+  pch = 19,
+  col = cols_alpha,
+  xlim = xlim,
+  ylim = ylim,
+  xlab = paste0("RDA1 (", round(eig[1], 1), "%)"),
+  ylab = paste0("RDA2 (", round(eig[2], 1), "%)")
+)
+```
+
+```{r prepare genetic data to include in constrained dbRDA, include=FALSE}
+# read VCF
+vcf <- read.vcfR(here("avena_ncbi", "filtered_variants_cov5-1000_biallelic_MAF0.01_80pct.vcf.gz"))
+
+# Convert to genlight (handles large SNP sets efficiently)
+gl <- vcfR2genlight(vcf)    # converts to genlight; ploidy defaults to 2
+indNames(gl) <- sub("_R1_trimmed_bismark_bt2_pe\\.sorted$", "", indNames(gl))
+
+
+# 3) missing data handling / imputation (replace NA by locus median)
+# compute allele dosage matrix
+dos <- as.matrix(gl)  # genlight -> numeric matrix (0/1/2), NAs remain
+# Remove some monomorphic positions
+keep <- apply(dos, 2, function(x) {
+    u <- unique(na.omit(x))
+    length(u) > 1
+})
+sum(!keep)    # should show 79
+dos_filtered <- dos[, keep]
+
+# impute by median allele dosage per SNP:
+for(j in seq_len(ncol(dos_filtered))){
+  nas <- is.na(dos_filtered[,j])
+  if(any(nas)) dos_filtered[nas,j] <- median(dos_filtered[,j], na.rm=TRUE)
+}
+
+# PRINCIPAL COMPONENT ANALYSIS
+pca <- prcomp(dos_filtered)
+
+# cALCULA EL % QUE EXPLICA CADA PC
+var_exp <- pca$sdev^2
+perc_var <- var_exp / sum(var_exp) * 100
+perc_var
+
+# CREA UNA TABLA PARA VISUALIZAR QUÉ PCS SON IMPORTANTES
+var_table <- data.frame(
+  PC = paste0("PC", seq_along(perc_var)),
+  Variance = var_exp,
+  Percent = perc_var,
+  Cumulative = cumsum(perc_var)
+)
+
+# Tabla con el porcentaje de variabilidad genética, total y acumulado, que explica cada PC
+var_table
+
+# Decidir con cuántos PCs nos quedamos:
+cum_var <- cumsum(pca$sdev^2 / sum(pca$sdev^2) * 100)
+which(cum_var <= 35)
+
+
+# sELECCIONA LOS PCs QUE VAYAS A USAR
+gen_pcs <- as.data.frame(pca$x[, 1:1])
+colnames(gen_pcs) <- paste0("PC", 1:1)
+
+# VER SI COINCIDE EL ORDEN DE LAS MUESTRAS EN EL PCA Y EN LOS METADATOS
+all(rownames(gen_pcs) == treatment$id)
+
+# COMBINAR PCs CON METADATOS
+treatment_pcs <- cbind(treatment, gen_pcs)
+
+mod_pc <- capscale(
+  CpG_dist_matrix ~ maternal * simulation + Condition(PC1:PC1),
+  data = treatment_pcs,
+  add = FALSE
+)
+
+# Significancia global
+anova(mod_pc, permutations = 9999)
+
+# Significancia por término (esto lo hacen en García-Seoane cuando el mod_pcelo global sale significativo)
+anova(mod_pc, by = "term", permutations = 9999)
+
+# R² ajustado (En García-Seoane la reportan en el texto pero no en la tabla)
+# Boquete - "We also calculated individual adj. R2 for each predictorby mod_pceling the effect of each predictor while accounting for the others using partial constrained dbRDA"
+RsquareAdj(mod_pc)
+
+# FDR
+```
+
+```{r CpG RDA PCs plot, echo=FALSE, results='hold', warning=FALSE, message=FALSE}
+# Gráfico (CAP axes = RDA axes)
+
+treatment$group <- with(treatment,
+  ifelse(maternal == "graz" & simulation == "clip", "0",
+  ifelse(maternal == "ungraz" & simulation == "clip", "1",
+  ifelse(maternal == "graz" & simulation == "unclip", "2", "3")))
+)
+
+treatment_colors <- c(
+  "0" = "#FF69B4",
+  "1" = "#00FF7F",
+  "2" = "#8B3A62",
+  "3" = "#008B45"
+)
+
+# % de varianza explicada por los ejes restringidos
+eig <- summary(mod_pc)$cont$importance[2, 1:2] * 100
+
+# scores de las muestras
+sc <- scores(mod_pc, display = "sites", choices = 1:2)
+
+# colores con transparencia
+cols_alpha <- adjustcolor(
+  treatment_colors[treatment$group],
+  alpha.f = 0.6
+)
+
+# límites ajustados
+xlim <- range(sc[,1]) * 1.1
+ylim <- range(sc[,2]) * 1.1
+
+# gráfico final
+plot(
+  sc,
+  type = "p",
+  pch = 19,
+  col = cols_alpha,
+  xlim = xlim,
+  ylim = ylim,
+  xlab = paste0("RDA1 (", round(eig[1], 1), "%)"),
+  ylab = paste0("RDA2 (", round(eig[2], 1), "%)")
+)
+```
+
+```{r CpG dbRDA GEN, include=FALSE}
+# dbRDA
+modGEN <- capscale(
+  CpG_dist_matrix ~ PC1,
+  data = treatment_pcs,
+  add = FALSE
+)
+
+# Significancia global
+anova(modGEN, permutations = 9999)
+
+# Significancia por término (esto lo hacen en García-Seoane cuando el modGENelo global sale significativo)
+anova(modGEN, by = "term", permutations = 9999)
+
+# R² ajustado (En García-Seoane la reportan en el texto pero no en la tabla)
+# Boquete - "We also calculated individual adj. R2 for each predictorby modGENeling the effect of each predictor while accounting for the others using partial constrained dbRDA"
+RsquareAdj(modGEN)
+
+# FDR
+```
+
+```{r CpG RDA plot GEN, echo=FALSE, results='hold', warning=FALSE, message=FALSE}
+# Gráfico (CAP axes = RDA axes)
+
+treatment$group <- with(treatment,
+  ifelse(maternal == "graz" & simulation == "clip", "0",
+  ifelse(maternal == "ungraz" & simulation == "clip", "1",
+  ifelse(maternal == "graz" & simulation == "unclip", "2", "3")))
+)
+
+treatment_colors <- c(
+  "0" = "#FF69B4",
+  "1" = "#00FF7F",
+  "2" = "#8B3A62",
+  "3" = "#008B45"
+)
+
+# % de varianza explicada por los ejes restringidos
+eig <- summary(modGEN)$cont$importance[2, 1:2] * 100
+
+# scores de las muestras
+sc <- scores(modGEN, display = "sites", choices = 1:2)
+
+# colores con transparencia
+cols_alpha <- adjustcolor(
+  treatment_colors[treatment$group],
+  alpha.f = 0.6
+)
+
+# límites ajustados
+xlim <- range(sc[,1]) * 1.1
+ylim <- range(sc[,2]) * 1.1
+
+# gráfico final
+plot(
+  sc,
+  type = "p",
+  pch = 19,
+  col = cols_alpha,
+  xlim = xlim,
+  ylim = ylim,
+  xlab = paste0("RDA1 (", round(eig[1], 1), "%)"),
+  ylab = paste0("RDA2 (", round(eig[2], 1), "%)")
+)
+```
