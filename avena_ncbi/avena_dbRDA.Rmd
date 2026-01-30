@@ -12,7 +12,9 @@ library(tidyverse)   # Incluye ggplot2, dplyr, tidyr, readr, purrr, stringr, for
 library(cluster)     # Matriz de disimilaridad
 
 # --- Estadística ---
-library(vegan)       # dbRDA y Rsq
+library(vegan)       # dbRDA (capscale) y Rsq
+library(pairwiseAdonis) # PERMANOVA PAREADA
+
 
 
 # --- Visualización y clustering ---
@@ -28,6 +30,15 @@ avena_CHH_obj <- readRDS(here("avena_ncbi", "avena_ncbi_CHH_meth_matrix.rds"))
 # plantago_CpG_obj <- readRDS(here("plantago_pseudo", "plantago_pseudo_CpG_meth_matrix.rds"))
 # plantago_CHG_obj <- readRDS(here("plantago_pseudo", "plantago_pseudo_CHG_meth_matrix.rds"))
 # plantago_CHH_obj <- readRDS(here("plantago_pseudo", "plantago_pseudo_CHH_meth_matrix.rds"))
+
+# Cargamos la tabla de tratamientos
+treatment_table <- read.table(file = here("avena_treatment.csv"), header = T, sep = ";")
+# Quitamos las muestras que no vamos a usar (sin tratar o inexistentes)
+treatment_table <- treatment_table %>%
+  filter(!id %in% c(
+    "AV253_2", "AV243_2", "AV282_2",
+    "AV280_2", "AV297_2", "AV275", "AV296_2"
+  ))
 ```
 
 ```{r CpG distance MATRIX, include=FALSE}
@@ -44,9 +55,81 @@ hc <- hclust(CpG_dist_matrix)
 plot(hc)
 heatmap(D, Rowv = as.dendrogram(hc), Colv = as.dendrogram(hc), symm = TRUE)
 
+# Nos aseguramos de que el orden de las muestras es el mismo que en la matriz de metilación
+treatment <- treatment_table[match(attr(CpG_dist_matrix, "Labels"), treatment_table$id), ]
+
 ```
 
 ```{r CpG dbRDA, include=FALSE}
+# dbRDA
+mod <- capscale(
+  CpG_dist_matrix ~ maternal * simulation,
+  data = treatment,
+  add = FALSE
+)
 
+# Significancia global
+anova(mod, permutations = 9999)
+
+# Significancia por término (esto lo hacen en García-Seoane cuando el modelo global sale significativo)
+anova(mod, by = "term", permutations = 9999)
+
+# R² ajustado (En García-Seoane la reportan en el texto pero no en la tabla)
+# Boquete - "We also calculated individual adj. R2 for each predictorby modeling the effect of each predictor while accounting for the others using partial constrained dbRDA"
+RsquareAdj(mod)
+
+# Pairwise PERMANOVA
+# pairwise.adonis2(
+#   CpG_dist_matrix,
+#   factors = treatment$group,
+#   perm = 999,
+#   p.adjust.m = "fdr"
+# )
+
+```
+
+```{r CpG RDA plot, echo=FALSE, results='hold', warning=FALSE, message=FALSE}
+# Gráfico (CAP axes = RDA axes)
+
+treatment$group <- with(treatment,
+  ifelse(maternal == "graz" & simulation == "clip", "0",
+  ifelse(maternal == "ungraz" & simulation == "clip", "1",
+  ifelse(maternal == "graz" & simulation == "unclip", "2", "3")))
+)
+
+treatment_colors <- c(
+  "0" = "#FF69B4",
+  "1" = "#00FF7F",
+  "2" = "#8B3A62",
+  "3" = "#008B45"
+)
+
+# % de varianza explicada por los ejes restringidos
+eig <- summary(mod)$cont$importance[2, 1:2] * 100
+
+# scores de las muestras
+sc <- scores(mod, display = "sites", choices = 1:2)
+
+# colores con transparencia
+cols_alpha <- adjustcolor(
+  treatment_colors[treatment$group],
+  alpha.f = 0.6
+)
+
+# límites ajustados
+xlim <- range(sc[,1]) * 1.1
+ylim <- range(sc[,2]) * 1.1
+
+# gráfico final
+plot(
+  sc,
+  type = "p",
+  pch = 19,
+  col = cols_alpha,
+  xlim = xlim,
+  ylim = ylim,
+  xlab = paste0("RDA1 (", round(eig[1], 1), "%)"),
+  ylab = paste0("RDA2 (", round(eig[2], 1), "%)")
+)
 ```
 
