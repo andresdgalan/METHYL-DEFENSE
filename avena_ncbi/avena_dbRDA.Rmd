@@ -17,8 +17,6 @@ library(vegan)       # dbRDA (capscale), permanova (adonis) y Rsq
 #library(pairwiseAdonis)  # adonis por pares
 
 
-
-
 # --- Visualización y clustering ---
 
 
@@ -80,6 +78,7 @@ anova(mod, by = "term", permutations = 9999)
 # R² ajustado (En García-Seoane la reportan en el texto pero no en la tabla)
 # Boquete - "We also calculated individual adj. R2 for each predictorby modeling the effect of each predictor while accounting for the others using partial constrained dbRDA"
 RsquareAdj(mod)
+
 
 # FDR
 
