@@ -17,8 +17,6 @@ library(vegan)       # dbRDA (capscale), permanova (adonis) y Rsq
 #library(pairwiseAdonis)  # adonis por pares
 
 
-
-
 # --- Visualización y clustering ---
 
 
@@ -61,80 +59,6 @@ heatmap(D, Rowv = as.dendrogram(hc), Colv = as.dendrogram(hc), symm = TRUE)
 # Nos aseguramos de que el orden de las muestras es el mismo que en la matriz de metilación
 treatment <- treatment_table[match(attr(CpG_dist_matrix, "Labels"), treatment_table$id), ]
 
-```
-
-```{r CpG dbRDA, include=FALSE}
-# dbRDA
-mod <- capscale(
-  CpG_dist_matrix ~ maternal * simulation,
-  data = treatment,
-  add = FALSE
-)
-
-# Significancia global
-anova(mod, permutations = 9999)
-
-# Significancia por término (esto lo hacen en García-Seoane cuando el modelo global sale significativo)
-anova(mod, by = "term", permutations = 9999)
-
-# R² ajustado (En García-Seoane la reportan en el texto pero no en la tabla)
-# Boquete - "We also calculated individual adj. R2 for each predictorby modeling the effect of each predictor while accounting for the others using partial constrained dbRDA"
-RsquareAdj(mod)
-
-# FDR
-
-# PERMANOVA
-vegan::adonis2(CpG_dist_matrix ~ maternal * simulation,
-  data = treatment,
-  permutations = 9999,
-  method = "euclidean",
-  by = "terms")   # Probar a correr con by = NULL para ver la significación global
-
-```
-
-```{r CpG RDA plot, echo=FALSE, results='hold', warning=FALSE, message=FALSE}
-# Gráfico (CAP axes = RDA axes)
-
-treatment$group <- with(treatment,
-  ifelse(maternal == "graz" & simulation == "clip", "0",
-  ifelse(maternal == "ungraz" & simulation == "clip", "1",
-  ifelse(maternal == "graz" & simulation == "unclip", "2", "3")))
-)
-
-treatment_colors <- c(
-  "0" = "#FF69B4",
-  "1" = "#00FF7F",
-  "2" = "#8B3A62",
-  "3" = "#008B45"
-)
-
-# % de varianza explicada por los ejes restringidos
-eig <- summary(mod)$cont$importance[2, 1:2] * 100
-
-# scores de las muestras
-sc <- scores(mod, display = "sites", choices = 1:2)
-
-# colores con transparencia
-cols_alpha <- adjustcolor(
-  treatment_colors[treatment$group],
-  alpha.f = 0.6
-)
-
-# límites ajustados
-xlim <- range(sc[,1]) * 1.1
-ylim <- range(sc[,2]) * 1.1
-
-# gráfico final
-plot(
-  sc,
-  type = "p",
-  pch = 19,
-  col = cols_alpha,
-  xlim = xlim,
-  ylim = ylim,
-  xlab = paste0("RDA1 (", round(eig[1], 1), "%)"),
-  ylab = paste0("RDA2 (", round(eig[2], 1), "%)")
-)
 ```
 
 ```{r prepare genetic data to include in constrained dbRDA, include=FALSE}
@@ -190,101 +114,201 @@ which(cum_var <= 35)
 # sELECCIONA LOS PCs QUE VAYAS A USAR
 gen_pcs <- as.data.frame(pca$x[, 1:1])
 colnames(gen_pcs) <- paste0("PC", 1:1)
+var_explained <- var_table$Cumulative[var_table$PC == "PC1"]
+var_txt <- sprintf("%.2f", var_explained)
+
 
 # VER SI COINCIDE EL ORDEN DE LAS MUESTRAS EN EL PCA Y EN LOS METADATOS
 all(rownames(gen_pcs) == treatment$id)
 
 # COMBINAR PCs CON METADATOS
 treatment_pcs <- cbind(treatment, gen_pcs)
-
-mod_pc <- capscale(
-  CpG_dist_matrix ~ maternal * simulation + Condition(PC1:PC1),
-  data = treatment_pcs,
-  add = FALSE
-)
-
-# Significancia global
-anova(mod_pc, permutations = 9999)
-
-# Significancia por término (esto lo hacen en García-Seoane cuando el mod_pcelo global sale significativo)
-anova(mod_pc, by = "term", permutations = 9999)
-
-# R² ajustado (En García-Seoane la reportan en el texto pero no en la tabla)
-# Boquete - "We also calculated individual adj. R2 for each predictorby mod_pceling the effect of each predictor while accounting for the others using partial constrained dbRDA"
-RsquareAdj(mod_pc)
-
-# FDR
 ```
 
-```{r CpG RDA PCs plot, echo=FALSE, results='hold', warning=FALSE, message=FALSE}
-# Gráfico (CAP axes = RDA axes)
+In these analyses we evaluate how much epigenetic variability is explained by the herbivory treatments and their interaction. We analysed overall epigenetic variability and separately for each context. We used the methylation percent of each SMP (INCLUIR CUÁNTOS SON EN CADA CONTEXTO) to construct an euclidean epigenetic distance matrix between samples (INDICAR CUÁNTAS MUESTRAS SON) using cluster::daisy.
 
-treatment$group <- with(treatment,
-  ifelse(maternal == "graz" & simulation == "clip", "0",
-  ifelse(maternal == "ungraz" & simulation == "clip", "1",
-  ifelse(maternal == "graz" & simulation == "unclip", "2", "3")))
-)
-
-treatment_colors <- c(
-  "0" = "#FF69B4",
-  "1" = "#00FF7F",
-  "2" = "#8B3A62",
-  "3" = "#008B45"
-)
-
-# % de varianza explicada por los ejes restringidos
-eig <- summary(mod_pc)$cont$importance[2, 1:2] * 100
-
-# scores de las muestras
-sc <- scores(mod_pc, display = "sites", choices = 1:2)
-
-# colores con transparencia
-cols_alpha <- adjustcolor(
-  treatment_colors[treatment$group],
-  alpha.f = 0.6
-)
-
-# límites ajustados
-xlim <- range(sc[,1]) * 1.1
-ylim <- range(sc[,2]) * 1.1
-
-# gráfico final
-plot(
-  sc,
-  type = "p",
-  pch = 19,
-  col = cols_alpha,
-  xlim = xlim,
-  ylim = ylim,
-  xlab = paste0("RDA1 (", round(eig[1], 1), "%)"),
-  ylab = paste0("RDA2 (", round(eig[2], 1), "%)")
-)
-```
-
-```{r CpG dbRDA GEN, include=FALSE}
+```{r CpG dbRDA CpG_mod1, include=FALSE}
 # dbRDA
-modGEN <- capscale(
-  CpG_dist_matrix ~ PC1,
+CpG_mod1 <- capscale(
+  CpG_dist_matrix ~ maternal,
+  data = treatment,
+  add = FALSE
+)
+
+# Significancia global
+Sig_CpG_mod1 <- anova(CpG_mod1, permutations = 9999)
+Sig_CpG_mod1
+
+# Significancia por término (esto lo hacen en García-Seoane cuando el CpG_mod1elo global sale significativo)
+anova(CpG_mod1, by = "term", permutations = 9999)
+
+# R² ajustado (En García-Seoane la reportan en el texto pero no en la tabla)
+# Boquete - "We also calculated individual adj. R2 for each predictorby CpG_mod1eling the effect of each predictor while accounting for the others using partial constrained dbRDA"
+Rsq_CpG_mod1 <- RsquareAdj(CpG_mod1)
+Rsq_CpG_mod1
+
+# FDR
+
+
+```
+
+```{r CpG dbRDA CpG_mod2, include=FALSE}
+# dbRDA
+CpG_mod2 <- capscale(
+  CpG_dist_matrix ~ maternal * simulation,
+  data = treatment,
+  add = FALSE
+)
+
+# Significancia global
+Sig_CpG_mod2 <- anova(CpG_mod2, permutations = 9999)
+Sig_CpG_mod2
+
+# Significancia por término (esto lo hacen en García-Seoane cuando el CpG_mod2elo global sale significativo)
+anova(CpG_mod2, by = "term", permutations = 9999)
+
+# R² ajustado (En García-Seoane la reportan en el texto pero no en la tabla)
+# Boquete - "We also calculated individual adj. R2 for each predictorby CpG_mod2eling the effect of each predictor while accounting for the others using partial constrained dbRDA"
+Rsq_CpG_mod2 <- RsquareAdj(CpG_mod2)
+Rsq_CpG_mod2
+
+# FDR
+
+
+```
+
+```{r CpG dbRDA CpG_mod3, include=FALSE}
+# dbRDA
+CpG_mod3 <- capscale(
+  CpG_dist_matrix ~ maternal * simulation + Condition(PC1),
   data = treatment_pcs,
   add = FALSE
 )
 
 # Significancia global
-anova(modGEN, permutations = 9999)
+Sig_CpG_mod3 <- anova(CpG_mod3, permutations = 9999)
+Sig_CpG_mod3
 
-# Significancia por término (esto lo hacen en García-Seoane cuando el modGENelo global sale significativo)
-anova(modGEN, by = "term", permutations = 9999)
+# Significancia por término (esto lo hacen en García-Seoane cuando el CpG_mod3elo global sale significativo)
+anova(CpG_mod3, by = "term", permutations = 9999)
 
 # R² ajustado (En García-Seoane la reportan en el texto pero no en la tabla)
-# Boquete - "We also calculated individual adj. R2 for each predictorby modGENeling the effect of each predictor while accounting for the others using partial constrained dbRDA"
-RsquareAdj(modGEN)
+# Boquete - "We also calculated individual adj. R2 for each predictorby CpG_mod3eling the effect of each predictor while accounting for the others using partial constrained dbRDA"
+Rsq_CpG_mod3 <- RsquareAdj(CpG_mod3)
+Rsq_CpG_mod3
 
 # FDR
+
+
 ```
 
-```{r CpG RDA plot GEN, echo=FALSE, results='hold', warning=FALSE, message=FALSE}
-# Gráfico (CAP axes = RDA axes)
+```{r CpG dbRDA CpG_mod4, include=FALSE}
 
+#  !!!
+#  !!!
+
+# MIRAR POR QUÉ EN MOUNGER (2022) USAN CONDITION... NO LE VEO EL SENTIDO PERO SEGURAMENTE LO TENGA
+
+#  !!!
+#  !!!
+
+# dbRDA
+CpG_mod4 <- capscale(
+  CpG_dist_matrix ~ PC1, # Condition(PC1),
+  data = treatment_pcs,
+  add = FALSE
+)
+
+# Significancia global
+Sig_CpG_mod4 <- anova(CpG_mod4, permutations = 9999)
+Sig_CpG_mod4
+
+# Significancia por término (esto lo hacen en García-Seoane cuando el CpG_mod4elo global sale significativo)
+anova(CpG_mod4, by = "term", permutations = 9999)
+
+# R² ajustado (En García-Seoane la reportan en el texto pero no en la tabla)
+# Boquete - "We also calculated individual adj. R2 for each predictorby CpG_mod4eling the effect of each predictor while accounting for the others using partial constrained dbRDA"
+Rsq_CpG_mod4 <- RsquareAdj(CpG_mod4)
+Rsq_CpG_mod4
+
+# FDR
+
+
+```
+
+We conducted dbRDA using vegan::capscale with the epigenetic distance matrix as response and the herbivory treatments as predictors. To account for genetic variability, we summarized the SNP data (INCLUIR CUÁNTOS SNPS) into principal components using PCA, and included the first PC (that explains PORCENTAJE % of the genetic variability) as a condition in a constrained dbRDA. We tested the significance of the model using a permutation test with 9999 permutations and obtained adjusted R2 values using the function RsquareAdj from the vegan package. We visualized the structure of the data in a 2-D space using the constrained ordination axes (RDA axes). We ran the following models for all contexts together and separately for each sequence context:
+
+1.  Epigenetic distance \~ Maternal herbivory
+
+2.  Epigenetic distance \~ Maternal herbivory \* Real-time herbivory
+
+3.  Epigenetic distance \~ Maternal herbivory \* Real-time herbivory + Condition (PC)
+
+4.  Epigenetic distance \~ PC
+
+
+```{r CpG TABLA, echo=FALSE, results='hold', warning=FALSE, message=FALSE}
+# Creamos una función para extraer los resultados de los test estadísticos para los 4 modelos
+get_model_stats <- function(anova_obj, rsq_obj, model_label) {
+  
+  tab <- as.data.frame(anova_obj)
+  
+  data.frame(
+    Model    = model_label,
+    df       = tab$Df[1],
+    SumOfSqs = tab$Variance[1],
+    F        = tab$F[1],
+    p_value  = tab$`Pr(>F)`[1],
+    adj_R2   = rsq_obj$adj.r.squared,
+    stringsAsFactors = FALSE
+  )
+}
+
+
+
+# Creamos una tabla con todos los resultados
+results_tbl <- rbind(
+  get_model_stats(Sig_CpG_mod1, Rsq_CpG_mod1, "ED ~ M"),
+  get_model_stats(Sig_CpG_mod2, Rsq_CpG_mod2, "ED ~ M * S"),
+  get_model_stats(Sig_CpG_mod3, Rsq_CpG_mod3, "ED ~ M * S + Condition(PC)"),
+  get_model_stats(Sig_CpG_mod4, Rsq_CpG_mod4, "ED ~ PC")
+)
+
+# Añadimos FDR
+results_tbl$FDR <- p.adjust(results_tbl$p_value, method = "fdr")
+
+# Reajustamos el orden de las columnas
+results_tbl <- results_tbl[, c(
+  "Model", "df", "SumOfSqs", "F", "p_value", "FDR", "adj_R2"
+)]
+
+footnote_text <- paste0(
+  "The models include with and without adjusting for the variance explained by the genetic data (PC). PC, first principal component from genetic data (explaining " , var_txt, "% of the variation in scaled allele frequencies); df, degrees of freedom; F, value of the test statistic; FDR, false discovery rate; adj. R2, percent of variance explained, adjusted for multiple comparisons."
+)
+
+# Tabla
+knitr::kable(
+  results_tbl,
+  digits = 4,
+  caption = "Table 1. Results of the distance-based redundancy analysis (dbRDA) showing the percentage of epigenetic variance (ED) in CG context explained by maternal environment (M), real-time herbivory simulation (S), and/or their interaction (M:S).",
+  booktabs = TRUE
+) %>%
+  kableExtra::kable_styling(
+    full_width = FALSE,
+    position = "center"
+  )%>%
+  kableExtra::footnote(
+    general = footnote_text,
+    general_title = ""
+  )
+
+```
+
+
+
+```{r CpG RDA plots, echo=FALSE, results='hold', warning=FALSE, message=FALSE}
+
+## --- Preparación común ---
 treatment$group <- with(treatment,
   ifelse(maternal == "graz" & simulation == "clip", "0",
   ifelse(maternal == "ungraz" & simulation == "clip", "1",
@@ -298,31 +322,55 @@ treatment_colors <- c(
   "3" = "#008B45"
 )
 
-# % de varianza explicada por los ejes restringidos
-eig <- summary(modGEN)$cont$importance[2, 1:2] * 100
-
-# scores de las muestras
-sc <- scores(modGEN, display = "sites", choices = 1:2)
-
-# colores con transparencia
 cols_alpha <- adjustcolor(
   treatment_colors[treatment$group],
   alpha.f = 0.6
 )
 
-# límites ajustados
-xlim <- range(sc[,1]) * 1.1
-ylim <- range(sc[,2]) * 1.1
+## Función para dibujar cada RDA
+plot_rda <- function(model, panel_label) {
 
-# gráfico final
-plot(
-  sc,
-  type = "p",
-  pch = 19,
-  col = cols_alpha,
-  xlim = xlim,
-  ylim = ylim,
-  xlab = paste0("RDA1 (", round(eig[1], 1), "%)"),
-  ylab = paste0("RDA2 (", round(eig[2], 1), "%)")
-)
+  eig <- summary(model)$cont$importance[2, 1:2] * 100
+  sc  <- scores(model, display = "sites", choices = 1:2)
+
+  xlim <- range(sc[,1]) * 1.1
+  ylim <- range(sc[,2]) * 1.1
+
+  plot(
+    sc,
+    type = "p",
+    pch = 19,
+    col = cols_alpha,
+    xlim = xlim,
+    ylim = ylim,
+    xlab = paste0("RDA1 (", round(eig[1], 1), "%)"),
+    ylab = paste0("RDA2 (", round(eig[2], 1), "%)")
+  )
+
+  ## etiqueta del panel (A–D)
+  mtext(panel_label, side = 3, adj = 0, line = 0.5, font = 2)
+}
+
+## --- Layout 2x2 ---
+par(mfrow = c(2, 2), mar = c(4, 4, 2, 1))
+
+plot_rda(CpG_mod1, "A")
+plot_rda(CpG_mod2, "B")
+plot_rda(CpG_mod3, "C")
+plot_rda(CpG_mod4, "D")
+
+
 ```
+Fig. 1. Epigenetic differentiation plots. Ordination plots of the distance-based redundancy analysis (dbRDA) carried out to test for epigenetic differences in CG context with all four models: 1. ED \~ M (A), 2. ED \~ M \* S (B), 3. ED \~ M \* S + Condition(PC) (C), 4. ED \~ PC (D). RDA1: first constrained ordination axis; RDA2: second constrained ordination axis. Samples are colored by group (i.e.: maternal environment x real-time herbivory simulation).
+
+
+```{r CpG PERMANOVA, include=FALSE}
+# PERMANOVA
+vegan::adonis2(CpG_dist_matrix ~ maternal * simulation,
+  data = treatment,
+  permutations = 9999,
+  method = "euclidean",
+  by = "terms")   # Probar a correr con by = NULL para ver la significación global
+
+```
+
