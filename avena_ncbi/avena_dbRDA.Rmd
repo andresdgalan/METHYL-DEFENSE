@@ -61,6 +61,7 @@ treatment <- treatment_table[match(attr(CpG_dist_matrix, "Labels"), treatment_ta
 
 ```
 
+
 ```{r prepare genetic data to include in constrained dbRDA, include=FALSE}
 # read VCF
 vcf <- read.vcfR(here("avena_ncbi", "filtered_variants_cov5-1000_biallelic_MAF0.01_80pct.vcf.gz"))
@@ -125,7 +126,7 @@ all(rownames(gen_pcs) == treatment$id)
 treatment_pcs <- cbind(treatment, gen_pcs)
 ```
 
-In these analyses we evaluate how much epigenetic variability is explained by the herbivory treatments and their interaction. We analysed overall epigenetic variability and separately for each context. We used the methylation percent of each SMP (INCLUIR CUÁNTOS SON EN CADA CONTEXTO) to construct an euclidean epigenetic distance matrix between samples (INDICAR CUÁNTAS MUESTRAS SON) using cluster::daisy.
+In these analyses we evaluate how much epigenetic variability is explained by the herbivory treatments and their interaction. We analysed overall epigenetic variability and separately for each context. We used the methylation percent of each SMP (`r nrow(avena_CpG_obj) ` in CpG, `r nrow(avena_CHG_obj) ` in CHG, `r nrow(avena_CHH_obj) ` in CHH) to construct an euclidean epigenetic distance matrix between samples (`r ncol(avena_CpG_obj) `) using cluster::daisy.
 
 ```{r CpG dbRDA CpG_mod1, include=FALSE}
 # dbRDA
@@ -219,12 +220,13 @@ CpG_mod4 <- capscale(
   add = FALSE
 )
 
+n_permut <- 9999
 # Significancia global
-Sig_CpG_mod4 <- anova(CpG_mod4, permutations = 9999)
+Sig_CpG_mod4 <- anova(CpG_mod4, permutations = n_permut)
 Sig_CpG_mod4
 
 # Significancia por término (esto lo hacen en García-Seoane cuando el CpG_mod4elo global sale significativo)
-anova(CpG_mod4, by = "term", permutations = 9999)
+anova(CpG_mod4, by = "term", permutations = n_permut)
 
 # R² ajustado (En García-Seoane la reportan en el texto pero no en la tabla)
 # Boquete - "We also calculated individual adj. R2 for each predictorby CpG_mod4eling the effect of each predictor while accounting for the others using partial constrained dbRDA"
@@ -236,7 +238,7 @@ Rsq_CpG_mod4
 
 ```
 
-We conducted dbRDA using vegan::capscale with the epigenetic distance matrix as response and the herbivory treatments as predictors. To account for genetic variability, we summarized the SNP data (INCLUIR CUÁNTOS SNPS) into principal components using PCA, and included the first PC (that explains PORCENTAJE % of the genetic variability) as a condition in a constrained dbRDA. We tested the significance of the model using a permutation test with 9999 permutations and obtained adjusted R2 values using the function RsquareAdj from the vegan package. We visualized the structure of the data in a 2-D space using the constrained ordination axes (RDA axes). We ran the following models for all contexts together and separately for each sequence context:
+We conducted dbRDA using vegan::capscale with the epigenetic distance matrix as response and the herbivory treatments as predictors. To account for genetic variability, we summarized the SNP data (`r ncol(dos_filtered) ` SNPs) into principal components using PCA, and included the first PC (that explains `r var_txt`% of the genetic variability) as a condition in a constrained dbRDA. We tested the significance of the model using a permutation test with `r n_permut` permutations and obtained adjusted R2 values using the function RsquareAdj from the vegan package. We visualized the structure of the data in a 2-D space using the constrained ordination axes (RDA axes). We ran the following models for all contexts together and separately for each sequence context:
 
 1.  Epigenetic distance \~ Maternal herbivory
 
@@ -361,6 +363,7 @@ plot_rda(CpG_mod4, "D")
 
 
 ```
+
 Fig. 1. Epigenetic differentiation plots. Ordination plots of the distance-based redundancy analysis (dbRDA) carried out to test for epigenetic differences in CG context with all four models: 1. ED \~ M (A), 2. ED \~ M \* S (B), 3. ED \~ M \* S + Condition(PC) (C), 4. ED \~ PC (D). RDA1: first constrained ordination axis; RDA2: second constrained ordination axis. Samples are colored by group (i.e.: maternal environment x real-time herbivory simulation).
 
 
