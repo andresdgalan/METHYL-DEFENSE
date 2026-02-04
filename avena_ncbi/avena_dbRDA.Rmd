@@ -61,6 +61,7 @@ treatment <- treatment_table[match(attr(CpG_dist_matrix, "Labels"), treatment_ta
 
 ```
 
+
 ```{r prepare genetic data to include in constrained dbRDA, include=FALSE}
 # read VCF
 vcf <- read.vcfR(here("avena_ncbi", "filtered_variants_cov5-1000_biallelic_MAF0.01_80pct.vcf.gz"))
@@ -361,6 +362,7 @@ plot_rda(CpG_mod4, "D")
 
 
 ```
+
 Fig. 1. Epigenetic differentiation plots. Ordination plots of the distance-based redundancy analysis (dbRDA) carried out to test for epigenetic differences in CG context with all four models: 1. ED \~ M (A), 2. ED \~ M \* S (B), 3. ED \~ M \* S + Condition(PC) (C), 4. ED \~ PC (D). RDA1: first constrained ordination axis; RDA2: second constrained ordination axis. Samples are colored by group (i.e.: maternal environment x real-time herbivory simulation).
 
 
