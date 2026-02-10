@@ -145,7 +145,6 @@ gl <- vcfR2genlight(vcf)    # converts to genlight; ploidy defaults to 2
 indNames(gl) <- sub("_R1_trimmed_bismark_bt2_pe\\.sorted$", "", indNames(gl))
 
 
-# 3) missing data handling / imputation (replace NA by locus median)
 # compute allele dosage matrix
 dos <- as.matrix(gl)  # genlight -> numeric matrix (0/1/2), NAs remain
 # Remove some monomorphic positions
@@ -156,6 +155,7 @@ keep <- apply(dos, 2, function(x) {
 sum(!keep)    # should show 79
 dos_filtered <- dos[, keep]
 
+#missing data handling / imputation (replace NA by locus median)
 # impute by median allele dosage per SNP:
 for(j in seq_len(ncol(dos_filtered))){
   nas <- is.na(dos_filtered[,j])
@@ -196,6 +196,7 @@ all(rownames(gen_pcs) == treatment$id)
 # COMBINAR PCs CON METADATOS
 treatment_pcs <- cbind(treatment, gen_pcs)
 
+# dbRDA
 mod_pc <- capscale(
   CpG_dist_matrix ~ maternal * simulation + Condition(PC1:PC1),
   data = treatment_pcs,
