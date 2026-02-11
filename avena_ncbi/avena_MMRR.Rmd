@@ -22,7 +22,7 @@ library(vegan)       # Mantel test
 library(vcfR)        # read and manipulate VCF files
 library(adegenet)
 
-# Cargamos SMPs de los tres contextos
+# --- SMPs ---
 avena_CpG_obj <- readRDS(here("avena_ncbi", "avena_ncbi_CpG_meth_matrix.rds"))
 avena_CHG_obj <- readRDS(here("avena_ncbi", "avena_ncbi_CHG_meth_matrix.rds"))
 avena_CHH_obj <- readRDS(here("avena_ncbi", "avena_ncbi_CHH_meth_matrix.rds"))
@@ -30,28 +30,51 @@ avena_CHH_obj <- readRDS(here("avena_ncbi", "avena_ncbi_CHH_meth_matrix.rds"))
 # plantago_CHG_obj <- readRDS(here("plantago_pseudo", "plantago_pseudo_CHG_meth_matrix.rds"))
 # plantago_CHH_obj <- readRDS(here("plantago_pseudo", "plantago_pseudo_CHH_meth_matrix.rds"))
 
-# Cargamos la tabla de tratamientos
+# --- TRATAMIENTOS ---
 treatment_table <- read.table(file = here("avena_treatment.csv"), header = T, sep = ";")
-# Quitamos las muestras que no vamos a usar (sin tratar o inexistentes)
-treatment_table <- treatment_table %>%
-  filter(!id %in% c(
-    "AV253_2", "AV243_2", "AV282_2",
-    "AV280_2", "AV297_2", "AV275", "AV296_2"
-  ))
+          # Quitamos las muestras que no vamos a usar (sin tratar o inexistentes)
+          treatment_table <- treatment_table %>%
+            filter(!id %in% c(
+              "AV253_2", "AV243_2", "AV282_2",
+              "AV280_2", "AV297_2", "AV275", "AV296_2"
+            ))
 
-# Cargamos los SNPs
+# --- SNPs ---
 vcf <- read.vcfR(here("avena_ncbi", "filtered_variants_cov5-1000_biallelic_MAF0.01_80pct.vcf.gz"))
 
-# Cargamos los datos fenotípicos (hay que incluir datos de Winrhizo)
+# --- FENOTIPO ---
 phenotype_table <- read.table(file = here("datos_sibecol_2025.csv"), header = T, sep = ";")
-avena_phenotype <- phenotype_table %>%
-  filter(sp == "AV")
-phenotype_matrix <- avena_phenotype %>%
-  mutate(full_id = paste0(sp, id)) %>%
-  filter(full_id %in% treatment_table$id) %>%
-  select(-id, -sp, -trat, -clip) %>%
-  column_to_rownames("full_id") %>%
-  as.matrix()
+          # Añadimos los datos de WINRHIZO
+          winrhizo <- read.table(here("winrhizo.csv"), header = T, sep = ",")
+          raices_pesos <- read.table(here("raices_pesos.csv"), header = T, sep = ",")
+          
+          # Nos quedamos con las variables que nos interesan y las muestras que estamos analizando 
+          winrhizo_selection <- winrhizo%>%
+            select(c(RHIZO.2009, AvgDiam.mm., Length.cm., RootVolume.cm3.))%>%
+            filter(RHIZO.2009 %in% treatment_table$id)%>%
+            rename(full_id = RHIZO.2009)
+          
+          # Nos quedamos con las muestras que estamos analizando 
+          raices_selection <- raices_pesos %>%
+            mutate(full_id = paste0(sp, id)) %>%
+            filter(full_id %in% treatment_table$id)
+
+          # Unimos todos los datos de raíces
+          winrhizo_full <- 
+            full_join(winrhizo_selection, raices_selection,by = "full_id")
+            
+          # Unimos fenotipo con raíces 
+           
+          # Eliminamos variables que no vamos a usar
+          phenotype_selection <- phenotype_table %>%
+            select(-c(massmother, seedfruto, humedad_muerte, dias_muerte, dias_fin_flor, dias_fin_fruto))
+          # Construimos la matriz de nuestras muestras sin metadatos
+          phenotype_matrix <- phenotype_selection %>%
+            mutate(full_id = paste0(sp, id)) %>%
+            filter(full_id %in% treatment_table$id) %>%
+            select(-id, -sp, -trat, -clip) %>%
+            column_to_rownames("full_id") %>%
+            as.matrix()
 ```
 
 ```{r EPIGENETIC distance MATRIX, include=FALSE}
