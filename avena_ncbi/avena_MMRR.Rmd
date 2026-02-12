@@ -46,7 +46,56 @@ vcf <- read.vcfR(here("avena_ncbi", "filtered_variants_cov5-1000_biallelic_MAF0.
 phenotype_table <- read.table(file = here("datos_sibecol_2025.csv"), header = T, sep = ";")
           # Añadimos los datos de WINRHIZO
           winrhizo <- read.table(here("winrhizo.csv"), header = T, sep = ",")
-          raices_pesos <- read.table(here("raices_pesos.csv"), header = T, sep = ",")
+          raices_pesos_gabi <- read.table(here("raices_pesos_gabi.csv"), header = T, sep = ",")
+          raices_pesos_lore <- read.table(here("raices_pesos.csv"), header = T, sep = ",")
+          raices_pesos <- full_join(raices_pesos_gabi, raices_pesos_lore, by = "id")
+          
+          # discrepancias entre las dos bases de datos
+          reporte_discrepancias <- raices_pesos %>%
+  # Creamos una columna que concatena los nombres de las variables que fallan
+  mutate(
+    discrepancia = paste0(
+      if_else(sp.x != sp.y, "sp, ", ""),
+      if_else(profundidad_sustrato.x != profundidad_sustrato.y, "profundidad, ", ""),
+      if_else(peso_resto.x != peso_resto.y, "peso_resto, ", ""),
+      # Usamos coalesce para que los NA no rompan la comparación
+      if_else(coalesce(peso_winrhizo.x != peso_winrhizo.y, TRUE), "peso_winrhizo, ", "")
+    ),
+    # Limpiamos la coma final de la cadena de texto
+    discrepancia = gsub(", $", "", discrepancia)
+  ) %>%
+  # Filtramos: solo filas donde la columna discrepancia NO esté vacía
+  filter(discrepancia != "") %>%
+  # Reorganizamos para ver la causa primero
+  select(id, discrepancia, everything())
+          
+          
+          reporte_limpio <- raices_pesos %>%
+  mutate(
+    discrepancia = paste0(
+      # Comparamos solo si AMBOS no son NA Y son distintos
+      if_else(!is.na(sp.x) & !is.na(sp.y) & sp.x != sp.y, "sp, ", ""),
+      
+      if_else(!is.na(profundidad_sustrato.x) & !is.na(profundidad_sustrato.y) & 
+                profundidad_sustrato.x != profundidad_sustrato.y, "profundidad, ", ""),
+      
+      if_else(!is.na(peso_resto.x) & !is.na(peso_resto.y) & 
+                peso_resto.x != peso_resto.y, "peso_resto, ", ""),
+      
+      if_else(!is.na(peso_winrhizo.x) & !is.na(peso_winrhizo.y) & 
+                peso_winrhizo.x != peso_winrhizo.y, "peso_winrhizo, ", "")
+    ),
+    # Limpiar la coma y espacio final
+    discrepancia = gsub(", $", "", discrepancia)
+  ) %>%
+  # Nos quedamos solo con las filas que tienen texto en 'discrepancia'
+  filter(discrepancia != "") %>%
+  select(id, discrepancia, everything())
+          
+          
+          # NOS QUEDAMOS CON LOS DATOS DE GABI QUE ESTÁN COMPLETOS
+          
+          
           
           # Nos quedamos con las variables que nos interesan y las muestras que estamos analizando 
           winrhizo_selection <- winrhizo%>%
@@ -55,26 +104,35 @@ phenotype_table <- read.table(file = here("datos_sibecol_2025.csv"), header = T,
             rename(full_id = RHIZO.2009)
           
           # Nos quedamos con las muestras que estamos analizando 
-          raices_selection <- raices_pesos %>%
+          raices_selection <- raices_pesos_gabi %>%
             mutate(full_id = paste0(sp, id)) %>%
             filter(full_id %in% treatment_table$id)
 
           # Unimos todos los datos de raíces
           winrhizo_full <- 
-            full_join(winrhizo_selection, raices_selection,by = "full_id")
+            full_join(winrhizo_selection, raices_selection,by = "full_id")%>%
+            mutate(RTD = paste0(peso_winrhizo/RootVolume.cm3.))%>%
+            mutate(SRL = paste0(Length.cm./peso_winrhizo))
             
-          # Unimos fenotipo con raíces 
-           
-          # Eliminamos variables que no vamos a usar
+          # Eliminamos variables que no vamos a usar y nos quedamos con nuestras muestras
           phenotype_selection <- phenotype_table %>%
             select(-c(massmother, seedfruto, humedad_muerte, dias_muerte, dias_fin_flor, dias_fin_fruto))
-          # Construimos la matriz de nuestras muestras sin metadatos
-          phenotype_matrix <- phenotype_selection %>%
+          
+          
+           
+                    # Construimos la matriz de nuestras muestras sin metadatos
+          phenotype_selection <- phenotype_table %>%
+            select(-c(massmother, seedfruto, humedad_muerte, dias_muerte, dias_fin_flor, dias_fin_fruto)) %>%
             mutate(full_id = paste0(sp, id)) %>%
             filter(full_id %in% treatment_table$id) %>%
-            select(-id, -sp, -trat, -clip) %>%
-            column_to_rownames("full_id") %>%
-            as.matrix()
+            select(-id, -sp, -trat, -clip)
+          
+          # Unimos fenotipo con raíces
+          phenotype_matrix <- full_join(phenotype_selection, winrhizo_full, by = "full_id")%>%
+            column_to_rownames("full_id")%>%
+            select(-c(peso_winrhizo, peso_resto, Length.cm., RootVolume.cm3., id, sp, profundidad_sustrato))%>%
+            as.matrix() %>%
+            apply(2, as.numeric)
 ```
 
 ```{r EPIGENETIC distance MATRIX, include=FALSE}
@@ -140,14 +198,14 @@ heatmap(P, Rowv = as.dendrogram(hc), Colv = as.dendrogram(hc), symm = TRUE)
 
 ```{r ENVIRONMENTAL distance matrix, include=FALSE}
 # Poner id como rownames en treatment
-rownames(treatment) <- treatment$id
+rownames(treatment_table) <- treatment_table$id
 
 # Convertir a factor
-treatment$maternal   <- as.factor(treatment$maternal)
-treatment$simulation <- as.factor(treatment$simulation)
+treatment_table$maternal   <- as.factor(treatment_table$maternal)
+treatment_table$simulation <- as.factor(treatment_table$simulation)
 
 # Crear dataframe solo con factores
-env_data <- treatment[, c("maternal", "simulation")]
+env_data <- treatment_table[, c("maternal", "simulation")]
 
 # Distancia Gower
 ENV_dist_matrix <- 

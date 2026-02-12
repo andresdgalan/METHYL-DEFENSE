@@ -1,4 +1,4 @@
-id,sp,profundidad_sustrato,peso_total,peso_winrhizo
+id,sp,profundidad_sustrato,peso_resto,peso_winrhizo
 1,PL,14.4,0.4791,0.0115
 2,PL,14.2,1.0541,0.0043
 3,PL,15,0.5602,0.0021
