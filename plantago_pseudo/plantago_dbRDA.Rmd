@@ -44,6 +44,8 @@ treatment_table <- read.table(file = here("plantago_treatment.csv"), header = T,
 ```{r CpG distance MATRIX, include=FALSE}
 #Transpose methylation matrix (individuals have to be rows)
 CpG_meth_matrix <- t(plantago_CpG_obj)
+# Filtramos los sitios con NAs
+CpG_meth_matrix <- CpG_meth_matrix[, colSums(is.na(CpG_meth_matrix)) == 0]
 
 # Create distance matrix
 CpG_dist_matrix <- 
@@ -63,6 +65,8 @@ treatment <- treatment_table[match(attr(CpG_dist_matrix, "Labels"), treatment_ta
 ```{r CHG distance MATRIX, include=FALSE}
 #Transpose methylation matrix (individuals have to be rows)
 CHG_meth_matrix <- t(plantago_CHG_obj)
+# Filtramos los sitios con NAs
+CHG_meth_matrix <- CHG_meth_matrix[, colSums(is.na(CHG_meth_matrix)) == 0]
 
 # Create distance matrix
 CHG_dist_matrix <- 
@@ -82,6 +86,8 @@ treatment <- treatment_table[match(attr(CHG_dist_matrix, "Labels"), treatment_ta
 ```{r CHH distance MATRIX, include=FALSE}
 #Transpose methylation matrix (individuals have to be rows)
 CHH_meth_matrix <- t(plantago_CHH_obj)
+# Filtramos los sitios con NAs
+CHH_meth_matrix <- CHH_meth_matrix[, colSums(is.na(CHH_meth_matrix)) == 0]
 
 # Create distance matrix
 CHH_dist_matrix <- 
@@ -101,6 +107,8 @@ treatment <- treatment_table[match(attr(CHH_dist_matrix, "Labels"), treatment_ta
 ```{r all_CTXT distance MATRIX, include=FALSE}
 #Transpose methylation matrix (individuals have to be rows)
 all_CTXT_meth_matrix <- t(plantago_all_CTXT_obj)
+# Filtramos los sitios con NAs
+all_CTXT_meth_matrix <- all_CTXT_meth_matrix[, colSums(is.na(all_CTXT_meth_matrix)) == 0]
 
 # Create distance matrix
 all_CTXT_dist_matrix <- 
@@ -200,7 +208,7 @@ RsquareAdj(mod_pc)
 # FDR
 ```
 
-In these analyses we evaluate how much epigenetic variability is explained by the herbivory treatments and their interaction. We analysed overall epigenetic variability and separately for each context. We used the methylation percent of each SMP (`r nrow(plantago_CpG_obj) ` in CpG, `r nrow(plantago_CHH_obj) ` in CHH, `r nrow(plantago_CHH_obj) ` in CHH) to construct an euclidean epigenetic distance matrix between samples (`r ncol(plantago_CpG_obj) `) using cluster::daisy.
+In these analyses we evaluate how much epigenetic variability is explained by the herbivory treatments and their interaction. We analysed overall epigenetic variability and separately for each context. We used the methylation percent of each SMP (`r ncol(CpG_meth_matrix) ` in CpG, `r ncol(CHG_meth_matrix) ` in CHG, `r ncol(CHH_meth_matrix) ` in CHH) to construct an euclidean epigenetic distance matrix between samples (`r nrow(CpG_meth_matrix) `) using cluster::daisy.
 
 ```{r CpG dbRDA CpG_mod1, include=FALSE}
 # dbRDA
