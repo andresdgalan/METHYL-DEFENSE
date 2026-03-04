@@ -1,0 +1,8 @@
+Running ReVeLio on ...
+Total alignments read from BAM:		155974620
+Potentially non-standard MD tags counted: 214142 (~0.14% of total alignments)
+
+----------------
+Success!
+
+Output written to VARIMETH3_masking/merged_masked.bam

@@ -1,0 +1,62 @@
+Filtrado de SNPs: VARIMETH4_freebayes/variants.vcf
+=== Coverage Filter (DP 5–1000) ===
+Sites after coverage filtering (DP 5–1000): 26969
+=== Keeping biallelic SNPs ===
+Sites after keeping only biallelic SNPs: 17935
+=== MAF >= 0.01 ===
+Sites after MAF >= 0.01: 9902
+=== Filter out SNPs with missingness in >80% of the samples per treatment ===
+  → 10 samples for graz_clip
+  → 10 samples for graz_unclip
+  → 10 samples for ungraz_clip
+  → 10 samples for ungraz_unclip
+Filtrando tratamiento graz_clip...
+Filtrando tratamiento graz_unclip...
+Filtrando tratamiento ungraz_clip...
+Filtrando tratamiento ungraz_unclip...
+Sites after per-treatment ≥80% genotyping: 5580
+Filtring completed: filtered_variants_cov5-1000_biallelic_MAF0.01_80pct.vcf.gz ready.
+
+===Summary of per sample missingness===
+Muestra              Missing    Total      Porcentaje
+PL30_R1_trimmed_bismark_bt2_pe.sorted 9          5580       .16%
+PL42_R1_trimmed_bismark_bt2_pe.sorted 11         5580       .19%
+PL28_R1_trimmed_bismark_bt2_pe.sorted 13         5580       .23%
+PL31_R1_trimmed_bismark_bt2_pe.sorted 14         5580       .25%
+PL55_R1_trimmed_bismark_bt2_pe.sorted 18         5580       .32%
+PL11_R1_trimmed_bismark_bt2_pe.sorted 21         5580       .37%
+PL14_R1_trimmed_bismark_bt2_pe.sorted 21         5580       .37%
+PL8_R1_trimmed_bismark_bt2_pe.sorted 26         5580       .46%
+PL39_R1_trimmed_bismark_bt2_pe.sorted 28         5580       .50%
+PL32_R1_trimmed_bismark_bt2_pe.sorted 30         5580       .53%
+PL37_R1_trimmed_bismark_bt2_pe.sorted 31         5580       .55%
+PL12_R1_trimmed_bismark_bt2_pe.sorted 32         5580       .57%
+PL58_R1_trimmed_bismark_bt2_pe.sorted 32         5580       .57%
+PL19_R1_trimmed_bismark_bt2_pe.sorted 36         5580       .64%
+PL52_R1_trimmed_bismark_bt2_pe.sorted 37         5580       .66%
+PL41_R1_trimmed_bismark_bt2_pe.sorted 44         5580       .78%
+PL17_R1_trimmed_bismark_bt2_pe.sorted 46         5580       .82%
+PL2_R1_trimmed_bismark_bt2_pe.sorted 47         5580       .84%
+PL24_R1_trimmed_bismark_bt2_pe.sorted 53         5580       .94%
+PL47_R1_trimmed_bismark_bt2_pe.sorted 53         5580       .94%
+PL57_R1_trimmed_bismark_bt2_pe.sorted 54         5580       .96%
+PL43_R1_trimmed_bismark_bt2_pe.sorted 57         5580       1.02%
+PL46_R1_trimmed_bismark_bt2_pe.sorted 60         5580       1.07%
+PL40_R1_trimmed_bismark_bt2_pe.sorted 64         5580       1.14%
+PL34_R1_trimmed_bismark_bt2_pe.sorted 66         5580       1.18%
+PL16_R1_trimmed_bismark_bt2_pe.sorted 67         5580       1.20%
+PL26_R1_trimmed_bismark_bt2_pe.sorted 67         5580       1.20%
+PL7_R1_trimmed_bismark_bt2_pe.sorted 68         5580       1.21%
+PL1_R1_trimmed_bismark_bt2_pe.sorted 70         5580       1.25%
+PL54_R1_trimmed_bismark_bt2_pe.sorted 74         5580       1.32%
+PL25_R1_trimmed_bismark_bt2_pe.sorted 80         5580       1.43%
+PL3_R1_trimmed_bismark_bt2_pe.sorted 80         5580       1.43%
+PL49_R1_trimmed_bismark_bt2_pe.sorted 82         5580       1.46%
+PL22_R1_trimmed_bismark_bt2_pe.sorted 89         5580       1.59%
+PL6_R1_trimmed_bismark_bt2_pe.sorted 110        5580       1.97%
+PL23_R1_trimmed_bismark_bt2_pe.sorted 138        5580       2.47%
+PL15_R1_trimmed_bismark_bt2_pe.sorted 198        5580       3.54%
+PL33_R1_trimmed_bismark_bt2_pe.sorted 251        5580       4.49%
+PL48_R1_trimmed_bismark_bt2_pe.sorted 813        5580       14.56%
+PL50_R1_trimmed_bismark_bt2_pe.sorted 944        5580       16.91%
+==============================================================

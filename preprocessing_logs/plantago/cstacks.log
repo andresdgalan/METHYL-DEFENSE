@@ -1,0 +1,85 @@
+cstacks parameters selected:
+  Loci matched based on sequence identity.
+  Number of mismatches allowed between stacks: 4
+  Gapped alignments: enabled
+Constructing catalog from 6 samples.
+
+Initializing new catalog...
+  Parsing ./stacks/PL54_2_joinedq.tags.tsv
+  Parsing ./stacks/PL54_2_joinedq.snps.tsv
+  Parsing ./stacks/PL54_2_joinedq.alleles.tsv
+  208936 loci were newly added to the catalog.
+
+Processing sample ./stacks/PL22_2_joinedq [2 of 6]
+  Parsing ./stacks/PL22_2_joinedq.tags.tsv
+  Parsing ./stacks/PL22_2_joinedq.snps.tsv
+  Parsing ./stacks/PL22_2_joinedq.alleles.tsv
+Searching for sequence matches...
+  208936 loci in the catalog, 39959335 kmers in the catalog hash.
+Searching for gapped alignments...
+Merging matches into catalog...
+  286 loci were matched to a catalog locus.
+  138 loci were matched to a catalog locus using gapped alignments.
+  158639 loci were newly added to the catalog.
+  2 loci matched more than one catalog locus, linking them.
+    4 linked catalog loci were merged into 2 loci.
+
+Processing sample ./stacks/PL26_2_joinedq [3 of 6]
+  Parsing ./stacks/PL26_2_joinedq.tags.tsv
+  Parsing ./stacks/PL26_2_joinedq.snps.tsv
+  Parsing ./stacks/PL26_2_joinedq.alleles.tsv
+Searching for sequence matches...
+  367573 loci in the catalog, 69084276 kmers in the catalog hash.
+Searching for gapped alignments...
+Merging matches into catalog...
+  34038 loci were matched to a catalog locus.
+  5706 loci were matched to a catalog locus using gapped alignments.
+  229404 loci were newly added to the catalog.
+  148 loci matched more than one catalog locus, linking them.
+    292 linked catalog loci were merged into 136 loci.
+
+Processing sample ./stacks/PL30_2_joinedq [4 of 6]
+  Parsing ./stacks/PL30_2_joinedq.tags.tsv
+  Parsing ./stacks/PL30_2_joinedq.snps.tsv
+  Parsing ./stacks/PL30_2_joinedq.alleles.tsv
+Searching for sequence matches...
+  596821 loci in the catalog, 111987703 kmers in the catalog hash.
+Searching for gapped alignments...
+Merging matches into catalog...
+  25450 loci were matched to a catalog locus.
+  5117 loci were matched to a catalog locus using gapped alignments.
+  102943 loci were newly added to the catalog.
+  500 loci matched more than one catalog locus, linking them.
+    908 linked catalog loci were merged into 359 loci.
+
+Processing sample ./stacks/PL11_2_joinedq [5 of 6]
+  Parsing ./stacks/PL11_2_joinedq.tags.tsv
+  Parsing ./stacks/PL11_2_joinedq.snps.tsv
+  Parsing ./stacks/PL11_2_joinedq.alleles.tsv
+Searching for sequence matches...
+  699215 loci in the catalog, 131092275 kmers in the catalog hash.
+Searching for gapped alignments...
+Merging matches into catalog...
+  32021 loci were matched to a catalog locus.
+  8863 loci were matched to a catalog locus using gapped alignments.
+  117320 loci were newly added to the catalog.
+  655 loci matched more than one catalog locus, linking them.
+    1231 linked catalog loci were merged into 545 loci.
+
+Processing sample ./stacks/PL6_2_joinedq [6 of 6]
+  Parsing ./stacks/PL6_2_joinedq.tags.tsv
+  Parsing ./stacks/PL6_2_joinedq.snps.tsv
+  Parsing ./stacks/PL6_2_joinedq.alleles.tsv
+Searching for sequence matches...
+  815849 loci in the catalog, 152810363 kmers in the catalog hash.
+Searching for gapped alignments...
+Merging matches into catalog...
+  162 loci were matched to a catalog locus.
+  75 loci were matched to a catalog locus using gapped alignments.
+  1908 loci were newly added to the catalog.
+  4 loci matched more than one catalog locus, linking them.
+    8 linked catalog loci were merged into 4 loci.
+
+Writing catalog in directory './stacks/'.
+Final catalog contains 817753 loci.
+cstacks is done.

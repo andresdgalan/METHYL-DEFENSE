@@ -1,0 +1,2353 @@
+🔹 Procesando muestra AV241
+Detecting adapter sequence for read1...
+No adapter detected for read1
+
+Detecting adapter sequence for read2...
+No adapter detected for read2
+
+Read1 before filtering:
+total reads: 8955391
+total bases: 1226888567
+Q20 bases: 1182353456(96.3701%)
+Q30 bases: 1105508481(90.1067%)
+
+Read2 before filtering:
+total reads: 8955391
+total bases: 1343308650
+Q20 bases: 1277849190(95.127%)
+Q30 bases: 1182037875(87.9945%)
+
+Read1 after filtering:
+total reads: 6007623
+total bases: 757758812
+Q20 bases: 733732895(96.8293%)
+Q30 bases: 689062617(90.9343%)
+
+Read2 after filtering:
+total reads: 6007623
+total bases: 787130650
+Q20 bases: 753563446(95.7355%)
+Q30 bases: 693750328(88.1366%)
+
+Filtering result:
+reads passed filter: 12015246
+reads failed due to low quality: 382362
+reads failed due to too many N: 0
+reads failed due to too short: 5109736
+reads failed due to low complexity: 403438
+reads with adapter trimmed: 888348
+bases trimmed due to adapters: 33603925
+
+Duplication rate: 36.272%
+
+Insert size peak (evaluated by paired-end reads): 23
+
+JSON report: trimmed/AV241_fastp_report.json
+HTML report: trimmed/AV241_fastp_report.html
+
+fastp -i /home/andres/datos/INTERTROPHIC/EPIGENÉTICA/NOVOGENE_DOWNLOAD/X204SC24100669-Z01-F001_01/01.RawData/Avena_Lib/samples/unzipped/AV241.1.fq -I /home/andres/datos/INTERTROPHIC/EPIGENÉTICA/NOVOGENE_DOWNLOAD/X204SC24100669-Z01-F001_01/01.RawData/Avena_Lib/samples/unzipped/AV241.2.fq -o trimmed/AV241_R1_trimmed.fq -O trimmed/AV241_R2_trimmed.fq --trim_poly_g --trim_front1 5 --trim_front2 12 --low_complexity_filter --complexity_threshold 30 --detect_adapter_for_pe --cut_front --cut_tail --cut_window_size 4 --cut_mean_quality 20 --qualified_quality_phred 15 --length_required 30 --thread 8 --html trimmed/AV241_fastp_report.html --json trimmed/AV241_fastp_report.json 
+fastp v0.23.4, time used: 56 seconds
+🔹 Procesando muestra AV243
+Detecting adapter sequence for read1...
+No adapter detected for read1
+
+Detecting adapter sequence for read2...
+No adapter detected for read2
+
+Read1 before filtering:
+total reads: 9341473
+total bases: 1279781801
+Q20 bases: 1234201387(96.4384%)
+Q30 bases: 1154800763(90.2342%)
+
+Read2 before filtering:
+total reads: 9341473
+total bases: 1401220950
+Q20 bases: 1336220011(95.3611%)
+Q30 bases: 1241887373(88.6289%)
+
+Read1 after filtering:
+total reads: 6304087
+total bases: 792142931
+Q20 bases: 767282274(96.8616%)
+Q30 bases: 720942216(91.0116%)
+
+Read2 after filtering:
+total reads: 6304087
+total bases: 822302389
+Q20 bases: 789423535(96.0016%)
+Q30 bases: 731150596(88.9151%)
+
+Filtering result:
+reads passed filter: 12608174
+reads failed due to low quality: 366746
+reads failed due to too many N: 0
+reads failed due to too short: 5302356
+reads failed due to low complexity: 405670
+reads with adapter trimmed: 1091828
+bases trimmed due to adapters: 41815957
+
+Duplication rate: 37.6095%
+
+Insert size peak (evaluated by paired-end reads): 23
+
+JSON report: trimmed/AV243_fastp_report.json
+HTML report: trimmed/AV243_fastp_report.html
+
+fastp -i /home/andres/datos/INTERTROPHIC/EPIGENÉTICA/NOVOGENE_DOWNLOAD/X204SC24100669-Z01-F001_01/01.RawData/Avena_Lib/samples/unzipped/AV243.1.fq -I /home/andres/datos/INTERTROPHIC/EPIGENÉTICA/NOVOGENE_DOWNLOAD/X204SC24100669-Z01-F001_01/01.RawData/Avena_Lib/samples/unzipped/AV243.2.fq -o trimmed/AV243_R1_trimmed.fq -O trimmed/AV243_R2_trimmed.fq --trim_poly_g --trim_front1 5 --trim_front2 12 --low_complexity_filter --complexity_threshold 30 --detect_adapter_for_pe --cut_front --cut_tail --cut_window_size 4 --cut_mean_quality 20 --qualified_quality_phred 15 --length_required 30 --thread 8 --html trimmed/AV243_fastp_report.html --json trimmed/AV243_fastp_report.json 
+fastp v0.23.4, time used: 56 seconds
+🔹 Procesando muestra AV243_2
+Detecting adapter sequence for read1...
+TCTGCTTCTAGGCAAACCTCCTGGCTGTCTCTGCACCCCTACCTCCTTTATCACTGAGCG
+
+Detecting adapter sequence for read2...
+No adapter detected for read2
+
+Read1 before filtering:
+total reads: 26442
+total bases: 3622554
+Q20 bases: 3538606(97.6826%)
+Q30 bases: 3379155(93.281%)
+
+Read2 before filtering:
+total reads: 26442
+total bases: 3966300
+Q20 bases: 3856195(97.224%)
+Q30 bases: 3690044(93.0349%)
+
+Read1 after filtering:
+total reads: 25671
+total bases: 3242507
+Q20 bases: 3179848(98.0676%)
+Q30 bases: 3048280(94.01%)
+
+Read2 after filtering:
+total reads: 25671
+total bases: 3367291
+Q20 bases: 3298004(97.9424%)
+Q30 bases: 3168650(94.1009%)
+
+Filtering result:
+reads passed filter: 51342
+reads failed due to low quality: 366
+reads failed due to too many N: 0
+reads failed due to too short: 1092
+reads failed due to low complexity: 84
+reads with adapter trimmed: 6402
+bases trimmed due to adapters: 134777
+
+Duplication rate: 50.7223%
+
+Insert size peak (evaluated by paired-end reads): 23
+
+JSON report: trimmed/AV243_2_fastp_report.json
+HTML report: trimmed/AV243_2_fastp_report.html
+
+fastp -i /home/andres/datos/INTERTROPHIC/EPIGENÉTICA/NOVOGENE_DOWNLOAD/X204SC24100669-Z01-F001_01/01.RawData/Avena_Lib/samples/unzipped/AV243_2.1.fq -I /home/andres/datos/INTERTROPHIC/EPIGENÉTICA/NOVOGENE_DOWNLOAD/X204SC24100669-Z01-F001_01/01.RawData/Avena_Lib/samples/unzipped/AV243_2.2.fq -o trimmed/AV243_2_R1_trimmed.fq -O trimmed/AV243_2_R2_trimmed.fq --trim_poly_g --trim_front1 5 --trim_front2 12 --low_complexity_filter --complexity_threshold 30 --detect_adapter_for_pe --cut_front --cut_tail --cut_window_size 4 --cut_mean_quality 20 --qualified_quality_phred 15 --length_required 30 --thread 8 --html trimmed/AV243_2_fastp_report.html --json trimmed/AV243_2_fastp_report.json 
+fastp v0.23.4, time used: 2 seconds
+🔹 Procesando muestra AV244
+Detecting adapter sequence for read1...
+No adapter detected for read1
+
+Detecting adapter sequence for read2...
+No adapter detected for read2
+
+Read1 before filtering:
+total reads: 8699486
+total bases: 1191829582
+Q20 bases: 1145316535(96.0973%)
+Q30 bases: 1064735942(89.3363%)
+
+Read2 before filtering:
+total reads: 8699486
+total bases: 1304922900
+Q20 bases: 1238295419(94.8941%)
+Q30 bases: 1138536020(87.2493%)
+
+Read1 after filtering:
+total reads: 5737244
+total bases: 735995489
+Q20 bases: 710502241(96.5362%)
+Q30 bases: 663256882(90.117%)
+
+Read2 after filtering:
+total reads: 5737244
+total bases: 767653635
+Q20 bases: 732243809(95.3873%)
+Q30 bases: 668592729(87.0956%)
+
+Filtering result:
+reads passed filter: 11474488
+reads failed due to low quality: 402484
+reads failed due to too many N: 0
+reads failed due to too short: 5089144
+reads failed due to low complexity: 432856
+reads with adapter trimmed: 149924
+bases trimmed due to adapters: 4316744
+
+Duplication rate: 35.2782%
+
+Insert size peak (evaluated by paired-end reads): 23
+
+JSON report: trimmed/AV244_fastp_report.json
+HTML report: trimmed/AV244_fastp_report.html
+
+fastp -i /home/andres/datos/INTERTROPHIC/EPIGENÉTICA/NOVOGENE_DOWNLOAD/X204SC24100669-Z01-F001_01/01.RawData/Avena_Lib/samples/unzipped/AV244.1.fq -I /home/andres/datos/INTERTROPHIC/EPIGENÉTICA/NOVOGENE_DOWNLOAD/X204SC24100669-Z01-F001_01/01.RawData/Avena_Lib/samples/unzipped/AV244.2.fq -o trimmed/AV244_R1_trimmed.fq -O trimmed/AV244_R2_trimmed.fq --trim_poly_g --trim_front1 5 --trim_front2 12 --low_complexity_filter --complexity_threshold 30 --detect_adapter_for_pe --cut_front --cut_tail --cut_window_size 4 --cut_mean_quality 20 --qualified_quality_phred 15 --length_required 30 --thread 8 --html trimmed/AV244_fastp_report.html --json trimmed/AV244_fastp_report.json 
+fastp v0.23.4, time used: 45 seconds
+🔹 Procesando muestra AV246
+Detecting adapter sequence for read1...
+No adapter detected for read1
+
+Detecting adapter sequence for read2...
+No adapter detected for read2
+
+Read1 before filtering:
+total reads: 20574421
+total bases: 2818695677
+Q20 bases: 2712147415(96.2199%)
+Q30 bases: 2523107699(89.5133%)
+
+Read2 before filtering:
+total reads: 20574421
+total bases: 3086163150
+Q20 bases: 2932544952(95.0224%)
+Q30 bases: 2703511557(87.6011%)
+
+Read1 after filtering:
+total reads: 13724969
+total bases: 1763969311
+Q20 bases: 1704671390(96.6384%)
+Q30 bases: 1592958128(90.3053%)
+
+Read2 after filtering:
+total reads: 13724969
+total bases: 1839307245
+Q20 bases: 1757032382(95.5269%)
+Q30 bases: 1610870051(87.5803%)
+
+Filtering result:
+reads passed filter: 27449938
+reads failed due to low quality: 909378
+reads failed due to too many N: 0
+reads failed due to too short: 11762844
+reads failed due to low complexity: 1026682
+reads with adapter trimmed: 248112
+bases trimmed due to adapters: 5178672
+
+Duplication rate: 36.6397%
+
+Insert size peak (evaluated by paired-end reads): 23
+
+JSON report: trimmed/AV246_fastp_report.json
+HTML report: trimmed/AV246_fastp_report.html
+
+fastp -i /home/andres/datos/INTERTROPHIC/EPIGENÉTICA/NOVOGENE_DOWNLOAD/X204SC24100669-Z01-F001_01/01.RawData/Avena_Lib/samples/unzipped/AV246.1.fq -I /home/andres/datos/INTERTROPHIC/EPIGENÉTICA/NOVOGENE_DOWNLOAD/X204SC24100669-Z01-F001_01/01.RawData/Avena_Lib/samples/unzipped/AV246.2.fq -o trimmed/AV246_R1_trimmed.fq -O trimmed/AV246_R2_trimmed.fq --trim_poly_g --trim_front1 5 --trim_front2 12 --low_complexity_filter --complexity_threshold 30 --detect_adapter_for_pe --cut_front --cut_tail --cut_window_size 4 --cut_mean_quality 20 --qualified_quality_phred 15 --length_required 30 --thread 8 --html trimmed/AV246_fastp_report.html --json trimmed/AV246_fastp_report.json 
+fastp v0.23.4, time used: 91 seconds
+🔹 Procesando muestra AV249
+Detecting adapter sequence for read1...
+No adapter detected for read1
+
+Detecting adapter sequence for read2...
+No adapter detected for read2
+
+Read1 before filtering:
+total reads: 11437387
+total bases: 1566922019
+Q20 bases: 1505558152(96.0838%)
+Q30 bases: 1397436101(89.1835%)
+
+Read2 before filtering:
+total reads: 11437387
+total bases: 1715608050
+Q20 bases: 1631583408(95.1023%)
+Q30 bases: 1505265834(87.7395%)
+
+Read1 after filtering:
+total reads: 7618551
+total bases: 978366259
+Q20 bases: 943819964(96.469%)
+Q30 bases: 879368755(89.8813%)
+
+Read2 after filtering:
+total reads: 7618551
+total bases: 1020437884
+Q20 bases: 975395152(95.5859%)
+Q30 bases: 894680765(87.6762%)
+
+Filtering result:
+reads passed filter: 15237102
+reads failed due to low quality: 489734
+reads failed due to too many N: 0
+reads failed due to too short: 6581414
+reads failed due to low complexity: 566524
+reads with adapter trimmed: 154490
+bases trimmed due to adapters: 4268342
+
+Duplication rate: 35.4444%
+
+Insert size peak (evaluated by paired-end reads): 23
+
+JSON report: trimmed/AV249_fastp_report.json
+HTML report: trimmed/AV249_fastp_report.html
+
+fastp -i /home/andres/datos/INTERTROPHIC/EPIGENÉTICA/NOVOGENE_DOWNLOAD/X204SC24100669-Z01-F001_01/01.RawData/Avena_Lib/samples/unzipped/AV249.1.fq -I /home/andres/datos/INTERTROPHIC/EPIGENÉTICA/NOVOGENE_DOWNLOAD/X204SC24100669-Z01-F001_01/01.RawData/Avena_Lib/samples/unzipped/AV249.2.fq -o trimmed/AV249_R1_trimmed.fq -O trimmed/AV249_R2_trimmed.fq --trim_poly_g --trim_front1 5 --trim_front2 12 --low_complexity_filter --complexity_threshold 30 --detect_adapter_for_pe --cut_front --cut_tail --cut_window_size 4 --cut_mean_quality 20 --qualified_quality_phred 15 --length_required 30 --thread 8 --html trimmed/AV249_fastp_report.html --json trimmed/AV249_fastp_report.json 
+fastp v0.23.4, time used: 56 seconds
+🔹 Procesando muestra AV250
+Detecting adapter sequence for read1...
+No adapter detected for read1
+
+Detecting adapter sequence for read2...
+No adapter detected for read2
+
+Read1 before filtering:
+total reads: 9967518
+total bases: 1365549966
+Q20 bases: 1313031442(96.154%)
+Q30 bases: 1220306012(89.3637%)
+
+Read2 before filtering:
+total reads: 9967518
+total bases: 1495127700
+Q20 bases: 1418226608(94.8566%)
+Q30 bases: 1303485191(87.1822%)
+
+Read1 after filtering:
+total reads: 6628548
+total bases: 850947780
+Q20 bases: 821734661(96.567%)
+Q30 bases: 766992610(90.1339%)
+
+Read2 after filtering:
+total reads: 6628548
+total bases: 886920218
+Q20 bases: 845826090(95.3666%)
+Q30 bases: 772302261(87.0769%)
+
+Filtering result:
+reads passed filter: 13257096
+reads failed due to low quality: 455850
+reads failed due to too many N: 0
+reads failed due to too short: 5720094
+reads failed due to low complexity: 501996
+reads with adapter trimmed: 161066
+bases trimmed due to adapters: 4821714
+
+Duplication rate: 35.4434%
+
+Insert size peak (evaluated by paired-end reads): 23
+
+JSON report: trimmed/AV250_fastp_report.json
+HTML report: trimmed/AV250_fastp_report.html
+
+fastp -i /home/andres/datos/INTERTROPHIC/EPIGENÉTICA/NOVOGENE_DOWNLOAD/X204SC24100669-Z01-F001_01/01.RawData/Avena_Lib/samples/unzipped/AV250.1.fq -I /home/andres/datos/INTERTROPHIC/EPIGENÉTICA/NOVOGENE_DOWNLOAD/X204SC24100669-Z01-F001_01/01.RawData/Avena_Lib/samples/unzipped/AV250.2.fq -o trimmed/AV250_R1_trimmed.fq -O trimmed/AV250_R2_trimmed.fq --trim_poly_g --trim_front1 5 --trim_front2 12 --low_complexity_filter --complexity_threshold 30 --detect_adapter_for_pe --cut_front --cut_tail --cut_window_size 4 --cut_mean_quality 20 --qualified_quality_phred 15 --length_required 30 --thread 8 --html trimmed/AV250_fastp_report.html --json trimmed/AV250_fastp_report.json 
+fastp v0.23.4, time used: 50 seconds
+🔹 Procesando muestra AV251
+Detecting adapter sequence for read1...
+No adapter detected for read1
+
+Detecting adapter sequence for read2...
+No adapter detected for read2
+
+Read1 before filtering:
+total reads: 6067948
+total bases: 831308876
+Q20 bases: 799811523(96.2111%)
+Q30 bases: 745769627(89.7103%)
+
+Read2 before filtering:
+total reads: 6067948
+total bases: 910192200
+Q20 bases: 864696047(95.0015%)
+Q30 bases: 798047531(87.679%)
+
+Read1 after filtering:
+total reads: 4009397
+total bases: 507249501
+Q20 bases: 490421025(96.6824%)
+Q30 bases: 459282686(90.5437%)
+
+Read2 after filtering:
+total reads: 4009397
+total bases: 527450453
+Q20 bases: 504124706(95.5776%)
+Q30 bases: 462576231(87.7004%)
+
+Filtering result:
+reads passed filter: 8018794
+reads failed due to low quality: 272848
+reads failed due to too many N: 0
+reads failed due to too short: 3558766
+reads failed due to low complexity: 285488
+reads with adapter trimmed: 495032
+bases trimmed due to adapters: 18441869
+
+Duplication rate: 35.1111%
+
+Insert size peak (evaluated by paired-end reads): 23
+
+JSON report: trimmed/AV251_fastp_report.json
+HTML report: trimmed/AV251_fastp_report.html
+
+fastp -i /home/andres/datos/INTERTROPHIC/EPIGENÉTICA/NOVOGENE_DOWNLOAD/X204SC24100669-Z01-F001_01/01.RawData/Avena_Lib/samples/unzipped/AV251.1.fq -I /home/andres/datos/INTERTROPHIC/EPIGENÉTICA/NOVOGENE_DOWNLOAD/X204SC24100669-Z01-F001_01/01.RawData/Avena_Lib/samples/unzipped/AV251.2.fq -o trimmed/AV251_R1_trimmed.fq -O trimmed/AV251_R2_trimmed.fq --trim_poly_g --trim_front1 5 --trim_front2 12 --low_complexity_filter --complexity_threshold 30 --detect_adapter_for_pe --cut_front --cut_tail --cut_window_size 4 --cut_mean_quality 20 --qualified_quality_phred 15 --length_required 30 --thread 8 --html trimmed/AV251_fastp_report.html --json trimmed/AV251_fastp_report.json 
+fastp v0.23.4, time used: 37 seconds
+🔹 Procesando muestra AV252
+Detecting adapter sequence for read1...
+No adapter detected for read1
+
+Detecting adapter sequence for read2...
+No adapter detected for read2
+
+Read1 before filtering:
+total reads: 5577047
+total bases: 764055439
+Q20 bases: 734420228(96.1213%)
+Q30 bases: 682637003(89.3439%)
+
+Read2 before filtering:
+total reads: 5577047
+total bases: 836557050
+Q20 bases: 794931942(95.0242%)
+Q30 bases: 733029192(87.6245%)
+
+Read1 after filtering:
+total reads: 3716085
+total bases: 475257589
+Q20 bases: 458926799(96.5638%)
+Q30 bases: 428492227(90.16%)
+
+Read2 after filtering:
+total reads: 3716085
+total bases: 495067979
+Q20 bases: 473108699(95.5644%)
+Q30 bases: 433850571(87.6345%)
+
+Filtering result:
+reads passed filter: 7432170
+reads failed due to low quality: 249012
+reads failed due to too many N: 0
+reads failed due to too short: 3198170
+reads failed due to low complexity: 274742
+reads with adapter trimmed: 194322
+bases trimmed due to adapters: 6638011
+
+Duplication rate: 35.8379%
+
+Insert size peak (evaluated by paired-end reads): 23
+
+JSON report: trimmed/AV252_fastp_report.json
+HTML report: trimmed/AV252_fastp_report.html
+
+fastp -i /home/andres/datos/INTERTROPHIC/EPIGENÉTICA/NOVOGENE_DOWNLOAD/X204SC24100669-Z01-F001_01/01.RawData/Avena_Lib/samples/unzipped/AV252.1.fq -I /home/andres/datos/INTERTROPHIC/EPIGENÉTICA/NOVOGENE_DOWNLOAD/X204SC24100669-Z01-F001_01/01.RawData/Avena_Lib/samples/unzipped/AV252.2.fq -o trimmed/AV252_R1_trimmed.fq -O trimmed/AV252_R2_trimmed.fq --trim_poly_g --trim_front1 5 --trim_front2 12 --low_complexity_filter --complexity_threshold 30 --detect_adapter_for_pe --cut_front --cut_tail --cut_window_size 4 --cut_mean_quality 20 --qualified_quality_phred 15 --length_required 30 --thread 8 --html trimmed/AV252_fastp_report.html --json trimmed/AV252_fastp_report.json 
+fastp v0.23.4, time used: 33 seconds
+🔹 Procesando muestra AV253
+Detecting adapter sequence for read1...
+No adapter detected for read1
+
+Detecting adapter sequence for read2...
+No adapter detected for read2
+
+Read1 before filtering:
+total reads: 10798066
+total bases: 1479335042
+Q20 bases: 1418737717(95.9037%)
+Q30 bases: 1316054015(88.9625%)
+
+Read2 before filtering:
+total reads: 10798066
+total bases: 1619709900
+Q20 bases: 1537875118(94.9476%)
+Q30 bases: 1415593635(87.398%)
+
+Read1 after filtering:
+total reads: 7186301
+total bases: 921797659
+Q20 bases: 888044800(96.3384%)
+Q30 bases: 826922794(89.7076%)
+
+Read2 after filtering:
+total reads: 7186301
+total bases: 961723818
+Q20 bases: 917873690(95.4405%)
+Q30 bases: 839625736(87.3042%)
+
+Filtering result:
+reads passed filter: 14372602
+reads failed due to low quality: 488476
+reads failed due to too many N: 0
+reads failed due to too short: 6193918
+reads failed due to low complexity: 541136
+reads with adapter trimmed: 194484
+bases trimmed due to adapters: 5029416
+
+Duplication rate: 34.2495%
+
+Insert size peak (evaluated by paired-end reads): 23
+
+JSON report: trimmed/AV253_fastp_report.json
+HTML report: trimmed/AV253_fastp_report.html
+
+fastp -i /home/andres/datos/INTERTROPHIC/EPIGENÉTICA/NOVOGENE_DOWNLOAD/X204SC24100669-Z01-F001_01/01.RawData/Avena_Lib/samples/unzipped/AV253.1.fq -I /home/andres/datos/INTERTROPHIC/EPIGENÉTICA/NOVOGENE_DOWNLOAD/X204SC24100669-Z01-F001_01/01.RawData/Avena_Lib/samples/unzipped/AV253.2.fq -o trimmed/AV253_R1_trimmed.fq -O trimmed/AV253_R2_trimmed.fq --trim_poly_g --trim_front1 5 --trim_front2 12 --low_complexity_filter --complexity_threshold 30 --detect_adapter_for_pe --cut_front --cut_tail --cut_window_size 4 --cut_mean_quality 20 --qualified_quality_phred 15 --length_required 30 --thread 8 --html trimmed/AV253_fastp_report.html --json trimmed/AV253_fastp_report.json 
+fastp v0.23.4, time used: 52 seconds
+🔹 Procesando muestra AV253_2
+Detecting adapter sequence for read1...
+No adapter detected for read1
+
+Detecting adapter sequence for read2...
+No adapter detected for read2
+
+Read1 before filtering:
+total reads: 162881
+total bases: 22314697
+Q20 bases: 21519225(96.4352%)
+Q30 bases: 20143653(90.2708%)
+
+Read2 before filtering:
+total reads: 162881
+total bases: 24432150
+Q20 bases: 23376189(95.678%)
+Q30 bases: 21955987(89.8651%)
+
+Read1 after filtering:
+total reads: 109572
+total bases: 13489033
+Q20 bases: 13089958(97.0415%)
+Q30 bases: 12324322(91.3655%)
+
+Read2 after filtering:
+total reads: 109572
+total bases: 13930425
+Q20 bases: 13461713(96.6353%)
+Q30 bases: 12651007(90.8157%)
+
+Filtering result:
+reads passed filter: 219144
+reads failed due to low quality: 6380
+reads failed due to too many N: 0
+reads failed due to too short: 93818
+reads failed due to low complexity: 6420
+reads with adapter trimmed: 37226
+bases trimmed due to adapters: 1312665
+
+Duplication rate: 34.753%
+
+Insert size peak (evaluated by paired-end reads): 23
+
+JSON report: trimmed/AV253_2_fastp_report.json
+HTML report: trimmed/AV253_2_fastp_report.html
+
+fastp -i /home/andres/datos/INTERTROPHIC/EPIGENÉTICA/NOVOGENE_DOWNLOAD/X204SC24100669-Z01-F001_01/01.RawData/Avena_Lib/samples/unzipped/AV253_2.1.fq -I /home/andres/datos/INTERTROPHIC/EPIGENÉTICA/NOVOGENE_DOWNLOAD/X204SC24100669-Z01-F001_01/01.RawData/Avena_Lib/samples/unzipped/AV253_2.2.fq -o trimmed/AV253_2_R1_trimmed.fq -O trimmed/AV253_2_R2_trimmed.fq --trim_poly_g --trim_front1 5 --trim_front2 12 --low_complexity_filter --complexity_threshold 30 --detect_adapter_for_pe --cut_front --cut_tail --cut_window_size 4 --cut_mean_quality 20 --qualified_quality_phred 15 --length_required 30 --thread 8 --html trimmed/AV253_2_fastp_report.html --json trimmed/AV253_2_fastp_report.json 
+fastp v0.23.4, time used: 13 seconds
+🔹 Procesando muestra AV254
+Detecting adapter sequence for read1...
+No adapter detected for read1
+
+Detecting adapter sequence for read2...
+No adapter detected for read2
+
+Read1 before filtering:
+total reads: 10410295
+total bases: 1426210415
+Q20 bases: 1371868676(96.1898%)
+Q30 bases: 1276588995(89.5092%)
+
+Read2 before filtering:
+total reads: 10410295
+total bases: 1561544250
+Q20 bases: 1483293017(94.9889%)
+Q30 bases: 1365878541(87.4697%)
+
+Read1 after filtering:
+total reads: 6935822
+total bases: 889910350
+Q20 bases: 859846570(96.6217%)
+Q30 bases: 803611332(90.3025%)
+
+Read2 after filtering:
+total reads: 6935822
+total bases: 927767128
+Q20 bases: 885993563(95.4974%)
+Q30 bases: 810914664(87.405%)
+
+Filtering result:
+reads passed filter: 13871644
+reads failed due to low quality: 469140
+reads failed due to too many N: 0
+reads failed due to too short: 5963588
+reads failed due to low complexity: 516218
+reads with adapter trimmed: 197196
+bases trimmed due to adapters: 5813330
+
+Duplication rate: 36.1753%
+
+Insert size peak (evaluated by paired-end reads): 23
+
+JSON report: trimmed/AV254_fastp_report.json
+HTML report: trimmed/AV254_fastp_report.html
+
+fastp -i /home/andres/datos/INTERTROPHIC/EPIGENÉTICA/NOVOGENE_DOWNLOAD/X204SC24100669-Z01-F001_01/01.RawData/Avena_Lib/samples/unzipped/AV254.1.fq -I /home/andres/datos/INTERTROPHIC/EPIGENÉTICA/NOVOGENE_DOWNLOAD/X204SC24100669-Z01-F001_01/01.RawData/Avena_Lib/samples/unzipped/AV254.2.fq -o trimmed/AV254_R1_trimmed.fq -O trimmed/AV254_R2_trimmed.fq --trim_poly_g --trim_front1 5 --trim_front2 12 --low_complexity_filter --complexity_threshold 30 --detect_adapter_for_pe --cut_front --cut_tail --cut_window_size 4 --cut_mean_quality 20 --qualified_quality_phred 15 --length_required 30 --thread 8 --html trimmed/AV254_fastp_report.html --json trimmed/AV254_fastp_report.json 
+fastp v0.23.4, time used: 53 seconds
+🔹 Procesando muestra AV256
+Detecting adapter sequence for read1...
+No adapter detected for read1
+
+Detecting adapter sequence for read2...
+No adapter detected for read2
+
+Read1 before filtering:
+total reads: 7965637
+total bases: 1091292269
+Q20 bases: 1050839033(96.2931%)
+Q30 bases: 979586522(89.7639%)
+
+Read2 before filtering:
+total reads: 7965637
+total bases: 1194845550
+Q20 bases: 1135311599(95.0174%)
+Q30 bases: 1048332965(87.7379%)
+
+Read1 after filtering:
+total reads: 5358726
+total bases: 678545678
+Q20 bases: 656703953(96.7811%)
+Q30 bases: 615424027(90.6975%)
+
+Read2 after filtering:
+total reads: 5358726
+total bases: 705334619
+Q20 bases: 674711279(95.6583%)
+Q30 bases: 620214574(87.932%)
+
+Filtering result:
+reads passed filter: 10717452
+reads failed due to low quality: 361790
+reads failed due to too many N: 0
+reads failed due to too short: 4486748
+reads failed due to low complexity: 365284
+reads with adapter trimmed: 638180
+bases trimmed due to adapters: 24017036
+
+Duplication rate: 36.4015%
+
+Insert size peak (evaluated by paired-end reads): 23
+
+JSON report: trimmed/AV256_fastp_report.json
+HTML report: trimmed/AV256_fastp_report.html
+
+fastp -i /home/andres/datos/INTERTROPHIC/EPIGENÉTICA/NOVOGENE_DOWNLOAD/X204SC24100669-Z01-F001_01/01.RawData/Avena_Lib/samples/unzipped/AV256.1.fq -I /home/andres/datos/INTERTROPHIC/EPIGENÉTICA/NOVOGENE_DOWNLOAD/X204SC24100669-Z01-F001_01/01.RawData/Avena_Lib/samples/unzipped/AV256.2.fq -o trimmed/AV256_R1_trimmed.fq -O trimmed/AV256_R2_trimmed.fq --trim_poly_g --trim_front1 5 --trim_front2 12 --low_complexity_filter --complexity_threshold 30 --detect_adapter_for_pe --cut_front --cut_tail --cut_window_size 4 --cut_mean_quality 20 --qualified_quality_phred 15 --length_required 30 --thread 8 --html trimmed/AV256_fastp_report.html --json trimmed/AV256_fastp_report.json 
+fastp v0.23.4, time used: 47 seconds
+🔹 Procesando muestra AV259
+Detecting adapter sequence for read1...
+No adapter detected for read1
+
+Detecting adapter sequence for read2...
+No adapter detected for read2
+
+Read1 before filtering:
+total reads: 6412780
+total bases: 878550860
+Q20 bases: 842547467(95.902%)
+Q30 bases: 780961621(88.892%)
+
+Read2 before filtering:
+total reads: 6412780
+total bases: 961917000
+Q20 bases: 914159766(95.0352%)
+Q30 bases: 843545942(87.6943%)
+
+Read1 after filtering:
+total reads: 4269555
+total bases: 542398390
+Q20 bases: 522609751(96.3516%)
+Q30 bases: 486460935(89.687%)
+
+Read2 after filtering:
+total reads: 4269555
+total bases: 564764365
+Q20 bases: 539807047(95.5809%)
+Q30 bases: 495303732(87.701%)
+
+Filtering result:
+reads passed filter: 8539110
+reads failed due to low quality: 284316
+reads failed due to too many N: 0
+reads failed due to too short: 3694942
+reads failed due to low complexity: 307192
+reads with adapter trimmed: 388170
+bases trimmed due to adapters: 14115843
+
+Duplication rate: 33.5497%
+
+Insert size peak (evaluated by paired-end reads): 23
+
+JSON report: trimmed/AV259_fastp_report.json
+HTML report: trimmed/AV259_fastp_report.html
+
+fastp -i /home/andres/datos/INTERTROPHIC/EPIGENÉTICA/NOVOGENE_DOWNLOAD/X204SC24100669-Z01-F001_01/01.RawData/Avena_Lib/samples/unzipped/AV259.1.fq -I /home/andres/datos/INTERTROPHIC/EPIGENÉTICA/NOVOGENE_DOWNLOAD/X204SC24100669-Z01-F001_01/01.RawData/Avena_Lib/samples/unzipped/AV259.2.fq -o trimmed/AV259_R1_trimmed.fq -O trimmed/AV259_R2_trimmed.fq --trim_poly_g --trim_front1 5 --trim_front2 12 --low_complexity_filter --complexity_threshold 30 --detect_adapter_for_pe --cut_front --cut_tail --cut_window_size 4 --cut_mean_quality 20 --qualified_quality_phred 15 --length_required 30 --thread 8 --html trimmed/AV259_fastp_report.html --json trimmed/AV259_fastp_report.json 
+fastp v0.23.4, time used: 37 seconds
+🔹 Procesando muestra AV260
+Detecting adapter sequence for read1...
+No adapter detected for read1
+
+Detecting adapter sequence for read2...
+No adapter detected for read2
+
+Read1 before filtering:
+total reads: 5669990
+total bases: 776788630
+Q20 bases: 747845514(96.274%)
+Q30 bases: 696630192(89.6808%)
+
+Read2 before filtering:
+total reads: 5669990
+total bases: 850498500
+Q20 bases: 807657704(94.9629%)
+Q30 bases: 744873155(87.5808%)
+
+Read1 after filtering:
+total reads: 3787188
+total bases: 480887355
+Q20 bases: 465169105(96.7314%)
+Q30 bases: 435462091(90.5539%)
+
+Read2 after filtering:
+total reads: 3787188
+total bases: 500227085
+Q20 bases: 478086736(95.5739%)
+Q30 bases: 438644953(87.6892%)
+
+Filtering result:
+reads passed filter: 7574376
+reads failed due to low quality: 265750
+reads failed due to too many N: 0
+reads failed due to too short: 3236278
+reads failed due to low complexity: 263576
+reads with adapter trimmed: 378358
+bases trimmed due to adapters: 13661473
+
+Duplication rate: 36.2409%
+
+Insert size peak (evaluated by paired-end reads): 23
+
+JSON report: trimmed/AV260_fastp_report.json
+HTML report: trimmed/AV260_fastp_report.html
+
+fastp -i /home/andres/datos/INTERTROPHIC/EPIGENÉTICA/NOVOGENE_DOWNLOAD/X204SC24100669-Z01-F001_01/01.RawData/Avena_Lib/samples/unzipped/AV260.1.fq -I /home/andres/datos/INTERTROPHIC/EPIGENÉTICA/NOVOGENE_DOWNLOAD/X204SC24100669-Z01-F001_01/01.RawData/Avena_Lib/samples/unzipped/AV260.2.fq -o trimmed/AV260_R1_trimmed.fq -O trimmed/AV260_R2_trimmed.fq --trim_poly_g --trim_front1 5 --trim_front2 12 --low_complexity_filter --complexity_threshold 30 --detect_adapter_for_pe --cut_front --cut_tail --cut_window_size 4 --cut_mean_quality 20 --qualified_quality_phred 15 --length_required 30 --thread 8 --html trimmed/AV260_fastp_report.html --json trimmed/AV260_fastp_report.json 
+fastp v0.23.4, time used: 33 seconds
+🔹 Procesando muestra AV261
+Detecting adapter sequence for read1...
+No adapter detected for read1
+
+Detecting adapter sequence for read2...
+No adapter detected for read2
+
+Read1 before filtering:
+total reads: 10199123
+total bases: 1397279851
+Q20 bases: 1339815297(95.8874%)
+Q30 bases: 1240833082(88.8035%)
+
+Read2 before filtering:
+total reads: 10199123
+total bases: 1529868450
+Q20 bases: 1452230626(94.9252%)
+Q30 bases: 1335534332(87.2973%)
+
+Read1 after filtering:
+total reads: 6757733
+total bases: 866677548
+Q20 bases: 835207759(96.3689%)
+Q30 bases: 777347629(89.6928%)
+
+Read2 after filtering:
+total reads: 6757733
+total bases: 903829751
+Q20 bases: 862564997(95.4345%)
+Q30 bases: 788053301(87.1905%)
+
+Filtering result:
+reads passed filter: 13515466
+reads failed due to low quality: 474808
+reads failed due to too many N: 0
+reads failed due to too short: 5900686
+reads failed due to low complexity: 507286
+reads with adapter trimmed: 197782
+bases trimmed due to adapters: 5922992
+
+Duplication rate: 34.8069%
+
+Insert size peak (evaluated by paired-end reads): 23
+
+JSON report: trimmed/AV261_fastp_report.json
+HTML report: trimmed/AV261_fastp_report.html
+
+fastp -i /home/andres/datos/INTERTROPHIC/EPIGENÉTICA/NOVOGENE_DOWNLOAD/X204SC24100669-Z01-F001_01/01.RawData/Avena_Lib/samples/unzipped/AV261.1.fq -I /home/andres/datos/INTERTROPHIC/EPIGENÉTICA/NOVOGENE_DOWNLOAD/X204SC24100669-Z01-F001_01/01.RawData/Avena_Lib/samples/unzipped/AV261.2.fq -o trimmed/AV261_R1_trimmed.fq -O trimmed/AV261_R2_trimmed.fq --trim_poly_g --trim_front1 5 --trim_front2 12 --low_complexity_filter --complexity_threshold 30 --detect_adapter_for_pe --cut_front --cut_tail --cut_window_size 4 --cut_mean_quality 20 --qualified_quality_phred 15 --length_required 30 --thread 8 --html trimmed/AV261_fastp_report.html --json trimmed/AV261_fastp_report.json 
+fastp v0.23.4, time used: 51 seconds
+🔹 Procesando muestra AV262
+Detecting adapter sequence for read1...
+No adapter detected for read1
+
+Detecting adapter sequence for read2...
+No adapter detected for read2
+
+Read1 before filtering:
+total reads: 6731965
+total bases: 922279205
+Q20 bases: 887204010(96.1969%)
+Q30 bases: 825496086(89.5061%)
+
+Read2 before filtering:
+total reads: 6731965
+total bases: 1009794750
+Q20 bases: 958395923(94.91%)
+Q30 bases: 882456269(87.3897%)
+
+Read1 after filtering:
+total reads: 4465530
+total bases: 570160193
+Q20 bases: 550851777(96.6135%)
+Q30 bases: 514769964(90.2851%)
+
+Read2 after filtering:
+total reads: 4465530
+total bases: 593924540
+Q20 bases: 566672731(95.4116%)
+Q30 bases: 518413527(87.2861%)
+
+Filtering result:
+reads passed filter: 8931060
+reads failed due to low quality: 301048
+reads failed due to too many N: 0
+reads failed due to too short: 3901320
+reads failed due to low complexity: 330502
+reads with adapter trimmed: 250198
+bases trimmed due to adapters: 8828602
+
+Duplication rate: 34.8402%
+
+Insert size peak (evaluated by paired-end reads): 23
+
+JSON report: trimmed/AV262_fastp_report.json
+HTML report: trimmed/AV262_fastp_report.html
+
+fastp -i /home/andres/datos/INTERTROPHIC/EPIGENÉTICA/NOVOGENE_DOWNLOAD/X204SC24100669-Z01-F001_01/01.RawData/Avena_Lib/samples/unzipped/AV262.1.fq -I /home/andres/datos/INTERTROPHIC/EPIGENÉTICA/NOVOGENE_DOWNLOAD/X204SC24100669-Z01-F001_01/01.RawData/Avena_Lib/samples/unzipped/AV262.2.fq -o trimmed/AV262_R1_trimmed.fq -O trimmed/AV262_R2_trimmed.fq --trim_poly_g --trim_front1 5 --trim_front2 12 --low_complexity_filter --complexity_threshold 30 --detect_adapter_for_pe --cut_front --cut_tail --cut_window_size 4 --cut_mean_quality 20 --qualified_quality_phred 15 --length_required 30 --thread 8 --html trimmed/AV262_fastp_report.html --json trimmed/AV262_fastp_report.json 
+fastp v0.23.4, time used: 37 seconds
+🔹 Procesando muestra AV263A
+Detecting adapter sequence for read1...
+No adapter detected for read1
+
+Detecting adapter sequence for read2...
+No adapter detected for read2
+
+Read1 before filtering:
+total reads: 14941204
+total bases: 2046944948
+Q20 bases: 1969616456(96.2222%)
+Q30 bases: 1831049819(89.4528%)
+
+Read2 before filtering:
+total reads: 14941204
+total bases: 2241180600
+Q20 bases: 2127456168(94.9257%)
+Q30 bases: 1956995391(87.3198%)
+
+Read1 after filtering:
+total reads: 9975142
+total bases: 1281490057
+Q20 bases: 1238362991(96.6346%)
+Q30 bases: 1156592369(90.2537%)
+
+Read2 after filtering:
+total reads: 9975142
+total bases: 1335991020
+Q20 bases: 1274991489(95.4341%)
+Q30 bases: 1165577478(87.2444%)
+
+Filtering result:
+reads passed filter: 19950284
+reads failed due to low quality: 670484
+reads failed due to too many N: 0
+reads failed due to too short: 8521356
+reads failed due to low complexity: 740284
+reads with adapter trimmed: 193908
+bases trimmed due to adapters: 5217902
+
+Duplication rate: 36.6662%
+
+Insert size peak (evaluated by paired-end reads): 23
+
+JSON report: trimmed/AV263A_fastp_report.json
+HTML report: trimmed/AV263A_fastp_report.html
+
+fastp -i /home/andres/datos/INTERTROPHIC/EPIGENÉTICA/NOVOGENE_DOWNLOAD/X204SC24100669-Z01-F001_01/01.RawData/Avena_Lib/samples/unzipped/AV263A.1.fq -I /home/andres/datos/INTERTROPHIC/EPIGENÉTICA/NOVOGENE_DOWNLOAD/X204SC24100669-Z01-F001_01/01.RawData/Avena_Lib/samples/unzipped/AV263A.2.fq -o trimmed/AV263A_R1_trimmed.fq -O trimmed/AV263A_R2_trimmed.fq --trim_poly_g --trim_front1 5 --trim_front2 12 --low_complexity_filter --complexity_threshold 30 --detect_adapter_for_pe --cut_front --cut_tail --cut_window_size 4 --cut_mean_quality 20 --qualified_quality_phred 15 --length_required 30 --thread 8 --html trimmed/AV263A_fastp_report.html --json trimmed/AV263A_fastp_report.json 
+fastp v0.23.4, time used: 71 seconds
+🔹 Procesando muestra AV263B
+Detecting adapter sequence for read1...
+No adapter detected for read1
+
+Detecting adapter sequence for read2...
+No adapter detected for read2
+
+Read1 before filtering:
+total reads: 13805306
+total bases: 1891326922
+Q20 bases: 1811128005(95.7596%)
+Q30 bases: 1672344450(88.4218%)
+
+Read2 before filtering:
+total reads: 13805306
+total bases: 2070795900
+Q20 bases: 1967864059(95.0294%)
+Q30 bases: 1812828256(87.5426%)
+
+Read1 after filtering:
+total reads: 9206965
+total bases: 1182383542
+Q20 bases: 1137860199(96.2344%)
+Q30 bases: 1055629063(89.2797%)
+
+Read2 after filtering:
+total reads: 9206965
+total bases: 1233574313
+Q20 bases: 1178585295(95.5423%)
+Q30 bases: 1079434168(87.5046%)
+
+Filtering result:
+reads passed filter: 18413930
+reads failed due to low quality: 628180
+reads failed due to too many N: 0
+reads failed due to too short: 7886574
+reads failed due to low complexity: 681928
+reads with adapter trimmed: 179334
+bases trimmed due to adapters: 4597424
+
+Duplication rate: 34.1424%
+
+Insert size peak (evaluated by paired-end reads): 23
+
+JSON report: trimmed/AV263B_fastp_report.json
+HTML report: trimmed/AV263B_fastp_report.html
+
+fastp -i /home/andres/datos/INTERTROPHIC/EPIGENÉTICA/NOVOGENE_DOWNLOAD/X204SC24100669-Z01-F001_01/01.RawData/Avena_Lib/samples/unzipped/AV263B.1.fq -I /home/andres/datos/INTERTROPHIC/EPIGENÉTICA/NOVOGENE_DOWNLOAD/X204SC24100669-Z01-F001_01/01.RawData/Avena_Lib/samples/unzipped/AV263B.2.fq -o trimmed/AV263B_R1_trimmed.fq -O trimmed/AV263B_R2_trimmed.fq --trim_poly_g --trim_front1 5 --trim_front2 12 --low_complexity_filter --complexity_threshold 30 --detect_adapter_for_pe --cut_front --cut_tail --cut_window_size 4 --cut_mean_quality 20 --qualified_quality_phred 15 --length_required 30 --thread 8 --html trimmed/AV263B_fastp_report.html --json trimmed/AV263B_fastp_report.json 
+fastp v0.23.4, time used: 64 seconds
+🔹 Procesando muestra AV264B
+Detecting adapter sequence for read1...
+No adapter detected for read1
+
+Detecting adapter sequence for read2...
+No adapter detected for read2
+
+Read1 before filtering:
+total reads: 10259270
+total bases: 1405519990
+Q20 bases: 1352045208(96.1954%)
+Q30 bases: 1258492138(89.5393%)
+
+Read2 before filtering:
+total reads: 10259270
+total bases: 1538890500
+Q20 bases: 1461775327(94.9889%)
+Q30 bases: 1346592312(87.5041%)
+
+Read1 after filtering:
+total reads: 6862263
+total bases: 880844181
+Q20 bases: 850639163(96.5709%)
+Q30 bases: 794712799(90.2217%)
+
+Read2 after filtering:
+total reads: 6862263
+total bases: 918614532
+Q20 bases: 877073748(95.4779%)
+Q30 bases: 803160623(87.4317%)
+
+Filtering result:
+reads passed filter: 13724526
+reads failed due to low quality: 454004
+reads failed due to too many N: 0
+reads failed due to too short: 5833848
+reads failed due to low complexity: 506162
+reads with adapter trimmed: 164592
+bases trimmed due to adapters: 4020469
+
+Duplication rate: 35.8157%
+
+Insert size peak (evaluated by paired-end reads): 23
+
+JSON report: trimmed/AV264B_fastp_report.json
+HTML report: trimmed/AV264B_fastp_report.html
+
+fastp -i /home/andres/datos/INTERTROPHIC/EPIGENÉTICA/NOVOGENE_DOWNLOAD/X204SC24100669-Z01-F001_01/01.RawData/Avena_Lib/samples/unzipped/AV264B.1.fq -I /home/andres/datos/INTERTROPHIC/EPIGENÉTICA/NOVOGENE_DOWNLOAD/X204SC24100669-Z01-F001_01/01.RawData/Avena_Lib/samples/unzipped/AV264B.2.fq -o trimmed/AV264B_R1_trimmed.fq -O trimmed/AV264B_R2_trimmed.fq --trim_poly_g --trim_front1 5 --trim_front2 12 --low_complexity_filter --complexity_threshold 30 --detect_adapter_for_pe --cut_front --cut_tail --cut_window_size 4 --cut_mean_quality 20 --qualified_quality_phred 15 --length_required 30 --thread 8 --html trimmed/AV264B_fastp_report.html --json trimmed/AV264B_fastp_report.json 
+fastp v0.23.4, time used: 53 seconds
+🔹 Procesando muestra AV265
+Detecting adapter sequence for read1...
+No adapter detected for read1
+
+Detecting adapter sequence for read2...
+No adapter detected for read2
+
+Read1 before filtering:
+total reads: 9364143
+total bases: 1282887591
+Q20 bases: 1237114677(96.432%)
+Q30 bases: 1156530622(90.1506%)
+
+Read2 before filtering:
+total reads: 9364143
+total bases: 1404621450
+Q20 bases: 1334727042(95.024%)
+Q30 bases: 1232656210(87.7572%)
+
+Read1 after filtering:
+total reads: 6268795
+total bases: 793028481
+Q20 bases: 768253966(96.876%)
+Q30 bases: 721563872(90.9884%)
+
+Read2 after filtering:
+total reads: 6268795
+total bases: 823953879
+Q20 bases: 787906149(95.625%)
+Q30 bases: 723861088(87.8521%)
+
+Filtering result:
+reads passed filter: 12537590
+reads failed due to low quality: 412218
+reads failed due to too many N: 0
+reads failed due to too short: 5348866
+reads failed due to low complexity: 429612
+reads with adapter trimmed: 801696
+bases trimmed due to adapters: 30164566
+
+Duplication rate: 36.8652%
+
+Insert size peak (evaluated by paired-end reads): 23
+
+JSON report: trimmed/AV265_fastp_report.json
+HTML report: trimmed/AV265_fastp_report.html
+
+fastp -i /home/andres/datos/INTERTROPHIC/EPIGENÉTICA/NOVOGENE_DOWNLOAD/X204SC24100669-Z01-F001_01/01.RawData/Avena_Lib/samples/unzipped/AV265.1.fq -I /home/andres/datos/INTERTROPHIC/EPIGENÉTICA/NOVOGENE_DOWNLOAD/X204SC24100669-Z01-F001_01/01.RawData/Avena_Lib/samples/unzipped/AV265.2.fq -o trimmed/AV265_R1_trimmed.fq -O trimmed/AV265_R2_trimmed.fq --trim_poly_g --trim_front1 5 --trim_front2 12 --low_complexity_filter --complexity_threshold 30 --detect_adapter_for_pe --cut_front --cut_tail --cut_window_size 4 --cut_mean_quality 20 --qualified_quality_phred 15 --length_required 30 --thread 8 --html trimmed/AV265_fastp_report.html --json trimmed/AV265_fastp_report.json 
+fastp v0.23.4, time used: 54 seconds
+🔹 Procesando muestra AV266
+Detecting adapter sequence for read1...
+No adapter detected for read1
+
+Detecting adapter sequence for read2...
+No adapter detected for read2
+
+Read1 before filtering:
+total reads: 16766997
+total bases: 2297078589
+Q20 bases: 2199678654(95.7598%)
+Q30 bases: 2034937093(88.588%)
+
+Read2 before filtering:
+total reads: 16766997
+total bases: 2515049550
+Q20 bases: 2391517558(95.0883%)
+Q30 bases: 2206364069(87.7265%)
+
+Read1 after filtering:
+total reads: 11225687
+total bases: 1441193281
+Q20 bases: 1386365522(96.1957%)
+Q30 bases: 1287376851(89.3271%)
+
+Read2 after filtering:
+total reads: 11225687
+total bases: 1504444539
+Q20 bases: 1438104079(95.5904%)
+Q30 bases: 1319672108(87.7182%)
+
+Filtering result:
+reads passed filter: 22451374
+reads failed due to low quality: 742102
+reads failed due to too many N: 0
+reads failed due to too short: 9509750
+reads failed due to low complexity: 830768
+reads with adapter trimmed: 239654
+bases trimmed due to adapters: 4532134
+
+Duplication rate: 34.0048%
+
+Insert size peak (evaluated by paired-end reads): 23
+
+JSON report: trimmed/AV266_fastp_report.json
+HTML report: trimmed/AV266_fastp_report.html
+
+fastp -i /home/andres/datos/INTERTROPHIC/EPIGENÉTICA/NOVOGENE_DOWNLOAD/X204SC24100669-Z01-F001_01/01.RawData/Avena_Lib/samples/unzipped/AV266.1.fq -I /home/andres/datos/INTERTROPHIC/EPIGENÉTICA/NOVOGENE_DOWNLOAD/X204SC24100669-Z01-F001_01/01.RawData/Avena_Lib/samples/unzipped/AV266.2.fq -o trimmed/AV266_R1_trimmed.fq -O trimmed/AV266_R2_trimmed.fq --trim_poly_g --trim_front1 5 --trim_front2 12 --low_complexity_filter --complexity_threshold 30 --detect_adapter_for_pe --cut_front --cut_tail --cut_window_size 4 --cut_mean_quality 20 --qualified_quality_phred 15 --length_required 30 --thread 8 --html trimmed/AV266_fastp_report.html --json trimmed/AV266_fastp_report.json 
+fastp v0.23.4, time used: 75 seconds
+🔹 Procesando muestra AV272
+Detecting adapter sequence for read1...
+No adapter detected for read1
+
+Detecting adapter sequence for read2...
+No adapter detected for read2
+
+Read1 before filtering:
+total reads: 14395873
+total bases: 1972234601
+Q20 bases: 1897379461(96.2046%)
+Q30 bases: 1771399423(89.8169%)
+
+Read2 before filtering:
+total reads: 14395873
+total bases: 2159380950
+Q20 bases: 2057129306(95.2648%)
+Q30 bases: 1910982220(88.4968%)
+
+Read1 after filtering:
+total reads: 9804432
+total bases: 1221614710
+Q20 bases: 1181359392(96.7047%)
+Q30 bases: 1107679845(90.6734%)
+
+Read2 after filtering:
+total reads: 9804432
+total bases: 1265773186
+Q20 bases: 1215506628(96.0288%)
+Q30 bases: 1126595564(89.0045%)
+
+Filtering result:
+reads passed filter: 19608864
+reads failed due to low quality: 604560
+reads failed due to too many N: 0
+reads failed due to too short: 7966150
+reads failed due to low complexity: 612172
+reads with adapter trimmed: 2294410
+bases trimmed due to adapters: 86799791
+
+Duplication rate: 35.2512%
+
+Insert size peak (evaluated by paired-end reads): 23
+
+JSON report: trimmed/AV272_fastp_report.json
+HTML report: trimmed/AV272_fastp_report.html
+
+fastp -i /home/andres/datos/INTERTROPHIC/EPIGENÉTICA/NOVOGENE_DOWNLOAD/X204SC24100669-Z01-F001_01/01.RawData/Avena_Lib/samples/unzipped/AV272.1.fq -I /home/andres/datos/INTERTROPHIC/EPIGENÉTICA/NOVOGENE_DOWNLOAD/X204SC24100669-Z01-F001_01/01.RawData/Avena_Lib/samples/unzipped/AV272.2.fq -o trimmed/AV272_R1_trimmed.fq -O trimmed/AV272_R2_trimmed.fq --trim_poly_g --trim_front1 5 --trim_front2 12 --low_complexity_filter --complexity_threshold 30 --detect_adapter_for_pe --cut_front --cut_tail --cut_window_size 4 --cut_mean_quality 20 --qualified_quality_phred 15 --length_required 30 --thread 8 --html trimmed/AV272_fastp_report.html --json trimmed/AV272_fastp_report.json 
+fastp v0.23.4, time used: 79 seconds
+🔹 Procesando muestra AV273
+Detecting adapter sequence for read1...
+No adapter detected for read1
+
+Detecting adapter sequence for read2...
+No adapter detected for read2
+
+Read1 before filtering:
+total reads: 13082629
+total bases: 1792320173
+Q20 bases: 1729299650(96.4839%)
+Q30 bases: 1621799997(90.4861%)
+
+Read2 before filtering:
+total reads: 13082629
+total bases: 1962394350
+Q20 bases: 1868313761(95.2058%)
+Q30 bases: 1733189876(88.3202%)
+
+Read1 after filtering:
+total reads: 8800356
+total bases: 1099159154
+Q20 bases: 1065774387(96.9627%)
+Q30 bases: 1003627346(91.3086%)
+
+Read2 after filtering:
+total reads: 8800356
+total bases: 1139102323
+Q20 bases: 1092678486(95.9245%)
+Q30 bases: 1010133956(88.6781%)
+
+Filtering result:
+reads passed filter: 17600712
+reads failed due to low quality: 548860
+reads failed due to too many N: 0
+reads failed due to too short: 7448744
+reads failed due to low complexity: 566942
+reads with adapter trimmed: 1918368
+bases trimmed due to adapters: 72459705
+
+Duplication rate: 36.9201%
+
+Insert size peak (evaluated by paired-end reads): 23
+
+JSON report: trimmed/AV273_fastp_report.json
+HTML report: trimmed/AV273_fastp_report.html
+
+fastp -i /home/andres/datos/INTERTROPHIC/EPIGENÉTICA/NOVOGENE_DOWNLOAD/X204SC24100669-Z01-F001_01/01.RawData/Avena_Lib/samples/unzipped/AV273.1.fq -I /home/andres/datos/INTERTROPHIC/EPIGENÉTICA/NOVOGENE_DOWNLOAD/X204SC24100669-Z01-F001_01/01.RawData/Avena_Lib/samples/unzipped/AV273.2.fq -o trimmed/AV273_R1_trimmed.fq -O trimmed/AV273_R2_trimmed.fq --trim_poly_g --trim_front1 5 --trim_front2 12 --low_complexity_filter --complexity_threshold 30 --detect_adapter_for_pe --cut_front --cut_tail --cut_window_size 4 --cut_mean_quality 20 --qualified_quality_phred 15 --length_required 30 --thread 8 --html trimmed/AV273_fastp_report.html --json trimmed/AV273_fastp_report.json 
+fastp v0.23.4, time used: 71 seconds
+🔹 Procesando muestra AV276
+Detecting adapter sequence for read1...
+No adapter detected for read1
+
+Detecting adapter sequence for read2...
+No adapter detected for read2
+
+Read1 before filtering:
+total reads: 8201236
+total bases: 1123569332
+Q20 bases: 1085908680(96.6481%)
+Q30 bases: 1020387068(90.8166%)
+
+Read2 before filtering:
+total reads: 8201236
+total bases: 1230185400
+Q20 bases: 1173207967(95.3684%)
+Q30 bases: 1090974733(88.6838%)
+
+Read1 after filtering:
+total reads: 5550395
+total bases: 694178139
+Q20 bases: 674015434(97.0955%)
+Q30 bases: 635911892(91.6064%)
+
+Read2 after filtering:
+total reads: 5550395
+total bases: 719593016
+Q20 bases: 691325747(96.0718%)
+Q30 bases: 640939349(89.0697%)
+
+Filtering result:
+reads passed filter: 11100790
+reads failed due to low quality: 325754
+reads failed due to too many N: 0
+reads failed due to too short: 4627186
+reads failed due to low complexity: 348742
+reads with adapter trimmed: 1171838
+bases trimmed due to adapters: 44338297
+
+Duplication rate: 37.6692%
+
+Insert size peak (evaluated by paired-end reads): 23
+
+JSON report: trimmed/AV276_fastp_report.json
+HTML report: trimmed/AV276_fastp_report.html
+
+fastp -i /home/andres/datos/INTERTROPHIC/EPIGENÉTICA/NOVOGENE_DOWNLOAD/X204SC24100669-Z01-F001_01/01.RawData/Avena_Lib/samples/unzipped/AV276.1.fq -I /home/andres/datos/INTERTROPHIC/EPIGENÉTICA/NOVOGENE_DOWNLOAD/X204SC24100669-Z01-F001_01/01.RawData/Avena_Lib/samples/unzipped/AV276.2.fq -o trimmed/AV276_R1_trimmed.fq -O trimmed/AV276_R2_trimmed.fq --trim_poly_g --trim_front1 5 --trim_front2 12 --low_complexity_filter --complexity_threshold 30 --detect_adapter_for_pe --cut_front --cut_tail --cut_window_size 4 --cut_mean_quality 20 --qualified_quality_phred 15 --length_required 30 --thread 8 --html trimmed/AV276_fastp_report.html --json trimmed/AV276_fastp_report.json 
+fastp v0.23.4, time used: 53 seconds
+🔹 Procesando muestra AV278
+Detecting adapter sequence for read1...
+No adapter detected for read1
+
+Detecting adapter sequence for read2...
+No adapter detected for read2
+
+Read1 before filtering:
+total reads: 36011226
+total bases: 4933537962
+Q20 bases: 4784947138(96.9881%)
+Q30 bases: 4520305622(91.624%)
+
+Read2 before filtering:
+total reads: 36011226
+total bases: 5401683900
+Q20 bases: 5173421023(95.7742%)
+Q30 bases: 4858100237(89.9368%)
+
+Read1 after filtering:
+total reads: 24747587
+total bases: 3056523880
+Q20 bases: 2977209678(97.4051%)
+Q30 bases: 2822842093(92.3547%)
+
+Read2 after filtering:
+total reads: 24747587
+total bases: 3159060620
+Q20 bases: 3055949051(96.736%)
+Q30 bases: 2874870106(91.004%)
+
+Filtering result:
+reads passed filter: 49495174
+reads failed due to low quality: 1257140
+reads failed due to too many N: 0
+reads failed due to too short: 19872208
+reads failed due to low complexity: 1397930
+reads with adapter trimmed: 7605962
+bases trimmed due to adapters: 282718708
+
+Duplication rate: 41.5006%
+
+Insert size peak (evaluated by paired-end reads): 23
+
+JSON report: trimmed/AV278_fastp_report.json
+HTML report: trimmed/AV278_fastp_report.html
+
+fastp -i /home/andres/datos/INTERTROPHIC/EPIGENÉTICA/NOVOGENE_DOWNLOAD/X204SC24100669-Z01-F001_01/01.RawData/Avena_Lib/samples/unzipped/AV278.1.fq -I /home/andres/datos/INTERTROPHIC/EPIGENÉTICA/NOVOGENE_DOWNLOAD/X204SC24100669-Z01-F001_01/01.RawData/Avena_Lib/samples/unzipped/AV278.2.fq -o trimmed/AV278_R1_trimmed.fq -O trimmed/AV278_R2_trimmed.fq --trim_poly_g --trim_front1 5 --trim_front2 12 --low_complexity_filter --complexity_threshold 30 --detect_adapter_for_pe --cut_front --cut_tail --cut_window_size 4 --cut_mean_quality 20 --qualified_quality_phred 15 --length_required 30 --thread 8 --html trimmed/AV278_fastp_report.html --json trimmed/AV278_fastp_report.json 
+fastp v0.23.4, time used: 167 seconds
+🔹 Procesando muestra AV279
+Detecting adapter sequence for read1...
+No adapter detected for read1
+
+Detecting adapter sequence for read2...
+No adapter detected for read2
+
+Read1 before filtering:
+total reads: 24588374
+total bases: 3368607238
+Q20 bases: 3263169947(96.87%)
+Q30 bases: 3076646336(91.3329%)
+
+Read2 before filtering:
+total reads: 24588374
+total bases: 3688256100
+Q20 bases: 3523243941(95.526%)
+Q30 bases: 3288178860(89.1527%)
+
+Read1 after filtering:
+total reads: 16822857
+total bases: 2094496701
+Q20 bases: 2037502666(97.2789%)
+Q30 bases: 1928347556(92.0673%)
+
+Read2 after filtering:
+total reads: 16822857
+total bases: 2168286722
+Q20 bases: 2088277791(96.31%)
+Q30 bases: 1946914693(89.7905%)
+
+Filtering result:
+reads passed filter: 33645714
+reads failed due to low quality: 906430
+reads failed due to too many N: 0
+reads failed due to too short: 13601880
+reads failed due to low complexity: 1022724
+reads with adapter trimmed: 4131056
+bases trimmed due to adapters: 157058909
+
+Duplication rate: 39.9507%
+
+Insert size peak (evaluated by paired-end reads): 23
+
+JSON report: trimmed/AV279_fastp_report.json
+HTML report: trimmed/AV279_fastp_report.html
+
+fastp -i /home/andres/datos/INTERTROPHIC/EPIGENÉTICA/NOVOGENE_DOWNLOAD/X204SC24100669-Z01-F001_01/01.RawData/Avena_Lib/samples/unzipped/AV279.1.fq -I /home/andres/datos/INTERTROPHIC/EPIGENÉTICA/NOVOGENE_DOWNLOAD/X204SC24100669-Z01-F001_01/01.RawData/Avena_Lib/samples/unzipped/AV279.2.fq -o trimmed/AV279_R1_trimmed.fq -O trimmed/AV279_R2_trimmed.fq --trim_poly_g --trim_front1 5 --trim_front2 12 --low_complexity_filter --complexity_threshold 30 --detect_adapter_for_pe --cut_front --cut_tail --cut_window_size 4 --cut_mean_quality 20 --qualified_quality_phred 15 --length_required 30 --thread 8 --html trimmed/AV279_fastp_report.html --json trimmed/AV279_fastp_report.json 
+fastp v0.23.4, time used: 121 seconds
+🔹 Procesando muestra AV280
+Detecting adapter sequence for read1...
+No adapter detected for read1
+
+Detecting adapter sequence for read2...
+No adapter detected for read2
+
+Read1 before filtering:
+total reads: 23281163
+total bases: 3189519331
+Q20 bases: 3098933216(97.1599%)
+Q30 bases: 2939352180(92.1566%)
+
+Read2 before filtering:
+total reads: 23281163
+total bases: 3492174450
+Q20 bases: 3348476992(95.8852%)
+Q30 bases: 3148614822(90.162%)
+
+Read1 after filtering:
+total reads: 16126949
+total bases: 1989590140
+Q20 bases: 1940848898(97.5502%)
+Q30 bases: 1846968437(92.8316%)
+
+Read2 after filtering:
+total reads: 16126949
+total bases: 2055853542
+Q20 bases: 1989966380(96.7951%)
+Q30 bases: 1874372785(91.1725%)
+
+Filtering result:
+reads passed filter: 32253898
+reads failed due to low quality: 778464
+reads failed due to too many N: 0
+reads failed due to too short: 12650430
+reads failed due to low complexity: 879534
+reads with adapter trimmed: 5149054
+bases trimmed due to adapters: 190630943
+
+Duplication rate: 41.9166%
+
+Insert size peak (evaluated by paired-end reads): 23
+
+JSON report: trimmed/AV280_fastp_report.json
+HTML report: trimmed/AV280_fastp_report.html
+
+fastp -i /home/andres/datos/INTERTROPHIC/EPIGENÉTICA/NOVOGENE_DOWNLOAD/X204SC24100669-Z01-F001_01/01.RawData/Avena_Lib/samples/unzipped/AV280.1.fq -I /home/andres/datos/INTERTROPHIC/EPIGENÉTICA/NOVOGENE_DOWNLOAD/X204SC24100669-Z01-F001_01/01.RawData/Avena_Lib/samples/unzipped/AV280.2.fq -o trimmed/AV280_R1_trimmed.fq -O trimmed/AV280_R2_trimmed.fq --trim_poly_g --trim_front1 5 --trim_front2 12 --low_complexity_filter --complexity_threshold 30 --detect_adapter_for_pe --cut_front --cut_tail --cut_window_size 4 --cut_mean_quality 20 --qualified_quality_phred 15 --length_required 30 --thread 8 --html trimmed/AV280_fastp_report.html --json trimmed/AV280_fastp_report.json 
+fastp v0.23.4, time used: 119 seconds
+🔹 Procesando muestra AV280_2
+Detecting adapter sequence for read1...
+No adapter detected for read1
+
+Detecting adapter sequence for read2...
+No adapter detected for read2
+
+Read1 before filtering:
+total reads: 252934
+total bases: 34651958
+Q20 bases: 32680112(94.3096%)
+Q30 bases: 29420862(84.9039%)
+
+Read2 before filtering:
+total reads: 252934
+total bases: 37940100
+Q20 bases: 35376907(93.2441%)
+Q30 bases: 32089027(84.5781%)
+
+Read1 after filtering:
+total reads: 174434
+total bases: 21354660
+Q20 bases: 20516268(96.074%)
+Q30 bases: 18933337(88.6614%)
+
+Read2 after filtering:
+total reads: 174434
+total bases: 22366048
+Q20 bases: 21146556(94.5476%)
+Q30 bases: 19347060(86.5019%)
+
+Filtering result:
+reads passed filter: 348868
+reads failed due to low quality: 28282
+reads failed due to too many N: 0
+reads failed due to too short: 119824
+reads failed due to low complexity: 8894
+reads with adapter trimmed: 33118
+bases trimmed due to adapters: 1055832
+
+Duplication rate: 20.5994%
+
+Insert size peak (evaluated by paired-end reads): 23
+
+JSON report: trimmed/AV280_2_fastp_report.json
+HTML report: trimmed/AV280_2_fastp_report.html
+
+fastp -i /home/andres/datos/INTERTROPHIC/EPIGENÉTICA/NOVOGENE_DOWNLOAD/X204SC24100669-Z01-F001_01/01.RawData/Avena_Lib/samples/unzipped/AV280_2.1.fq -I /home/andres/datos/INTERTROPHIC/EPIGENÉTICA/NOVOGENE_DOWNLOAD/X204SC24100669-Z01-F001_01/01.RawData/Avena_Lib/samples/unzipped/AV280_2.2.fq -o trimmed/AV280_2_R1_trimmed.fq -O trimmed/AV280_2_R2_trimmed.fq --trim_poly_g --trim_front1 5 --trim_front2 12 --low_complexity_filter --complexity_threshold 30 --detect_adapter_for_pe --cut_front --cut_tail --cut_window_size 4 --cut_mean_quality 20 --qualified_quality_phred 15 --length_required 30 --thread 8 --html trimmed/AV280_2_fastp_report.html --json trimmed/AV280_2_fastp_report.json 
+fastp v0.23.4, time used: 20 seconds
+🔹 Procesando muestra AV281
+Detecting adapter sequence for read1...
+No adapter detected for read1
+
+Detecting adapter sequence for read2...
+No adapter detected for read2
+
+Read1 before filtering:
+total reads: 15903621
+total bases: 2178796077
+Q20 bases: 2105767255(96.6482%)
+Q30 bases: 1977256249(90.7499%)
+
+Read2 before filtering:
+total reads: 15903621
+total bases: 2385543150
+Q20 bases: 2272089794(95.2441%)
+Q30 bases: 2108387099(88.3818%)
+
+Read1 after filtering:
+total reads: 10800062
+total bases: 1352470410
+Q20 bases: 1313008708(97.0823%)
+Q30 bases: 1238117125(91.5449%)
+
+Read2 after filtering:
+total reads: 10800062
+total bases: 1401875167
+Q20 bases: 1345193127(95.9567%)
+Q30 bases: 1244362192(88.7641%)
+
+Filtering result:
+reads passed filter: 21600124
+reads failed due to low quality: 641346
+reads failed due to too many N: 0
+reads failed due to too short: 8875336
+reads failed due to low complexity: 690436
+reads with adapter trimmed: 2155536
+bases trimmed due to adapters: 83205344
+
+Duplication rate: 38.2477%
+
+Insert size peak (evaluated by paired-end reads): 23
+
+JSON report: trimmed/AV281_fastp_report.json
+HTML report: trimmed/AV281_fastp_report.html
+
+fastp -i /home/andres/datos/INTERTROPHIC/EPIGENÉTICA/NOVOGENE_DOWNLOAD/X204SC24100669-Z01-F001_01/01.RawData/Avena_Lib/samples/unzipped/AV281.1.fq -I /home/andres/datos/INTERTROPHIC/EPIGENÉTICA/NOVOGENE_DOWNLOAD/X204SC24100669-Z01-F001_01/01.RawData/Avena_Lib/samples/unzipped/AV281.2.fq -o trimmed/AV281_R1_trimmed.fq -O trimmed/AV281_R2_trimmed.fq --trim_poly_g --trim_front1 5 --trim_front2 12 --low_complexity_filter --complexity_threshold 30 --detect_adapter_for_pe --cut_front --cut_tail --cut_window_size 4 --cut_mean_quality 20 --qualified_quality_phred 15 --length_required 30 --thread 8 --html trimmed/AV281_fastp_report.html --json trimmed/AV281_fastp_report.json 
+fastp v0.23.4, time used: 83 seconds
+🔹 Procesando muestra AV282
+Detecting adapter sequence for read1...
+No adapter detected for read1
+
+Detecting adapter sequence for read2...
+No adapter detected for read2
+
+Read1 before filtering:
+total reads: 33950424
+total bases: 4651208088
+Q20 bases: 4502036725(96.7928%)
+Q30 bases: 4245304963(91.2732%)
+
+Read2 before filtering:
+total reads: 33950424
+total bases: 5092563600
+Q20 bases: 4884517444(95.9147%)
+Q30 bases: 4594112124(90.2122%)
+
+Read1 after filtering:
+total reads: 23453767
+total bases: 2888309599
+Q20 bases: 2808407791(97.2336%)
+Q30 bases: 2657481021(92.0082%)
+
+Read2 after filtering:
+total reads: 23453767
+total bases: 2985354539
+Q20 bases: 2889983400(96.8054%)
+Q30 bases: 2722864346(91.2074%)
+
+Filtering result:
+reads passed filter: 46907534
+reads failed due to low quality: 1146850
+reads failed due to too many N: 0
+reads failed due to too short: 18551870
+reads failed due to low complexity: 1294594
+reads with adapter trimmed: 7532976
+bases trimmed due to adapters: 286470593
+
+Duplication rate: 39.6953%
+
+Insert size peak (evaluated by paired-end reads): 23
+
+JSON report: trimmed/AV282_fastp_report.json
+HTML report: trimmed/AV282_fastp_report.html
+
+fastp -i /home/andres/datos/INTERTROPHIC/EPIGENÉTICA/NOVOGENE_DOWNLOAD/X204SC24100669-Z01-F001_01/01.RawData/Avena_Lib/samples/unzipped/AV282.1.fq -I /home/andres/datos/INTERTROPHIC/EPIGENÉTICA/NOVOGENE_DOWNLOAD/X204SC24100669-Z01-F001_01/01.RawData/Avena_Lib/samples/unzipped/AV282.2.fq -o trimmed/AV282_R1_trimmed.fq -O trimmed/AV282_R2_trimmed.fq --trim_poly_g --trim_front1 5 --trim_front2 12 --low_complexity_filter --complexity_threshold 30 --detect_adapter_for_pe --cut_front --cut_tail --cut_window_size 4 --cut_mean_quality 20 --qualified_quality_phred 15 --length_required 30 --thread 8 --html trimmed/AV282_fastp_report.html --json trimmed/AV282_fastp_report.json 
+fastp v0.23.4, time used: 172 seconds
+🔹 Procesando muestra AV282_2
+Detecting adapter sequence for read1...
+No adapter detected for read1
+
+Detecting adapter sequence for read2...
+No adapter detected for read2
+
+Read1 before filtering:
+total reads: 3520
+total bases: 482240
+Q20 bases: 456898(94.7449%)
+Q30 bases: 420805(87.2605%)
+
+Read2 before filtering:
+total reads: 3520
+total bases: 528000
+Q20 bases: 474479(89.8634%)
+Q30 bases: 429588(81.3614%)
+
+Read1 after filtering:
+total reads: 3063
+total bases: 320874
+Q20 bases: 313520(97.7081%)
+Q30 bases: 300341(93.6009%)
+
+Read2 after filtering:
+total reads: 3063
+total bases: 337919
+Q20 bases: 317919(94.0814%)
+Q30 bases: 300055(88.7949%)
+
+Filtering result:
+reads passed filter: 6126
+reads failed due to low quality: 340
+reads failed due to too many N: 0
+reads failed due to too short: 558
+reads failed due to low complexity: 16
+reads with adapter trimmed: 2012
+bases trimmed due to adapters: 92188
+
+Duplication rate: 18.8352%
+
+Insert size peak (evaluated by paired-end reads): 23
+
+JSON report: trimmed/AV282_2_fastp_report.json
+HTML report: trimmed/AV282_2_fastp_report.html
+
+fastp -i /home/andres/datos/INTERTROPHIC/EPIGENÉTICA/NOVOGENE_DOWNLOAD/X204SC24100669-Z01-F001_01/01.RawData/Avena_Lib/samples/unzipped/AV282_2.1.fq -I /home/andres/datos/INTERTROPHIC/EPIGENÉTICA/NOVOGENE_DOWNLOAD/X204SC24100669-Z01-F001_01/01.RawData/Avena_Lib/samples/unzipped/AV282_2.2.fq -o trimmed/AV282_2_R1_trimmed.fq -O trimmed/AV282_2_R2_trimmed.fq --trim_poly_g --trim_front1 5 --trim_front2 12 --low_complexity_filter --complexity_threshold 30 --detect_adapter_for_pe --cut_front --cut_tail --cut_window_size 4 --cut_mean_quality 20 --qualified_quality_phred 15 --length_required 30 --thread 8 --html trimmed/AV282_2_fastp_report.html --json trimmed/AV282_2_fastp_report.json 
+fastp v0.23.4, time used: 0 seconds
+🔹 Procesando muestra AV283
+Detecting adapter sequence for read1...
+No adapter detected for read1
+
+Detecting adapter sequence for read2...
+No adapter detected for read2
+
+Read1 before filtering:
+total reads: 36775965
+total bases: 5038307205
+Q20 bases: 4878171698(96.8216%)
+Q30 bases: 4593577108(91.173%)
+
+Read2 before filtering:
+total reads: 36775965
+total bases: 5516394750
+Q20 bases: 5264647937(95.4364%)
+Q30 bases: 4908707340(88.984%)
+
+Read1 after filtering:
+total reads: 25276572
+total bases: 3145338747
+Q20 bases: 3059416148(97.2683%)
+Q30 bases: 2893594442(91.9963%)
+
+Read2 after filtering:
+total reads: 25276572
+total bases: 3255912574
+Q20 bases: 3134719395(96.2778%)
+Q30 bases: 2920425040(89.6961%)
+
+Filtering result:
+reads passed filter: 50553144
+reads failed due to low quality: 1427406
+reads failed due to too many N: 0
+reads failed due to too short: 20072248
+reads failed due to low complexity: 1499132
+reads with adapter trimmed: 6250976
+bases trimmed due to adapters: 237523008
+
+Duplication rate: 40.1794%
+
+Insert size peak (evaluated by paired-end reads): 23
+
+JSON report: trimmed/AV283_fastp_report.json
+HTML report: trimmed/AV283_fastp_report.html
+
+fastp -i /home/andres/datos/INTERTROPHIC/EPIGENÉTICA/NOVOGENE_DOWNLOAD/X204SC24100669-Z01-F001_01/01.RawData/Avena_Lib/samples/unzipped/AV283.1.fq -I /home/andres/datos/INTERTROPHIC/EPIGENÉTICA/NOVOGENE_DOWNLOAD/X204SC24100669-Z01-F001_01/01.RawData/Avena_Lib/samples/unzipped/AV283.2.fq -o trimmed/AV283_R1_trimmed.fq -O trimmed/AV283_R2_trimmed.fq --trim_poly_g --trim_front1 5 --trim_front2 12 --low_complexity_filter --complexity_threshold 30 --detect_adapter_for_pe --cut_front --cut_tail --cut_window_size 4 --cut_mean_quality 20 --qualified_quality_phred 15 --length_required 30 --thread 8 --html trimmed/AV283_fastp_report.html --json trimmed/AV283_fastp_report.json 
+fastp v0.23.4, time used: 167 seconds
+🔹 Procesando muestra AV284
+Detecting adapter sequence for read1...
+No adapter detected for read1
+
+Detecting adapter sequence for read2...
+No adapter detected for read2
+
+Read1 before filtering:
+total reads: 24414818
+total bases: 3344830066
+Q20 bases: 3213349676(96.0691%)
+Q30 bases: 2991823892(89.4462%)
+
+Read2 before filtering:
+total reads: 24414818
+total bases: 3662222700
+Q20 bases: 3497670153(95.5068%)
+Q30 bases: 3264176870(89.131%)
+
+Read1 after filtering:
+total reads: 16538358
+total bases: 2055896338
+Q20 bases: 1987626383(96.6793%)
+Q30 bases: 1861164898(90.5281%)
+
+Read2 after filtering:
+total reads: 16538358
+total bases: 2129426092
+Q20 bases: 2052915181(96.407%)
+Q30 bases: 1916634213(90.0071%)
+
+Filtering result:
+reads passed filter: 33076716
+reads failed due to low quality: 1099412
+reads failed due to too many N: 0
+reads failed due to too short: 13624798
+reads failed due to low complexity: 1028710
+reads with adapter trimmed: 4167578
+bases trimmed due to adapters: 159254412
+
+Duplication rate: 38.0464%
+
+Insert size peak (evaluated by paired-end reads): 23
+
+JSON report: trimmed/AV284_fastp_report.json
+HTML report: trimmed/AV284_fastp_report.html
+
+fastp -i /home/andres/datos/INTERTROPHIC/EPIGENÉTICA/NOVOGENE_DOWNLOAD/X204SC24100669-Z01-F001_01/01.RawData/Avena_Lib/samples/unzipped/AV284.1.fq -I /home/andres/datos/INTERTROPHIC/EPIGENÉTICA/NOVOGENE_DOWNLOAD/X204SC24100669-Z01-F001_01/01.RawData/Avena_Lib/samples/unzipped/AV284.2.fq -o trimmed/AV284_R1_trimmed.fq -O trimmed/AV284_R2_trimmed.fq --trim_poly_g --trim_front1 5 --trim_front2 12 --low_complexity_filter --complexity_threshold 30 --detect_adapter_for_pe --cut_front --cut_tail --cut_window_size 4 --cut_mean_quality 20 --qualified_quality_phred 15 --length_required 30 --thread 8 --html trimmed/AV284_fastp_report.html --json trimmed/AV284_fastp_report.json 
+fastp v0.23.4, time used: 125 seconds
+🔹 Procesando muestra AV286
+Detecting adapter sequence for read1...
+No adapter detected for read1
+
+Detecting adapter sequence for read2...
+No adapter detected for read2
+
+Read1 before filtering:
+total reads: 29262546
+total bases: 4008968802
+Q20 bases: 3870780264(96.553%)
+Q30 bases: 3637284142(90.7287%)
+
+Read2 before filtering:
+total reads: 29262546
+total bases: 4389381900
+Q20 bases: 4182171745(95.2793%)
+Q30 bases: 3890274909(88.6292%)
+
+Read1 after filtering:
+total reads: 19857923
+total bases: 2464729929
+Q20 bases: 2394434867(97.148%)
+Q30 bases: 2262425763(91.792%)
+
+Read2 after filtering:
+total reads: 19857923
+total bases: 2550058629
+Q20 bases: 2452585034(96.1776%)
+Q30 bases: 2280103632(89.4138%)
+
+Filtering result:
+reads passed filter: 39715846
+reads failed due to low quality: 1306460
+reads failed due to too many N: 0
+reads failed due to too short: 16269632
+reads failed due to low complexity: 1233154
+reads with adapter trimmed: 5255652
+bases trimmed due to adapters: 200332775
+
+Duplication rate: 38.3454%
+
+Insert size peak (evaluated by paired-end reads): 23
+
+JSON report: trimmed/AV286_fastp_report.json
+HTML report: trimmed/AV286_fastp_report.html
+
+fastp -i /home/andres/datos/INTERTROPHIC/EPIGENÉTICA/NOVOGENE_DOWNLOAD/X204SC24100669-Z01-F001_01/01.RawData/Avena_Lib/samples/unzipped/AV286.1.fq -I /home/andres/datos/INTERTROPHIC/EPIGENÉTICA/NOVOGENE_DOWNLOAD/X204SC24100669-Z01-F001_01/01.RawData/Avena_Lib/samples/unzipped/AV286.2.fq -o trimmed/AV286_R1_trimmed.fq -O trimmed/AV286_R2_trimmed.fq --trim_poly_g --trim_front1 5 --trim_front2 12 --low_complexity_filter --complexity_threshold 30 --detect_adapter_for_pe --cut_front --cut_tail --cut_window_size 4 --cut_mean_quality 20 --qualified_quality_phred 15 --length_required 30 --thread 8 --html trimmed/AV286_fastp_report.html --json trimmed/AV286_fastp_report.json 
+fastp v0.23.4, time used: 153 seconds
+🔹 Procesando muestra AV287
+Detecting adapter sequence for read1...
+No adapter detected for read1
+
+Detecting adapter sequence for read2...
+No adapter detected for read2
+
+Read1 before filtering:
+total reads: 14836061
+total bases: 2032540357
+Q20 bases: 1965383750(96.6959%)
+Q30 bases: 1848314534(90.9362%)
+
+Read2 before filtering:
+total reads: 14836061
+total bases: 2225409150
+Q20 bases: 2121471035(95.3295%)
+Q30 bases: 1973003487(88.658%)
+
+Read1 after filtering:
+total reads: 10132094
+total bases: 1262834198
+Q20 bases: 1226730746(97.1411%)
+Q30 bases: 1158472092(91.7359%)
+
+Read2 after filtering:
+total reads: 10132094
+total bases: 1307679104
+Q20 bases: 1256918347(96.1183%)
+Q30 bases: 1166621631(89.2131%)
+
+Filtering result:
+reads passed filter: 20264188
+reads failed due to low quality: 591860
+reads failed due to too many N: 0
+reads failed due to too short: 8197110
+reads failed due to low complexity: 618964
+reads with adapter trimmed: 2383186
+bases trimmed due to adapters: 90932107
+
+Duplication rate: 38.6575%
+
+Insert size peak (evaluated by paired-end reads): 23
+
+JSON report: trimmed/AV287_fastp_report.json
+HTML report: trimmed/AV287_fastp_report.html
+
+fastp -i /home/andres/datos/INTERTROPHIC/EPIGENÉTICA/NOVOGENE_DOWNLOAD/X204SC24100669-Z01-F001_01/01.RawData/Avena_Lib/samples/unzipped/AV287.1.fq -I /home/andres/datos/INTERTROPHIC/EPIGENÉTICA/NOVOGENE_DOWNLOAD/X204SC24100669-Z01-F001_01/01.RawData/Avena_Lib/samples/unzipped/AV287.2.fq -o trimmed/AV287_R1_trimmed.fq -O trimmed/AV287_R2_trimmed.fq --trim_poly_g --trim_front1 5 --trim_front2 12 --low_complexity_filter --complexity_threshold 30 --detect_adapter_for_pe --cut_front --cut_tail --cut_window_size 4 --cut_mean_quality 20 --qualified_quality_phred 15 --length_required 30 --thread 8 --html trimmed/AV287_fastp_report.html --json trimmed/AV287_fastp_report.json 
+fastp v0.23.4, time used: 88 seconds
+🔹 Procesando muestra AV288
+Detecting adapter sequence for read1...
+No adapter detected for read1
+
+Detecting adapter sequence for read2...
+No adapter detected for read2
+
+Read1 before filtering:
+total reads: 40500737
+total bases: 5548600969
+Q20 bases: 5370995714(96.7991%)
+Q30 bases: 5060552354(91.2041%)
+
+Read2 before filtering:
+total reads: 40500737
+total bases: 6075110550
+Q20 bases: 5802489799(95.5125%)
+Q30 bases: 5415165512(89.1369%)
+
+Read1 after filtering:
+total reads: 27739289
+total bases: 3442229645
+Q20 bases: 3347290325(97.2419%)
+Q30 bases: 3166802151(91.9986%)
+
+Read2 after filtering:
+total reads: 27739289
+total bases: 3561584588
+Q20 bases: 3430542544(96.3207%)
+Q30 bases: 3198254329(89.7986%)
+
+Filtering result:
+reads passed filter: 55478578
+reads failed due to low quality: 1518266
+reads failed due to too many N: 0
+reads failed due to too short: 22353012
+reads failed due to low complexity: 1651618
+reads with adapter trimmed: 7374114
+bases trimmed due to adapters: 282552223
+
+Duplication rate: 40.0681%
+
+Insert size peak (evaluated by paired-end reads): 23
+
+JSON report: trimmed/AV288_fastp_report.json
+HTML report: trimmed/AV288_fastp_report.html
+
+fastp -i /home/andres/datos/INTERTROPHIC/EPIGENÉTICA/NOVOGENE_DOWNLOAD/X204SC24100669-Z01-F001_01/01.RawData/Avena_Lib/samples/unzipped/AV288.1.fq -I /home/andres/datos/INTERTROPHIC/EPIGENÉTICA/NOVOGENE_DOWNLOAD/X204SC24100669-Z01-F001_01/01.RawData/Avena_Lib/samples/unzipped/AV288.2.fq -o trimmed/AV288_R1_trimmed.fq -O trimmed/AV288_R2_trimmed.fq --trim_poly_g --trim_front1 5 --trim_front2 12 --low_complexity_filter --complexity_threshold 30 --detect_adapter_for_pe --cut_front --cut_tail --cut_window_size 4 --cut_mean_quality 20 --qualified_quality_phred 15 --length_required 30 --thread 8 --html trimmed/AV288_fastp_report.html --json trimmed/AV288_fastp_report.json 
+fastp v0.23.4, time used: 193 seconds
+🔹 Procesando muestra AV289
+Detecting adapter sequence for read1...
+No adapter detected for read1
+
+Detecting adapter sequence for read2...
+No adapter detected for read2
+
+Read1 before filtering:
+total reads: 15875442
+total bases: 2174935554
+Q20 bases: 2098802497(96.4995%)
+Q30 bases: 1967596719(90.4669%)
+
+Read2 before filtering:
+total reads: 15875442
+total bases: 2381316300
+Q20 bases: 2266060926(95.16%)
+Q30 bases: 2100953821(88.2266%)
+
+Read1 after filtering:
+total reads: 10726340
+total bases: 1341329768
+Q20 bases: 1300875849(96.984%)
+Q30 bases: 1225057904(91.3316%)
+
+Read2 after filtering:
+total reads: 10726340
+total bases: 1390148392
+Q20 bases: 1332915996(95.883%)
+Q30 bases: 1231757063(88.6062%)
+
+Filtering result:
+reads passed filter: 21452680
+reads failed due to low quality: 667730
+reads failed due to too many N: 0
+reads failed due to too short: 8941054
+reads failed due to low complexity: 689420
+reads with adapter trimmed: 2275782
+bases trimmed due to adapters: 85584201
+
+Duplication rate: 36.6195%
+
+Insert size peak (evaluated by paired-end reads): 23
+
+JSON report: trimmed/AV289_fastp_report.json
+HTML report: trimmed/AV289_fastp_report.html
+
+fastp -i /home/andres/datos/INTERTROPHIC/EPIGENÉTICA/NOVOGENE_DOWNLOAD/X204SC24100669-Z01-F001_01/01.RawData/Avena_Lib/samples/unzipped/AV289.1.fq -I /home/andres/datos/INTERTROPHIC/EPIGENÉTICA/NOVOGENE_DOWNLOAD/X204SC24100669-Z01-F001_01/01.RawData/Avena_Lib/samples/unzipped/AV289.2.fq -o trimmed/AV289_R1_trimmed.fq -O trimmed/AV289_R2_trimmed.fq --trim_poly_g --trim_front1 5 --trim_front2 12 --low_complexity_filter --complexity_threshold 30 --detect_adapter_for_pe --cut_front --cut_tail --cut_window_size 4 --cut_mean_quality 20 --qualified_quality_phred 15 --length_required 30 --thread 8 --html trimmed/AV289_fastp_report.html --json trimmed/AV289_fastp_report.json 
+fastp v0.23.4, time used: 82 seconds
+🔹 Procesando muestra AV290
+Detecting adapter sequence for read1...
+No adapter detected for read1
+
+Detecting adapter sequence for read2...
+No adapter detected for read2
+
+Read1 before filtering:
+total reads: 6607929
+total bases: 905286273
+Q20 bases: 877376838(96.9171%)
+Q30 bases: 828993687(91.5725%)
+
+Read2 before filtering:
+total reads: 6607929
+total bases: 991189350
+Q20 bases: 949302131(95.774%)
+Q30 bases: 890769348(89.8687%)
+
+Read1 after filtering:
+total reads: 4571569
+total bases: 564850852
+Q20 bases: 549937650(97.3598%)
+Q30 bases: 521585791(92.3404%)
+
+Read2 after filtering:
+total reads: 4571569
+total bases: 583943441
+Q20 bases: 564438048(96.6597%)
+Q30 bases: 530137104(90.7857%)
+
+Filtering result:
+reads passed filter: 9143138
+reads failed due to low quality: 233202
+reads failed due to too many N: 0
+reads failed due to too short: 3584938
+reads failed due to low complexity: 254580
+reads with adapter trimmed: 1400554
+bases trimmed due to adapters: 51985085
+
+Duplication rate: 39.994%
+
+Insert size peak (evaluated by paired-end reads): 23
+
+JSON report: trimmed/AV290_fastp_report.json
+HTML report: trimmed/AV290_fastp_report.html
+
+fastp -i /home/andres/datos/INTERTROPHIC/EPIGENÉTICA/NOVOGENE_DOWNLOAD/X204SC24100669-Z01-F001_01/01.RawData/Avena_Lib/samples/unzipped/AV290.1.fq -I /home/andres/datos/INTERTROPHIC/EPIGENÉTICA/NOVOGENE_DOWNLOAD/X204SC24100669-Z01-F001_01/01.RawData/Avena_Lib/samples/unzipped/AV290.2.fq -o trimmed/AV290_R1_trimmed.fq -O trimmed/AV290_R2_trimmed.fq --trim_poly_g --trim_front1 5 --trim_front2 12 --low_complexity_filter --complexity_threshold 30 --detect_adapter_for_pe --cut_front --cut_tail --cut_window_size 4 --cut_mean_quality 20 --qualified_quality_phred 15 --length_required 30 --thread 8 --html trimmed/AV290_fastp_report.html --json trimmed/AV290_fastp_report.json 
+fastp v0.23.4, time used: 55 seconds
+🔹 Procesando muestra AV291
+Detecting adapter sequence for read1...
+No adapter detected for read1
+
+Detecting adapter sequence for read2...
+No adapter detected for read2
+
+Read1 before filtering:
+total reads: 12136711
+total bases: 1662729407
+Q20 bases: 1607529746(96.6802%)
+Q30 bases: 1513231253(91.0089%)
+
+Read2 before filtering:
+total reads: 12136711
+total bases: 1820506650
+Q20 bases: 1737374207(95.4336%)
+Q30 bases: 1618832393(88.9221%)
+
+Read1 after filtering:
+total reads: 8239210
+total bases: 1023768547
+Q20 bases: 994422593(97.1335%)
+Q30 bases: 939562801(91.7749%)
+
+Read2 after filtering:
+total reads: 8239210
+total bases: 1060062181
+Q20 bases: 1019777420(96.1998%)
+Q30 bases: 948582772(89.4837%)
+
+Filtering result:
+reads passed filter: 16478420
+reads failed due to low quality: 472450
+reads failed due to too many N: 0
+reads failed due to too short: 6813872
+reads failed due to low complexity: 508680
+reads with adapter trimmed: 2098828
+bases trimmed due to adapters: 80045665
+
+Duplication rate: 37.7886%
+
+Insert size peak (evaluated by paired-end reads): 23
+
+JSON report: trimmed/AV291_fastp_report.json
+HTML report: trimmed/AV291_fastp_report.html
+
+fastp -i /home/andres/datos/INTERTROPHIC/EPIGENÉTICA/NOVOGENE_DOWNLOAD/X204SC24100669-Z01-F001_01/01.RawData/Avena_Lib/samples/unzipped/AV291.1.fq -I /home/andres/datos/INTERTROPHIC/EPIGENÉTICA/NOVOGENE_DOWNLOAD/X204SC24100669-Z01-F001_01/01.RawData/Avena_Lib/samples/unzipped/AV291.2.fq -o trimmed/AV291_R1_trimmed.fq -O trimmed/AV291_R2_trimmed.fq --trim_poly_g --trim_front1 5 --trim_front2 12 --low_complexity_filter --complexity_threshold 30 --detect_adapter_for_pe --cut_front --cut_tail --cut_window_size 4 --cut_mean_quality 20 --qualified_quality_phred 15 --length_required 30 --thread 8 --html trimmed/AV291_fastp_report.html --json trimmed/AV291_fastp_report.json 
+fastp v0.23.4, time used: 72 seconds
+🔹 Procesando muestra AV292
+Detecting adapter sequence for read1...
+No adapter detected for read1
+
+Detecting adapter sequence for read2...
+No adapter detected for read2
+
+Read1 before filtering:
+total reads: 38631646
+total bases: 5292535502
+Q20 bases: 5124553951(96.8261%)
+Q30 bases: 4838470318(91.4206%)
+
+Read2 before filtering:
+total reads: 38631646
+total bases: 5794746900
+Q20 bases: 5546035539(95.708%)
+Q30 bases: 5197645070(89.6958%)
+
+Read1 after filtering:
+total reads: 26675242
+total bases: 3291517346
+Q20 bases: 3202442823(97.2938%)
+Q30 bases: 3034831983(92.2016%)
+
+Read2 after filtering:
+total reads: 26675242
+total bases: 3403120918
+Q20 bases: 3286714566(96.5794%)
+Q30 bases: 3082360232(90.5745%)
+
+Filtering result:
+reads passed filter: 53350484
+reads failed due to low quality: 1394740
+reads failed due to too many N: 0
+reads failed due to too short: 21005220
+reads failed due to low complexity: 1512848
+reads with adapter trimmed: 8174250
+bases trimmed due to adapters: 309982451
+
+Duplication rate: 39.5095%
+
+Insert size peak (evaluated by paired-end reads): 23
+
+JSON report: trimmed/AV292_fastp_report.json
+HTML report: trimmed/AV292_fastp_report.html
+
+fastp -i /home/andres/datos/INTERTROPHIC/EPIGENÉTICA/NOVOGENE_DOWNLOAD/X204SC24100669-Z01-F001_01/01.RawData/Avena_Lib/samples/unzipped/AV292.1.fq -I /home/andres/datos/INTERTROPHIC/EPIGENÉTICA/NOVOGENE_DOWNLOAD/X204SC24100669-Z01-F001_01/01.RawData/Avena_Lib/samples/unzipped/AV292.2.fq -o trimmed/AV292_R1_trimmed.fq -O trimmed/AV292_R2_trimmed.fq --trim_poly_g --trim_front1 5 --trim_front2 12 --low_complexity_filter --complexity_threshold 30 --detect_adapter_for_pe --cut_front --cut_tail --cut_window_size 4 --cut_mean_quality 20 --qualified_quality_phred 15 --length_required 30 --thread 8 --html trimmed/AV292_fastp_report.html --json trimmed/AV292_fastp_report.json 
+fastp v0.23.4, time used: 180 seconds
+🔹 Procesando muestra AV293
+Detecting adapter sequence for read1...
+No adapter detected for read1
+
+Detecting adapter sequence for read2...
+No adapter detected for read2
+
+Read1 before filtering:
+total reads: 14745136
+total bases: 2020083632
+Q20 bases: 1932132792(95.6462%)
+Q30 bases: 1784854931(88.3555%)
+
+Read2 before filtering:
+total reads: 14745136
+total bases: 2211770400
+Q20 bases: 2109248594(95.3647%)
+Q30 bases: 1961525101(88.6857%)
+
+Read1 after filtering:
+total reads: 9951253
+total bases: 1241257002
+Q20 bases: 1193473819(96.1504%)
+Q30 bases: 1106973088(89.1816%)
+
+Read2 after filtering:
+total reads: 9951253
+total bases: 1287310094
+Q20 bases: 1237135633(96.1024%)
+Q30 bases: 1147941358(89.1736%)
+
+Filtering result:
+reads passed filter: 19902506
+reads failed due to low quality: 628476
+reads failed due to too many N: 0
+reads failed due to too short: 8325190
+reads failed due to low complexity: 634100
+reads with adapter trimmed: 2229698
+bases trimmed due to adapters: 84369005
+
+Duplication rate: 33.9355%
+
+Insert size peak (evaluated by paired-end reads): 23
+
+JSON report: trimmed/AV293_fastp_report.json
+HTML report: trimmed/AV293_fastp_report.html
+
+fastp -i /home/andres/datos/INTERTROPHIC/EPIGENÉTICA/NOVOGENE_DOWNLOAD/X204SC24100669-Z01-F001_01/01.RawData/Avena_Lib/samples/unzipped/AV293.1.fq -I /home/andres/datos/INTERTROPHIC/EPIGENÉTICA/NOVOGENE_DOWNLOAD/X204SC24100669-Z01-F001_01/01.RawData/Avena_Lib/samples/unzipped/AV293.2.fq -o trimmed/AV293_R1_trimmed.fq -O trimmed/AV293_R2_trimmed.fq --trim_poly_g --trim_front1 5 --trim_front2 12 --low_complexity_filter --complexity_threshold 30 --detect_adapter_for_pe --cut_front --cut_tail --cut_window_size 4 --cut_mean_quality 20 --qualified_quality_phred 15 --length_required 30 --thread 8 --html trimmed/AV293_fastp_report.html --json trimmed/AV293_fastp_report.json 
+fastp v0.23.4, time used: 77 seconds
+🔹 Procesando muestra AV296
+Detecting adapter sequence for read1...
+No adapter detected for read1
+
+Detecting adapter sequence for read2...
+No adapter detected for read2
+
+Read1 before filtering:
+total reads: 60186693
+total bases: 8245576941
+Q20 bases: 7998928839(97.0087%)
+Q30 bases: 7570012129(91.8069%)
+
+Read2 before filtering:
+total reads: 60186693
+total bases: 9028003950
+Q20 bases: 8643181175(95.7375%)
+Q30 bases: 8112641847(89.8609%)
+
+Read1 after filtering:
+total reads: 41606486
+total bases: 5121451054
+Q20 bases: 4991773985(97.468%)
+Q30 bases: 4742867806(92.6079%)
+
+Read2 after filtering:
+total reads: 41606486
+total bases: 5288584873
+Q20 bases: 5114306095(96.7046%)
+Q30 bases: 4808082129(90.9143%)
+
+Filtering result:
+reads passed filter: 83212972
+reads failed due to low quality: 2076494
+reads failed due to too many N: 0
+reads failed due to too short: 32795848
+reads failed due to low complexity: 2288072
+reads with adapter trimmed: 13919142
+bases trimmed due to adapters: 513724444
+
+Duplication rate: 40.6731%
+
+Insert size peak (evaluated by paired-end reads): 23
+
+JSON report: trimmed/AV296_fastp_report.json
+HTML report: trimmed/AV296_fastp_report.html
+
+fastp -i /home/andres/datos/INTERTROPHIC/EPIGENÉTICA/NOVOGENE_DOWNLOAD/X204SC24100669-Z01-F001_01/01.RawData/Avena_Lib/samples/unzipped/AV296.1.fq -I /home/andres/datos/INTERTROPHIC/EPIGENÉTICA/NOVOGENE_DOWNLOAD/X204SC24100669-Z01-F001_01/01.RawData/Avena_Lib/samples/unzipped/AV296.2.fq -o trimmed/AV296_R1_trimmed.fq -O trimmed/AV296_R2_trimmed.fq --trim_poly_g --trim_front1 5 --trim_front2 12 --low_complexity_filter --complexity_threshold 30 --detect_adapter_for_pe --cut_front --cut_tail --cut_window_size 4 --cut_mean_quality 20 --qualified_quality_phred 15 --length_required 30 --thread 8 --html trimmed/AV296_fastp_report.html --json trimmed/AV296_fastp_report.json 
+fastp v0.23.4, time used: 244 seconds
+🔹 Procesando muestra AV296_2
+Detecting adapter sequence for read1...
+No adapter detected for read1
+
+Detecting adapter sequence for read2...
+No adapter detected for read2
+
+Read1 before filtering:
+total reads: 151415
+total bases: 20743855
+Q20 bases: 19595706(94.4651%)
+Q30 bases: 17719142(85.4188%)
+
+Read2 before filtering:
+total reads: 151415
+total bases: 22712250
+Q20 bases: 21392359(94.1886%)
+Q30 bases: 19653140(86.531%)
+
+Read1 after filtering:
+total reads: 122791
+total bases: 15336714
+Q20 bases: 14752691(96.192%)
+Q30 bases: 13639053(88.9307%)
+
+Read2 after filtering:
+total reads: 122791
+total bases: 15909876
+Q20 bases: 15300778(96.1716%)
+Q30 bases: 14229535(89.4384%)
+
+Filtering result:
+reads passed filter: 245582
+reads failed due to low quality: 12314
+reads failed due to too many N: 0
+reads failed due to too short: 41456
+reads failed due to low complexity: 3478
+reads with adapter trimmed: 26842
+bases trimmed due to adapters: 888921
+
+Duplication rate: 19.7893%
+
+Insert size peak (evaluated by paired-end reads): 23
+
+JSON report: trimmed/AV296_2_fastp_report.json
+HTML report: trimmed/AV296_2_fastp_report.html
+
+fastp -i /home/andres/datos/INTERTROPHIC/EPIGENÉTICA/NOVOGENE_DOWNLOAD/X204SC24100669-Z01-F001_01/01.RawData/Avena_Lib/samples/unzipped/AV296_2.1.fq -I /home/andres/datos/INTERTROPHIC/EPIGENÉTICA/NOVOGENE_DOWNLOAD/X204SC24100669-Z01-F001_01/01.RawData/Avena_Lib/samples/unzipped/AV296_2.2.fq -o trimmed/AV296_2_R1_trimmed.fq -O trimmed/AV296_2_R2_trimmed.fq --trim_poly_g --trim_front1 5 --trim_front2 12 --low_complexity_filter --complexity_threshold 30 --detect_adapter_for_pe --cut_front --cut_tail --cut_window_size 4 --cut_mean_quality 20 --qualified_quality_phred 15 --length_required 30 --thread 8 --html trimmed/AV296_2_fastp_report.html --json trimmed/AV296_2_fastp_report.json 
+fastp v0.23.4, time used: 10 seconds
+🔹 Procesando muestra AV297
+Detecting adapter sequence for read1...
+No adapter detected for read1
+
+Detecting adapter sequence for read2...
+No adapter detected for read2
+
+Read1 before filtering:
+total reads: 8595638
+total bases: 1177602406
+Q20 bases: 1136369872(96.4986%)
+Q30 bases: 1065175027(90.4529%)
+
+Read2 before filtering:
+total reads: 8595638
+total bases: 1289345700
+Q20 bases: 1226398299(95.1179%)
+Q30 bases: 1137431533(88.2177%)
+
+Read1 after filtering:
+total reads: 5758937
+total bases: 720091501
+Q20 bases: 699664458(97.1633%)
+Q30 bases: 660374180(91.707%)
+
+Read2 after filtering:
+total reads: 5758937
+total bases: 746081700
+Q20 bases: 716437401(96.0267%)
+Q30 bases: 663757739(88.9658%)
+
+Filtering result:
+reads passed filter: 11517874
+reads failed due to low quality: 422484
+reads failed due to too many N: 0
+reads failed due to too short: 4872458
+reads failed due to low complexity: 378460
+reads with adapter trimmed: 1232220
+bases trimmed due to adapters: 46495890
+
+Duplication rate: 38.6281%
+
+Insert size peak (evaluated by paired-end reads): 23
+
+JSON report: trimmed/AV297_fastp_report.json
+HTML report: trimmed/AV297_fastp_report.html
+
+fastp -i /home/andres/datos/INTERTROPHIC/EPIGENÉTICA/NOVOGENE_DOWNLOAD/X204SC24100669-Z01-F001_01/01.RawData/Avena_Lib/samples/unzipped/AV297.1.fq -I /home/andres/datos/INTERTROPHIC/EPIGENÉTICA/NOVOGENE_DOWNLOAD/X204SC24100669-Z01-F001_01/01.RawData/Avena_Lib/samples/unzipped/AV297.2.fq -o trimmed/AV297_R1_trimmed.fq -O trimmed/AV297_R2_trimmed.fq --trim_poly_g --trim_front1 5 --trim_front2 12 --low_complexity_filter --complexity_threshold 30 --detect_adapter_for_pe --cut_front --cut_tail --cut_window_size 4 --cut_mean_quality 20 --qualified_quality_phred 15 --length_required 30 --thread 8 --html trimmed/AV297_fastp_report.html --json trimmed/AV297_fastp_report.json 
+fastp v0.23.4, time used: 53 seconds
+🔹 Procesando muestra AV297_2
+Detecting adapter sequence for read1...
+>Illumina TruSeq Adapter Read 1
+AGATCGGAAGAGCACACGTCTGAACTCCAGTCA
+
+Detecting adapter sequence for read2...
+No adapter detected for read2
+
+Read1 before filtering:
+total reads: 12491
+total bases: 1711267
+Q20 bases: 1650817(96.4675%)
+Q30 bases: 1548899(90.5118%)
+
+Read2 before filtering:
+total reads: 12491
+total bases: 1873650
+Q20 bases: 1783605(95.1941%)
+Q30 bases: 1675716(89.4359%)
+
+Read1 after filtering:
+total reads: 11882
+total bases: 1460260
+Q20 bases: 1415265(96.9187%)
+Q30 bases: 1331917(91.2109%)
+
+Read2 after filtering:
+total reads: 11882
+total bases: 1512834
+Q20 bases: 1465796(96.8907%)
+Q30 bases: 1390150(91.8905%)
+
+Filtering result:
+reads passed filter: 23764
+reads failed due to low quality: 448
+reads failed due to too many N: 0
+reads failed due to too short: 702
+reads failed due to low complexity: 68
+reads with adapter trimmed: 4913
+bases trimmed due to adapters: 137211
+
+Duplication rate: 33.8324%
+
+Insert size peak (evaluated by paired-end reads): 161
+
+JSON report: trimmed/AV297_2_fastp_report.json
+HTML report: trimmed/AV297_2_fastp_report.html
+
+fastp -i /home/andres/datos/INTERTROPHIC/EPIGENÉTICA/NOVOGENE_DOWNLOAD/X204SC24100669-Z01-F001_01/01.RawData/Avena_Lib/samples/unzipped/AV297_2.1.fq -I /home/andres/datos/INTERTROPHIC/EPIGENÉTICA/NOVOGENE_DOWNLOAD/X204SC24100669-Z01-F001_01/01.RawData/Avena_Lib/samples/unzipped/AV297_2.2.fq -o trimmed/AV297_2_R1_trimmed.fq -O trimmed/AV297_2_R2_trimmed.fq --trim_poly_g --trim_front1 5 --trim_front2 12 --low_complexity_filter --complexity_threshold 30 --detect_adapter_for_pe --cut_front --cut_tail --cut_window_size 4 --cut_mean_quality 20 --qualified_quality_phred 15 --length_required 30 --thread 8 --html trimmed/AV297_2_fastp_report.html --json trimmed/AV297_2_fastp_report.json 
+fastp v0.23.4, time used: 2 seconds
+🔹 Procesando muestra AV298
+Detecting adapter sequence for read1...
+No adapter detected for read1
+
+Detecting adapter sequence for read2...
+No adapter detected for read2
+
+Read1 before filtering:
+total reads: 25148087
+total bases: 3445287919
+Q20 bases: 3328726825(96.6168%)
+Q30 bases: 3127178263(90.7668%)
+
+Read2 before filtering:
+total reads: 25148087
+total bases: 3772213050
+Q20 bases: 3596533398(95.3428%)
+Q30 bases: 3346613887(88.7175%)
+
+Read1 after filtering:
+total reads: 17125453
+total bases: 2131097592
+Q20 bases: 2068910790(97.0819%)
+Q30 bases: 1951961363(91.5942%)
+
+Read2 after filtering:
+total reads: 17125453
+total bases: 2206040058
+Q20 bases: 2120473472(96.1213%)
+Q30 bases: 1969281610(89.2677%)
+
+Filtering result:
+reads passed filter: 34250906
+reads failed due to low quality: 990112
+reads failed due to too many N: 0
+reads failed due to too short: 13997860
+reads failed due to low complexity: 1057296
+reads with adapter trimmed: 4210286
+bases trimmed due to adapters: 160756975
+
+Duplication rate: 37.8647%
+
+Insert size peak (evaluated by paired-end reads): 23
+
+JSON report: trimmed/AV298_fastp_report.json
+HTML report: trimmed/AV298_fastp_report.html
+
+fastp -i /home/andres/datos/INTERTROPHIC/EPIGENÉTICA/NOVOGENE_DOWNLOAD/X204SC24100669-Z01-F001_01/01.RawData/Avena_Lib/samples/unzipped/AV298.1.fq -I /home/andres/datos/INTERTROPHIC/EPIGENÉTICA/NOVOGENE_DOWNLOAD/X204SC24100669-Z01-F001_01/01.RawData/Avena_Lib/samples/unzipped/AV298.2.fq -o trimmed/AV298_R1_trimmed.fq -O trimmed/AV298_R2_trimmed.fq --trim_poly_g --trim_front1 5 --trim_front2 12 --low_complexity_filter --complexity_threshold 30 --detect_adapter_for_pe --cut_front --cut_tail --cut_window_size 4 --cut_mean_quality 20 --qualified_quality_phred 15 --length_required 30 --thread 8 --html trimmed/AV298_fastp_report.html --json trimmed/AV298_fastp_report.json 
+fastp v0.23.4, time used: 118 seconds
+🔹 Procesando muestra AV299
+Detecting adapter sequence for read1...
+No adapter detected for read1
+
+Detecting adapter sequence for read2...
+No adapter detected for read2
+
+Read1 before filtering:
+total reads: 16210810
+total bases: 2220880970
+Q20 bases: 2154881544(97.0282%)
+Q30 bases: 2041813404(91.9371%)
+
+Read2 before filtering:
+total reads: 16210810
+total bases: 2431621500
+Q20 bases: 2327570552(95.7209%)
+Q30 bases: 2185644073(89.8842%)
+
+Read1 after filtering:
+total reads: 11262220
+total bases: 1377541759
+Q20 bases: 1343009178(97.4932%)
+Q30 bases: 1276899789(92.6941%)
+
+Read2 after filtering:
+total reads: 11262220
+total bases: 1420708708
+Q20 bases: 1374806231(96.769%)
+Q30 bases: 1293440685(91.0419%)
+
+Filtering result:
+reads passed filter: 22524440
+reads failed due to low quality: 524130
+reads failed due to too many N: 0
+reads failed due to too short: 8746082
+reads failed due to low complexity: 626968
+reads with adapter trimmed: 4213940
+bases trimmed due to adapters: 155539530
+
+Duplication rate: 39.0939%
+
+Insert size peak (evaluated by paired-end reads): 23
+
+JSON report: trimmed/AV299_fastp_report.json
+HTML report: trimmed/AV299_fastp_report.html
+
+fastp -i /home/andres/datos/INTERTROPHIC/EPIGENÉTICA/NOVOGENE_DOWNLOAD/X204SC24100669-Z01-F001_01/01.RawData/Avena_Lib/samples/unzipped/AV299.1.fq -I /home/andres/datos/INTERTROPHIC/EPIGENÉTICA/NOVOGENE_DOWNLOAD/X204SC24100669-Z01-F001_01/01.RawData/Avena_Lib/samples/unzipped/AV299.2.fq -o trimmed/AV299_R1_trimmed.fq -O trimmed/AV299_R2_trimmed.fq --trim_poly_g --trim_front1 5 --trim_front2 12 --low_complexity_filter --complexity_threshold 30 --detect_adapter_for_pe --cut_front --cut_tail --cut_window_size 4 --cut_mean_quality 20 --qualified_quality_phred 15 --length_required 30 --thread 8 --html trimmed/AV299_fastp_report.html --json trimmed/AV299_fastp_report.json 
+fastp v0.23.4, time used: 92 seconds
