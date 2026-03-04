@@ -1,0 +1,779 @@
+---
+title: "P.lagopus MMRR"
+author: "Andrés Delgado Galán"
+date: "2026-02-24"
+output: html_document
+---
+
+```{r LOADING DATA AND PACKAGES, include=FALSE}
+# --- Core packages ---
+library(here)        # Reproducibilidad de rutas
+library(tidyverse)   # Incluye ggplot2, dplyr, tidyr, readr, purrr, stringr, forcats, tibble
+library(cluster)     # Matriz de disimilaridad con método gower
+
+# --- Estadística ---
+library(vegan)       # Mantel test
+
+
+# --- Visualización y clustering ---
+
+
+# --- Genética ---
+library(vcfR)        # read and manipulate VCF files
+library(adegenet)
+
+# --- SMPs ---
+# avena_CpG_obj <- readRDS(here("avena_ncbi", "avena_ncbi_CpG_meth_matrix.rds"))
+# avena_CHG_obj <- readRDS(here("avena_ncbi", "avena_ncbi_CHG_meth_matrix.rds"))
+# avena_CHH_obj <- readRDS(here("avena_ncbi", "avena_ncbi_CHH_meth_matrix.rds"))
+
+# avena_all_CTXT_obj <- rbind(avena_CpG_obj, avena_CHG_obj, avena_CHH_obj)
+
+plantago_CpG_obj <- readRDS(here("plantago_pseudo", "plantago_pseudo_CpG_meth_matrix.rds"))
+plantago_CHG_obj <- readRDS(here("plantago_pseudo", "plantago_pseudo_CHG_meth_matrix.rds"))
+plantago_CHH_obj <- readRDS(here("plantago_pseudo", "plantago_pseudo_CHH_meth_matrix.rds"))
+
+plantago_all_CTXT_obj <- rbind(plantago_CpG_obj, plantago_CHG_obj, plantago_CHH_obj)
+
+# --- TRATAMIENTOS ---
+treatment_table <- read.table(file = here("plantago_treatment.csv"), header = T, sep = ";")
+
+# --- SNPs ---
+vcf <- read.vcfR(here("plantago_pseudo", "filtered_variants_cov5-1000_biallelic_MAF0.01_80pct.vcf.gz"))
+
+# --- FENOTIPO ---
+phenotype_table <- read.table(file = here("datos_sibecol_2025.csv"), header = T, sep = ";")
+          # Añadimos los datos de WINRHIZO
+          winrhizo <- read.table(here("winrhizo.csv"), header = T, sep = ",")
+          raices_pesos_gabi <- read.table(here("raices_pesos_gabi.csv"), header = T, sep = ",")
+          raices_pesos_lore <- read.table(here("raices_pesos.csv"), header = T, sep = ",")
+          raices_pesos <- full_join(raices_pesos_gabi, raices_pesos_lore, by = "id")
+          
+          # discrepancias entre las dos bases de datos
+          reporte_discrepancias <- raices_pesos %>%
+  # Creamos una columna que concatena los nombres de las variables que fallan
+  mutate(
+    discrepancia = paste0(
+      if_else(sp.x != sp.y, "sp, ", ""),
+      if_else(profundidad_sustrato.x != profundidad_sustrato.y, "profundidad, ", ""),
+      if_else(peso_resto.x != peso_resto.y, "peso_resto, ", ""),
+      # Usamos coalesce para que los NA no rompan la comparación
+      if_else(coalesce(peso_winrhizo.x != peso_winrhizo.y, TRUE), "peso_winrhizo, ", "")
+    ),
+    # Limpiamos la coma final de la cadena de texto
+    discrepancia = gsub(", $", "", discrepancia)
+  ) %>%
+  # Filtramos: solo filas donde la columna discrepancia NO esté vacía
+  filter(discrepancia != "") %>%
+  # Reorganizamos para ver la causa primero
+  select(id, discrepancia, everything())
+          
+          
+          reporte_limpio <- raices_pesos %>%
+  mutate(
+    discrepancia = paste0(
+      # Comparamos solo si AMBOS no son NA Y son distintos
+      if_else(!is.na(sp.x) & !is.na(sp.y) & sp.x != sp.y, "sp, ", ""),
+      
+      if_else(!is.na(profundidad_sustrato.x) & !is.na(profundidad_sustrato.y) & 
+                profundidad_sustrato.x != profundidad_sustrato.y, "profundidad, ", ""),
+      
+      if_else(!is.na(peso_resto.x) & !is.na(peso_resto.y) & 
+                peso_resto.x != peso_resto.y, "peso_resto, ", ""),
+      
+      if_else(!is.na(peso_winrhizo.x) & !is.na(peso_winrhizo.y) & 
+                peso_winrhizo.x != peso_winrhizo.y, "peso_winrhizo, ", "")
+    ),
+    # Limpiar la coma y espacio final
+    discrepancia = gsub(", $", "", discrepancia)
+  ) %>%
+  # Nos quedamos solo con las filas que tienen texto en 'discrepancia'
+  filter(discrepancia != "") %>%
+  select(id, discrepancia, everything())
+          
+          
+          # NOS QUEDAMOS CON LOS DATOS DE GABI QUE ESTÁN COMPLETOS
+          
+          
+          
+          # Nos quedamos con las variables que nos interesan y las muestras que estamos analizando 
+          winrhizo_selection <- winrhizo%>%
+            select(c(RHIZO.2009, AvgDiam.mm., Length.cm., RootVolume.cm3.))%>%
+            filter(RHIZO.2009 %in% treatment_table$id)%>%
+            rename(full_id = RHIZO.2009)
+          
+          # Nos quedamos con las muestras que estamos analizando 
+          raices_selection <- raices_pesos_gabi %>%
+            mutate(full_id = paste0(sp, id)) %>%
+            filter(full_id %in% treatment_table$id)
+
+          # Unimos todos los datos de raíces
+          winrhizo_full <- 
+            full_join(winrhizo_selection, raices_selection,by = "full_id")%>%
+            mutate(RTD = paste0(peso_winrhizo/RootVolume.cm3.))%>% # g/cm3
+            mutate(SRL = paste0(Length.cm./100*peso_winrhizo)) # cm/g salen números muy grandes, cambiamos a m/g que es más habitual
+            
+          # Eliminamos variables que no vamos a usar y nos quedamos con nuestras muestras
+          phenotype_selection <- phenotype_table %>%
+            select(-c(massmother, seedfruto, humedad_muerte, dias_muerte, dias_fin_flor, dias_fin_fruto))
+          
+          
+           
+                    # Construimos la matriz de nuestras muestras sin metadatos
+          phenotype_selection <- phenotype_table %>%
+            select(-c(massmother, seedfruto, humedad_muerte, dias_muerte, dias_fin_flor, dias_fin_fruto)) %>%
+            mutate(full_id = paste0(sp, id)) %>%
+            filter(full_id %in% treatment_table$id) %>%
+            select(-id, -sp, -trat, -clip)
+          
+          # Unimos fenotipo con raíces
+          # 1. Crear el dataframe procesado primero
+          phenotype_df <- full_join(phenotype_selection, winrhizo_full, by = "full_id") %>%
+            column_to_rownames("full_id") %>%
+            select(-c(peso_winrhizo, peso_resto, Length.cm., RootVolume.cm3., id, sp, profundidad_sustrato))
+          
+          # 2. Convertir a matriz
+          phenotype_matrix <- as.matrix(phenotype_df)
+          
+          # 3. Forzar el tipo numérico preservando los nombres
+          class(phenotype_matrix) <- "numeric"
+          
+          # 4. Verificar
+          head(phenotype_matrix)
+
+```
+
+```{r CpG distance MATRIX, include=FALSE}
+#Transpose methylation matrix (individuals have to be rows)
+CpG_meth_matrix <- t(plantago_CpG_obj)
+
+# Distancia euclídea
+CpG_dist_matrix <- 
+  dist(CpG_meth_matrix, method = "euclidean")
+
+# Para preparar el heatmap
+CpG <- as.matrix(CpG_dist_matrix)
+CpGclust <- hclust(CpG_dist_matrix)
+
+```
+
+```{r CHG distance MATRIX, include=FALSE}
+#Transpose methylation matrix (individuals have to be rows)
+CHG_meth_matrix <- t(plantago_CHG_obj)
+
+# Distancia euclídea
+CHG_dist_matrix <- 
+  dist(CHG_meth_matrix, method = "euclidean")
+
+# Para preparar el heatmap
+CHG <- as.matrix(CHG_dist_matrix)
+CHGclust <- hclust(CHG_dist_matrix)
+
+```
+
+```{r CHH distance MATRIX, include=FALSE}
+#Transpose methylation matrix (individuals have to be rows)
+CHH_meth_matrix <- t(plantago_CHH_obj)
+
+# Distancia euclídea
+CHH_dist_matrix <- 
+  dist(CHH_meth_matrix, method = "euclidean")
+
+# Para preparar el heatmap
+CHH <- as.matrix(CHH_dist_matrix)
+CHHclust <- hclust(CHH_dist_matrix)
+
+```
+
+```{r all_CTXT distance MATRIX, include=FALSE}
+#Transpose methylation matrix (individuals have to be rows)
+all_CTXT_meth_matrix <- t(plantago_all_CTXT_obj)
+
+# Distancia euclídea
+all_CTXT_dist_matrix <- 
+  dist(all_CTXT_meth_matrix, method = "euclidean")
+
+# Para preparar el heatmap
+all_CTXT <- as.matrix(all_CTXT_dist_matrix)
+all_CTXTclust <- hclust(all_CTXT_dist_matrix)
+
+```
+
+
+```{r SNP distance matrix, include=FALSE}
+# Convert to genlight (handles large SNP sets efficiently)
+gl <- vcfR2genlight(vcf)    # converts to genlight; ploidy defaults to 2
+indNames(gl) <- sub("_R1_trimmed_bismark_bt2_pe\\.sorted$", "", indNames(gl))
+
+
+# compute allele dosage matrix
+dos <- as.matrix(gl)  # genlight -> numeric matrix (0/1/2), NAs remain
+# Remove some monomorphic positions
+keep <- apply(dos, 2, function(x) {
+    u <- unique(na.omit(x))
+    length(u) > 1
+})
+sum(!keep)    # should show 79
+dos_filtered <- dos[, keep]
+
+# Distancia genética
+SNP_dist_matrix <- 
+  dist(dos, method = "euclidean")
+
+SNP <- as.matrix(SNP_dist_matrix)
+SNPclust <- hclust(SNP_dist_matrix)
+```
+
+```{r ENVIRONMENTAL distance matrix, include=FALSE}
+# Poner id como rownames en treatment
+rownames(treatment_table) <- treatment_table$id
+
+# Convertir a factor
+treatment_table$maternal   <- as.factor(treatment_table$maternal)
+treatment_table$simulation <- as.factor(treatment_table$simulation)
+
+# Crear dataframe solo con factores
+env_data <- treatment_table[, c("maternal", "simulation")]
+
+# Distancia Gower
+ENV_dist_matrix <- 
+  daisy(env_data, metric = "gower")
+
+ENV <- as.matrix(ENV_dist_matrix)
+ENVclust <- hclust(ENV_dist_matrix)
+
+```
+
+```{r PREDICTOR distance heatmap, echo=FALSE, results='hold', warning=FALSE, message=FALSE}
+library(cowplot)
+library(ggplotify)
+
+# Convertir cada heatmap a un objeto ggplot
+p1 <- as.ggplot(~heatmap(CpG, Rowv = as.dendrogram(CpGclust), 
+                         Colv = as.dendrogram(CpGclust), symm = TRUE))
+p2 <- as.ggplot(~heatmap(CHG, Rowv = as.dendrogram(CHGclust), 
+                         Colv = as.dendrogram(CHGclust), symm = TRUE))
+p3 <- as.ggplot(~heatmap(CHH, Rowv = as.dendrogram(CHHclust), 
+                         Colv = as.dendrogram(CHHclust), symm = TRUE))
+p4 <- as.ggplot(~heatmap(all_CTXT, Rowv = as.dendrogram(all_CTXTclust), 
+                         Colv = as.dendrogram(all_CTXTclust), symm = TRUE))
+p5 <- as.ggplot(~heatmap(SNP, Rowv = as.dendrogram(SNPclust), 
+                         Colv = as.dendrogram(SNPclust), symm = TRUE))
+p6 <- as.ggplot(~heatmap(ENV, Rowv = as.dendrogram(ENVclust), 
+                         Colv = as.dendrogram(ENVclust), symm = TRUE))
+
+# Organizar en grid
+plot_grid(p1, p2, p3, p4, p5, p6, ncol = 2, labels = "auto")
+```
+
+Fig. 1. Predictor ditstance matrices: a) CpG, b) CHG, c) CHH, d) all cytosine contexts, e) SNPs, f) Treatments.
+
+```{r PHENOTYPE distance matrix, include=FALSE}
+# Escalar rasgos fenotípicos
+phenotype_scaled <- scale(phenotype_matrix, center = TRUE, scale = TRUE)
+
+# Distancia fenotípica
+PHENOTYPE_dist_matrix <- 
+  dist(phenotype_scaled, method = "euclidean")
+
+P <- as.matrix(PHENOTYPE_dist_matrix)
+hc <- hclust(PHENOTYPE_dist_matrix)
+```
+
+
+```{r preparando matrices para MMRR, include=FALSE}
+# daisy() devuelve un objeto clase "dissimilarity"
+# MMRR trabaja con objetos tipo matrix
+# Convertimos las matrices
+CpG_dist_matrix <- as.matrix(CpG_dist_matrix)
+CHG_dist_matrix <- as.matrix(CHG_dist_matrix)
+CHH_dist_matrix <- as.matrix(CHH_dist_matrix)
+all_CTXT_dist_matrix <- as.matrix(all_CTXT_dist_matrix)
+SNP_dist_matrix <- as.matrix(SNP_dist_matrix)
+PHENOTYPE_dist_matrix <- as.matrix(PHENOTYPE_dist_matrix)
+ENV_dist_matrix <- as.matrix(ENV_dist_matrix)
+
+# Estandarizamos las matrices: mean=0;SD=1
+# Creamos una función
+standardize_matrix <- function(mat){
+  
+  vals <- mat[lower.tri(mat)]
+  m <- mean(vals, na.rm = TRUE)
+  s <- sd(vals, na.rm = TRUE)
+  
+  mat_std <- mat
+  mat_std[lower.tri(mat_std)] <- (vals - m) / s
+  mat_std[upper.tri(mat_std)] <- t(mat_std)[upper.tri(mat_std)]
+  diag(mat_std) <- 0
+  
+  return(mat_std)
+}
+
+
+
+# Aplicamos la función
+CpG_dist_matrix_std  <- standardize_matrix(CpG_dist_matrix)
+CHG_dist_matrix_std  <- standardize_matrix(CHG_dist_matrix)
+CHH_dist_matrix_std  <- standardize_matrix(CHH_dist_matrix)
+all_CTXT_dist_matrix_std  <- standardize_matrix(all_CTXT_dist_matrix)
+SNP_dist_matrix_std  <- standardize_matrix(SNP_dist_matrix)
+PHENO_dist_matrix_std <- standardize_matrix(PHENOTYPE_dist_matrix)
+ENV_dist_matrix_std  <- standardize_matrix(ENV_dist_matrix)
+
+# Comprobamos que la media es 0 y la desviación estándar es 1
+mean(CpG_dist_matrix_std[lower.tri(CpG_dist_matrix_std)])
+sd(CpG_dist_matrix_std[lower.tri(CpG_dist_matrix_std)])
+mean(SNP_dist_matrix_std[lower.tri(SNP_dist_matrix_std)])
+sd(SNP_dist_matrix_std[lower.tri(SNP_dist_matrix_std)])
+mean(PHENO_dist_matrix_std[lower.tri(PHENO_dist_matrix_std)])
+sd(PHENO_dist_matrix_std[lower.tri(PHENO_dist_matrix_std)])
+mean(ENV_dist_matrix_std[lower.tri(ENV_dist_matrix_std)])
+sd(ENV_dist_matrix_std[lower.tri(ENV_dist_matrix_std)])
+
+# Todas las matrices deben tener el mismo orden de muestras
+# Si alguna línea devuelve FALSE, hay que reordenar la matriz
+identical(rownames(PHENO_dist_matrix_std), rownames(SNP_dist_matrix_std))
+identical(rownames(PHENO_dist_matrix_std), rownames(CpG_dist_matrix_std))
+identical(rownames(PHENO_dist_matrix_std), rownames(ENV_dist_matrix_std))
+identical(rownames(PHENO_dist_matrix_std), rownames(CHG_dist_matrix_std))
+identical(rownames(PHENO_dist_matrix_std), rownames(CHH_dist_matrix_std))
+identical(rownames(PHENO_dist_matrix_std), rownames(all_CTXT_dist_matrix_std))
+
+# Si alguna no coincide:
+# Reordenar filas y columnas de ENV para que coincidan con PHENO
+ENV_dist_matrix_std <- ENV_dist_matrix_std[rownames(PHENO_dist_matrix_std), colnames(PHENO_dist_matrix_std)]
+
+# Verificación
+identical(rownames(PHENO_dist_matrix_std), rownames(ENV_dist_matrix_std))
+```
+
+```{r Multicollinearity test, echo=FALSE, results='hold', warning=FALSE, message=FALSE}
+# Crear lista con todas las matrices
+matrices <- list(
+  SNP = SNP_dist_matrix_std,
+  CpG = CpG_dist_matrix_std,
+  ENV = ENV_dist_matrix_std,
+  CHG = CHG_dist_matrix_std,
+  CHH = CHH_dist_matrix_std,
+  all_CTXT = all_CTXT_dist_matrix_std
+)
+
+# Extraer triángulos inferiores
+triangular <- lapply(matrices, function(x) x[lower.tri(x)])
+
+# Crear matriz de correlación
+cor_matrix <- cor(do.call(cbind, triangular))
+
+# heatmap de correlaciones
+library(corrplot)
+corrplot(cor_matrix, method = "number", type = "upper")
+```
+
+Fig. 2. Multicollinearity test for predictor selection. The predictor matrices with a correlation > 0.65 were not included in the same model.
+
+```{r PHENOTYPIC distance heatmap, echo=FALSE, results='hold', warning=FALSE, message=FALSE}
+heatmap(P, Rowv = as.dendrogram(hc), Colv = as.dendrogram(hc), symm = TRUE)
+```
+
+Fig. 3. Response distance matrix: Phenotypic distances based on `r ncol(phenotype_scaled)` traits: morphological, chemical, phenological, physiological and reproductive.
+
+```{r MANTEL OPCIONAL, include=FALSE}
+# Esto lo hacen en Monguer22 pero en nuestro caso no sé si tendría más sentido incluirlo en el dbRDA
+# mantel(PHENOTYPE_dist_matrix,
+#        ENV_dist_matrix,
+#        method = "pearson",
+#        permutations = 9999)
+```
+
+```{r MMRR, include=FALSE}
+# MMRR performs Multiple Matrix Regression with Randomization analysis
+# Y is a dependent distance matrix
+# X is a list of independent distance matrices (with optional names)
+# Función para el modelo
+MMRR <- function(Y, X, nperm = 999){
+  
+  Y <- as.matrix(Y)
+  X <- lapply(X, as.matrix)
+  
+  # Extraer triángulo inferior
+  y <- Y[lower.tri(Y)]
+  Xs <- do.call(cbind, lapply(X, function(x) x[lower.tri(x)]))
+  
+  if(is.null(colnames(Xs))){
+    colnames(Xs) <- paste0("X", 1:ncol(Xs))
+  }
+  
+  # Modelo observado
+  fit <- lm(y ~ Xs)
+  summ <- summary(fit)
+  
+  coef_obs <- coef(fit)
+  t_obs <- summ$coefficients[, "t value"]
+  r2_obs <- summ$r.squared
+  F_obs <- summ$fstatistic[1]
+  
+  # Almacenar permutaciones
+  perm_coefs <- matrix(NA, nperm, length(coef_obs))
+  perm_t <- matrix(NA, nperm, length(coef_obs))
+  perm_r2 <- numeric(nperm)
+  perm_F <- numeric(nperm)
+  
+  n <- nrow(Y)
+  
+  for(i in 1:nperm){
+    
+    perm_idx <- sample(1:n)
+    Y_perm <- Y[perm_idx, perm_idx]
+    y_perm <- Y_perm[lower.tri(Y_perm)]
+    
+    fit_perm <- lm(y_perm ~ Xs)
+    summ_perm <- summary(fit_perm)
+    
+    perm_coefs[i, ] <- coef(fit_perm)
+    perm_t[i, ] <- summ_perm$coefficients[, "t value"]
+    perm_r2[i] <- summ_perm$r.squared
+    perm_F[i] <- summ_perm$fstatistic[1]
+  }
+  
+  # p-values con corrección +1
+  p_coef <- sapply(1:length(coef_obs), function(i)
+    (sum(abs(perm_t[, i]) >= abs(t_obs[i])) + 1) / (nperm + 1)
+  )
+  
+  p_F <- (sum(perm_F >= F_obs) + 1) / (nperm + 1)
+  p_r2 <- (sum(perm_r2 >= r2_obs) + 1) / (nperm + 1)
+  
+  results <- data.frame(
+    Coefficient = coef_obs,
+    t.value = t_obs,
+    p.value = p_coef
+  )
+  
+  list(
+    R2 = r2_obs,
+    R2_p = p_r2,
+    F_statistic = F_obs,
+    F_p = p_F,
+    Coefficients = results
+  )
+}
+
+# phenD ~ cpgD + envD ----
+# Lista de predictores
+cpg_list <- list(
+  Genetic = SNP_dist_matrix_std,
+  CpG = CpG_dist_matrix_std,
+  Environmental = ENV_dist_matrix_std
+)
+
+# Ejecutamos el modelo
+mmrr_cpg <- MMRR(
+  Y = PHENO_dist_matrix_std,
+  X = cpg_list,
+  nperm = 9999
+)
+
+# Resultados
+mmrr_cpg$R2
+mmrr_cpg$F_statistic
+mmrr_cpg$F_p
+mmrr_cpg$Coefficients
+
+
+# phenD ~ snpD + envD ----
+# Lista de predictores
+gen_list <- list(
+  Genetic = SNP_dist_matrix_std,
+  # CpG = CpG_dist_matrix_std,
+  Environmental = ENV_dist_matrix_std
+)
+
+# Ejecutamos el modelo
+mmrr_gen <- MMRR(
+  Y = PHENO_dist_matrix_std,
+  X = gen_list,
+  nperm = 9999
+)
+
+# Resultados
+mmrr_gen$R2
+mmrr_gen$F_statistic
+mmrr_gen$F_p
+mmrr_gen$Coefficients
+
+# phenD ~ chgD + snpD + envD ----
+# Lista de predictores
+chg_list <- list(
+  # Genetic = SNP_dist_matrix_std,
+  chg = CHG_dist_matrix_std,
+  Environmental = ENV_dist_matrix_std
+)
+
+# Ejecutamos el modelo
+mmrr_chg <- MMRR(
+  Y = PHENO_dist_matrix_std,
+  X = chg_list,
+  nperm = 9999
+)
+
+# Resultados
+mmrr_chg$R2
+mmrr_chg$F_statistic
+mmrr_chg$F_p
+mmrr_chg$Coefficients
+
+# phenD ~ chhD + snpD + envD ----
+# Lista de predictores
+chh_list <- list(
+  # Genetic = SNP_dist_matrix_std,
+  chh = CHH_dist_matrix_std,
+  Environmental = ENV_dist_matrix_std
+)
+
+# Ejecutamos el modelo
+mmrr_chh <- MMRR(
+  Y = PHENO_dist_matrix_std,
+  X = chh_list,
+  nperm = 9999
+)
+
+# Resultados
+mmrr_chh$R2
+mmrr_chh$F_statistic
+mmrr_chh$F_p
+mmrr_chh$Coefficients
+
+# phenD ~ all_ctxtD + snpD + envD ----
+# Lista de predictores
+all_ctxt_list <- list(
+  # Genetic = SNP_dist_matrix_std,
+  all_ctxt = all_CTXT_dist_matrix_std,
+  Environmental = ENV_dist_matrix_std
+)
+
+# Ejecutamos el modelo
+mmrr_all_ctxt <- MMRR(
+  Y = PHENO_dist_matrix_std,
+  X = all_ctxt_list,
+  nperm = 9999
+)
+
+# Resultados
+mmrr_all_ctxt$R2
+mmrr_all_ctxt$F_statistic
+mmrr_all_ctxt$F_p
+mmrr_all_ctxt$Coefficients
+```
+
+
+```{r MMRR TABLA, echo=FALSE, results='hold', warning=FALSE, message=FALSE}
+# Cargamos librerías necesarias
+library(knitr)
+library(kableExtra)
+
+# Función para extraer los coeficientes de un predictor específico
+get_predictor_stats <- function(coef_matrix, predictor_name) {
+  # Buscamos la fila que contiene el predictor (XsGenetic, Xscpg, Xschg, Xschh, Xsall_ctxt, XsEnvironmental)
+  # Usamos grep flexible que busca el patrón sin importar mayúsculas/minúsculas
+  pattern <- paste0("Xs", predictor_name, "|", predictor_name)
+  row_idx <- grep(pattern, rownames(coef_matrix), ignore.case = TRUE)
+  
+  if (length(row_idx) > 0) {
+    return(data.frame(
+      Coefficient = coef_matrix[row_idx, "Coefficient"],
+      p_value_coef = coef_matrix[row_idx, "p.value"]
+    ))
+  } else {
+    return(data.frame(
+      Coefficient = NA,
+      p_value_coef = NA
+    ))
+  }
+}
+
+# Función principal para crear la tabla completa con todos los modelos
+create_mmrr_table <- function(mmrr_cpg, mmrr_chg, mmrr_chh, mmrr_all_ctxt, mmrr_gen) {
+  
+  # Lista para almacenar todas las filas
+  rows_list <- list()
+  
+  # Función interna para procesar cada modelo
+  process_model <- function(mmrr_obj, model_label, genetic_included, cpg_included, chg_included, chh_included, all_ctxt_included) {
+    
+    # Extraemos coeficientes para cada predictor
+    genetic_stats <- if(genetic_included) get_predictor_stats(mmrr_obj$Coefficients, "Genetic") else data.frame(Coefficient = NA, p_value_coef = NA)
+    cpg_stats <- if(cpg_included) get_predictor_stats(mmrr_obj$Coefficients, "cpg") else data.frame(Coefficient = NA, p_value_coef = NA)
+    chg_stats <- if(chg_included) get_predictor_stats(mmrr_obj$Coefficients, "chg") else data.frame(Coefficient = NA, p_value_coef = NA)
+    chh_stats <- if(chh_included) get_predictor_stats(mmrr_obj$Coefficients, "chh") else data.frame(Coefficient = NA, p_value_coef = NA)
+    all_ctxt_stats <- if(all_ctxt_included) get_predictor_stats(mmrr_obj$Coefficients, "all_ctxt") else data.frame(Coefficient = NA, p_value_coef = NA)
+    env_stats <- get_predictor_stats(mmrr_obj$Coefficients, "Environmental")
+    
+    # Creamos la fila
+    data.frame(
+      Model = model_label,
+      
+      # Overall regression
+      R2 = mmrr_obj$R2,
+      F = mmrr_obj$F_statistic,
+      p_value = mmrr_obj$F_p,
+      
+      # Genetic distance
+      Genetic_Coeff = genetic_stats$Coefficient,
+      Genetic_p = genetic_stats$p_value_coef,
+      
+      # CpG distance
+      CpG_Coeff = cpg_stats$Coefficient,
+      CpG_p = cpg_stats$p_value_coef,
+      
+      # CHG distance
+      CHG_Coeff = chg_stats$Coefficient,
+      CHG_p = chg_stats$p_value_coef,
+      
+      # CHH distance
+      CHH_Coeff = chh_stats$Coefficient,
+      CHH_p = chh_stats$p_value_coef,
+      
+      # All contexts distance
+      AllCtxt_Coeff = all_ctxt_stats$Coefficient,
+      AllCtxt_p = all_ctxt_stats$p_value_coef,
+      
+      # Environmental distance
+      Environmental_Coeff = env_stats$Coefficient,
+      Environmental_p = env_stats$p_value_coef,
+      
+      stringsAsFactors = FALSE,
+      row.names = NULL
+    )
+  }
+  
+  # Procesamos cada modelo con sus predictores específicos
+  rows_list[[1]] <- process_model(mmrr_cpg, "PhenD ~ CpGD + GenD + EnvD", 
+                                   genetic_included = TRUE, cpg_included = TRUE, 
+                                   chg_included = FALSE, chh_included = FALSE, all_ctxt_included = FALSE)
+  
+  rows_list[[2]] <- process_model(mmrr_chg, "PhenD ~ CHGD +  EnvD", 
+                                   genetic_included = FALSE, cpg_included = FALSE, 
+                                   chg_included = TRUE, chh_included = FALSE, all_ctxt_included = FALSE)
+  
+  rows_list[[3]] <- process_model(mmrr_chh, "PhenD ~ CHHD + EnvD", 
+                                   genetic_included = FALSE, cpg_included = FALSE, 
+                                   chg_included = FALSE, chh_included = TRUE, all_ctxt_included = FALSE)
+  
+  rows_list[[4]] <- process_model(mmrr_all_ctxt, "PhenD ~ AllCtxtD + EnvD", 
+                                   genetic_included = FALSE, cpg_included = FALSE, 
+                                   chg_included = FALSE, chh_included = FALSE, all_ctxt_included = TRUE)
+  
+  rows_list[[5]] <- process_model(mmrr_gen, "PhenD ~ GenD + EnvD", 
+                                   genetic_included = TRUE, cpg_included = FALSE, 
+                                   chg_included = FALSE, chh_included = FALSE, all_ctxt_included = FALSE)
+  
+  # Combinamos todas las filas
+  results_tbl <- do.call(rbind, rows_list)
+  
+  # Calculamos FDR para el p-value global
+  results_tbl$FDR <- p.adjust(results_tbl$p_value, method = "fdr")
+  
+  # Reordenamos las columnas
+  results_tbl <- results_tbl[, c(
+    "Model", 
+    "R2", "F", "p_value", "FDR",
+    "Genetic_Coeff", "Genetic_p",
+    "CpG_Coeff", "CpG_p",
+    "CHG_Coeff", "CHG_p",
+    "CHH_Coeff", "CHH_p",
+    "AllCtxt_Coeff", "AllCtxt_p",
+    "Environmental_Coeff", "Environmental_p"
+  )]
+  
+  return(results_tbl)
+}
+
+# Creamos la tabla con todos los modelos
+results_tbl <- create_mmrr_table(mmrr_cpg, mmrr_chg, mmrr_chh, mmrr_all_ctxt, mmrr_gen)
+
+# Función para formatear valores numéricos
+# Función para formatear valores numéricos
+format_value <- function(x, is_pvalue = FALSE) {
+  if (is.na(x)) {
+    return("-")
+  } else if (is_pvalue && x < 0.001) {
+    return("<0.001")
+  } else {
+    return(sprintf("%.3f", x))
+  }
+}
+
+# Aplicamos formato a todas las columnas numéricas
+# Aplicamos formato a todas las columnas numéricas
+results_tbl_formatted <- results_tbl
+
+# Identificamos columnas que son p-valores
+pvalue_cols <- grep("_p$|p_value$|FDR$", names(results_tbl_formatted))
+
+# Aplicamos formato diferenciado
+for (i in 1:ncol(results_tbl_formatted)) {
+  col_name <- names(results_tbl_formatted)[i]
+  if (is.numeric(results_tbl_formatted[[i]])) {
+    if (col_name %in% names(results_tbl_formatted)[pvalue_cols] || col_name == "p_value" || col_name == "FDR") {
+      # Es una columna de p-valor
+      results_tbl_formatted[[i]] <- sapply(results_tbl_formatted[[i]], function(x) format_value(x, is_pvalue = TRUE))
+    } else {
+      # Es una columna de coeficiente o estadístico
+      results_tbl_formatted[[i]] <- sapply(results_tbl_formatted[[i]], function(x) format_value(x, is_pvalue = FALSE))
+    }
+  }
+}
+
+# Creamos la tabla con formato mejorado
+results_tbl_formatted %>%
+  kable(
+    caption = "Table 1. Results of Multiple Matrix Regression with Randomization (MMRR) showing overall model fit and individual predictor contributions for epigenetic (CpG, CHG, CHH, all contexts) and genetic models.",
+    booktabs = TRUE,
+    escape = FALSE,
+    col.names = c(
+      "Model", 
+      "R²", "F", "p-value", "FDR",
+      "Coeff", "p-value",  # Genetic
+      "Coeff", "p-value",  # CpG
+      "Coeff", "p-value",  # CHG
+      "Coeff", "p-value",  # CHH
+      "Coeff", "p-value",  # All contexts
+      "Coeff", "p-value"   # Environmental
+    )
+  ) %>%
+  kable_styling(
+    full_width = FALSE,
+    position = "center",
+    font_size = 10
+  ) %>%
+  
+  # Añadimos cabeceras múltiples para agrupar las columnas
+  add_header_above(c(
+    " " = 1,  # Model column
+    "Overall Regression" = 4,  # R², F, p-value, FDR
+    "Genetic Distance" = 2,
+    "CpG Distance" = 2,
+    "CHG Distance" = 2,
+    "CHH Distance" = 2,
+    "All Contexts Distance" = 2,
+    "Environmental Distance" = 2
+  )) %>%
+  
+  # Añadimos formato condicional para resaltar valores significativos (opcional)
+  column_spec(5, bold = ifelse(as.numeric(results_tbl$FDR) < 0.05, TRUE, FALSE)) %>%
+  
+  # Añadimos nota al pie
+  footnote(
+    general = paste0(
+      "Results of Multiple Matrix Regression with Randomization (MMRR). ",
+      "Overall model statistics include R² (proportion of variance explained), ",
+      "F-statistic, and associated p-value with FDR correction. ",
+      "Individual predictor statistics show the standardized coefficient and ",
+      "its p-value. '−' indicates the predictor was not included in the model. ",
+      "Significant FDR values (p < 0.05) are shown in bold."
+    ),
+    general_title = "Note:",
+    footnote_as_chunk = TRUE
+  )
+```
+

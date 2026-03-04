@@ -1,7 +1,7 @@
 ---
-title: "A.barbata dbRDA"
+title: "P.lagopus dbRDA"
 author: "Andrés Delgado Galán"
-date: "2026-01-29"
+date: "2026-02-24"
 output: html_document
 ---
 
@@ -25,29 +25,25 @@ library(vcfR)        # read and manipulate VCF files
 library(adegenet)
 
 # Cargamos SMPs de los tres contextos
-avena_CpG_obj <- readRDS(here("avena_ncbi", "avena_ncbi_CpG_meth_matrix.rds"))
-avena_CHG_obj <- readRDS(here("avena_ncbi", "avena_ncbi_CHG_meth_matrix.rds"))
-avena_CHH_obj <- readRDS(here("avena_ncbi", "avena_ncbi_CHH_meth_matrix.rds"))
+# avena_CpG_obj <- readRDS(here("avena_ncbi", "avena_ncbi_CpG_meth_matrix.rds"))
+# avena_CHG_obj <- readRDS(here("avena_ncbi", "avena_ncbi_CHG_meth_matrix.rds"))
+# avena_CHH_obj <- readRDS(here("avena_ncbi", "avena_ncbi_CHH_meth_matrix.rds"))
 
-avena_all_CTXT_obj <- rbind(avena_CpG_obj, avena_CHG_obj, avena_CHH_obj)
+# avena_all_CTXT_obj <- rbind(avena_CpG_obj, avena_CHG_obj, avena_CHH_obj)
 
-# plantago_CpG_obj <- readRDS(here("plantago_pseudo", "plantago_pseudo_CpG_meth_matrix.rds"))
-# plantago_CHG_obj <- readRDS(here("plantago_pseudo", "plantago_pseudo_CHG_meth_matrix.rds"))
-# plantago_CHH_obj <- readRDS(here("plantago_pseudo", "plantago_pseudo_CHH_meth_matrix.rds"))
+plantago_CpG_obj <- readRDS(here("plantago_pseudo", "plantago_pseudo_CpG_meth_matrix.rds"))
+plantago_CHG_obj <- readRDS(here("plantago_pseudo", "plantago_pseudo_CHG_meth_matrix.rds"))
+plantago_CHH_obj <- readRDS(here("plantago_pseudo", "plantago_pseudo_CHH_meth_matrix.rds"))
+
+plantago_all_CTXT_obj <- rbind(plantago_CpG_obj, plantago_CHG_obj, plantago_CHH_obj)
 
 # Cargamos la tabla de tratamientos
-treatment_table <- read.table(file = here("avena_treatment.csv"), header = T, sep = ";")
-# Quitamos las muestras que no vamos a usar (sin tratar o inexistentes)
-treatment_table <- treatment_table %>%
-  filter(!id %in% c(
-    "AV253_2", "AV243_2", "AV282_2",
-    "AV280_2", "AV297_2", "AV275", "AV296_2"
-  ))
+treatment_table <- read.table(file = here("plantago_treatment.csv"), header = T, sep = ";")
 ```
 
 ```{r CpG distance MATRIX, include=FALSE}
 #Transpose methylation matrix (individuals have to be rows)
-CpG_meth_matrix <- t(avena_CpG_obj)
+CpG_meth_matrix <- t(plantago_CpG_obj)
 # Filtramos los sitios con NAs
 CpG_meth_matrix <- CpG_meth_matrix[, colSums(is.na(CpG_meth_matrix)) == 0]
 
@@ -68,7 +64,7 @@ treatment <- treatment_table[match(attr(CpG_dist_matrix, "Labels"), treatment_ta
 
 ```{r CHG distance MATRIX, include=FALSE}
 #Transpose methylation matrix (individuals have to be rows)
-CHG_meth_matrix <- t(avena_CHG_obj)
+CHG_meth_matrix <- t(plantago_CHG_obj)
 # Filtramos los sitios con NAs
 CHG_meth_matrix <- CHG_meth_matrix[, colSums(is.na(CHG_meth_matrix)) == 0]
 
@@ -89,7 +85,7 @@ treatment <- treatment_table[match(attr(CHG_dist_matrix, "Labels"), treatment_ta
 
 ```{r CHH distance MATRIX, include=FALSE}
 #Transpose methylation matrix (individuals have to be rows)
-CHH_meth_matrix <- t(avena_CHH_obj)
+CHH_meth_matrix <- t(plantago_CHH_obj)
 # Filtramos los sitios con NAs
 CHH_meth_matrix <- CHH_meth_matrix[, colSums(is.na(CHH_meth_matrix)) == 0]
 
@@ -110,7 +106,7 @@ treatment <- treatment_table[match(attr(CHH_dist_matrix, "Labels"), treatment_ta
 
 ```{r all_CTXT distance MATRIX, include=FALSE}
 #Transpose methylation matrix (individuals have to be rows)
-all_CTXT_meth_matrix <- t(avena_all_CTXT_obj)
+all_CTXT_meth_matrix <- t(plantago_all_CTXT_obj)
 # Filtramos los sitios con NAs
 all_CTXT_meth_matrix <- all_CTXT_meth_matrix[, colSums(is.na(all_CTXT_meth_matrix)) == 0]
 
@@ -131,7 +127,7 @@ treatment <- treatment_table[match(attr(all_CTXT_dist_matrix, "Labels"), treatme
 
 ```{r prepare genetic data to include in constrained dbRDA, include=FALSE}
 # read VCF
-vcf <- read.vcfR(here("avena_ncbi", "filtered_variants_cov5-1000_biallelic_MAF0.01_80pct.vcf.gz"))
+vcf <- read.vcfR(here("plantago_pseudo", "filtered_variants_cov5-1000_biallelic_MAF0.01_80pct.vcf.gz"))
 
 # Convert to genlight (handles large SNP sets efficiently)
 gl <- vcfR2genlight(vcf)    # converts to genlight; ploidy defaults to 2

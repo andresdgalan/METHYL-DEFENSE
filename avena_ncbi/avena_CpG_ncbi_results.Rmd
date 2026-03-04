@@ -356,6 +356,7 @@ coords <- getData(CpG_meth)$start
 
 # assign them as rownames to meth_matrix
 rownames(CpG_meth_matrix) <- coords
+
 write.table(CpG_meth_matrix, "avena_ncbi_CpG_meth_matrix.csv", sep = ";", row.names = TRUE, col.names = TRUE)
 saveRDS(CpG_meth_matrix, "avena_ncbi_CpG_meth_matrix.rds")
 ```
