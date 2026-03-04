@@ -1,0 +1,38 @@
+🔍 Buscando pares R1/R2 en carpeta truncated/...
+🧩 Procesando par: PL11_2
+   - IDs comunes: 3539704
+   ✅ Filtrado completado:
+      → filtered/PL11_2_filtered_R1.fq
+      → filtered/PL11_2_filtered_R2.fq
+
+🧩 Procesando par: PL22_2
+   - IDs comunes: 3525159
+   ✅ Filtrado completado:
+      → filtered/PL22_2_filtered_R1.fq
+      → filtered/PL22_2_filtered_R2.fq
+
+🧩 Procesando par: PL26_2
+   - IDs comunes: 7407013
+   ✅ Filtrado completado:
+      → filtered/PL26_2_filtered_R1.fq
+      → filtered/PL26_2_filtered_R2.fq
+
+🧩 Procesando par: PL30_2
+   - IDs comunes: 2861929
+   ✅ Filtrado completado:
+      → filtered/PL30_2_filtered_R1.fq
+      → filtered/PL30_2_filtered_R2.fq
+
+🧩 Procesando par: PL54_2
+   - IDs comunes: 5835423
+   ✅ Filtrado completado:
+      → filtered/PL54_2_filtered_R1.fq
+      → filtered/PL54_2_filtered_R2.fq
+
+🧩 Procesando par: PL6_2
+   - IDs comunes: 28896
+   ✅ Filtrado completado:
+      → filtered/PL6_2_filtered_R1.fq
+      → filtered/PL6_2_filtered_R2.fq
+
+🎉 Todos los pares procesados. Resultados en la carpeta 'filtered/'.

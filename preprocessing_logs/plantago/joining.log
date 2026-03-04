@@ -1,0 +1,36 @@
+Joining ./filtered/PL11_2_filtered_R1.fq and ./filtered/PL11_2_filtered_R2.fq ...
+vsearch v2.21.1_linux_x86_64, 25.3GB RAM, 32 cores
+https://github.com/torognes/vsearch
+
+Joining reads 100%
+3539704 pairs joined
+Joining ./filtered/PL22_2_filtered_R1.fq and ./filtered/PL22_2_filtered_R2.fq ...
+vsearch v2.21.1_linux_x86_64, 25.3GB RAM, 32 cores
+https://github.com/torognes/vsearch
+
+Joining reads 100%
+3525159 pairs joined
+Joining ./filtered/PL26_2_filtered_R1.fq and ./filtered/PL26_2_filtered_R2.fq ...
+vsearch v2.21.1_linux_x86_64, 25.3GB RAM, 32 cores
+https://github.com/torognes/vsearch
+
+Joining reads 100%
+7407013 pairs joined
+Joining ./filtered/PL30_2_filtered_R1.fq and ./filtered/PL30_2_filtered_R2.fq ...
+vsearch v2.21.1_linux_x86_64, 27.1GB RAM, 32 cores
+https://github.com/torognes/vsearch
+
+Joining reads 100%
+2861929 pairs joined
+Joining ./filtered/PL54_2_filtered_R1.fq and ./filtered/PL54_2_filtered_R2.fq ...
+vsearch v2.21.1_linux_x86_64, 27.9GB RAM, 32 cores
+https://github.com/torognes/vsearch
+
+Joining reads 100%
+5835423 pairs joined
+Joining ./filtered/PL6_2_filtered_R1.fq and ./filtered/PL6_2_filtered_R2.fq ...
+vsearch v2.21.1_linux_x86_64, 27.9GB RAM, 32 cores
+https://github.com/torognes/vsearch
+
+Joining reads 100%
+28896 pairs joined

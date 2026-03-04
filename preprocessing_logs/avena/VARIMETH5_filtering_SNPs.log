@@ -1,0 +1,25 @@
+Filtrado de SNPs: VARIMETH4_freebayes/variants.vcf
+=== Coverage Filter (DP 5–1000) ===
+Sites after coverage filtering (DP 5–1000): 332540
+=== Keeping biallelic SNPs ===
+Sites after keeping only biallelic SNPs: 294832
+=== MAF >= 0.01 ===
+Sites after MAF >= 0.01: 66352
+=== Filter out SNPs with missingness in >80% of the samples per treatment ===
+  → 10 samples for graz_clip
+  → 10 samples for graz_unclip
+  → 10 samples for ungraz_clip
+  → 12 samples for ungraz_unclip
+Filtrando tratamiento graz_clip...
+Filtrando tratamiento graz_unclip...
+Filtrando tratamiento ungraz_clip...
+Filtrando tratamiento ungraz_unclip...
+Sites after per-treatment ≥80% genotyping: 3776
+Filtring completed: filtered_variants_cov5-1000_biallelic_MAF0.01_80pct.vcf.gz ready.
+
+===Summary of per sample missingness===
+Muestra              Missing    Total      Porcentaje
+AV246_R1_trimmed_bismark_bt2_pe.sorted 1          3776       .02%
+AV241_R1_trimmed_bismark_bt2_pe.sorted 51         3776       1.35%
+AV244_R1_trimmed_bismark_bt2_pe.sorted 57         3776       1.50%
+AV243_R1_trimmed_bismark_bt2_pe.sorted 446        3776       11.81%

@@ -1,0 +1,40 @@
+Bismark report for: ./trimmed/AV299_R1_trimmed.fq and ./trimmed/AV299_R2_trimmed.fq (version: v0.24.2)
+Bismark was run with Bowtie 2 against the bisulfite genome of /home/andres/nuevo_datos/Avena_lib/Avena_genome_ncbi/ with the specified options: -q --score-min L,0,-0.2 -p 20 --reorder --ignore-quals --no-mixed --no-discordant --dovetail --maxins 500
+Option '--non_directional' specified: alignments to all strands were being performed (OT, OB, CTOT, CTOB)
+
+Final Alignment report
+======================
+Sequence pairs analysed in total:	11262220
+Number of paired-end alignments with a unique best hit:	800756
+Mapping efficiency:	7.1% 
+Sequence pairs with no alignments under any condition:	9503721
+Sequence pairs did not map uniquely:	957743
+Sequence pairs which were discarded because genomic sequence could not be extracted:	0
+
+Number of sequence pairs with unique best (first) alignment came from the bowtie output:
+CT/GA/CT:	3542	((converted) top strand)
+GA/CT/CT:	395333	(complementary to (converted) top strand)
+GA/CT/GA:	398596	(complementary to (converted) bottom strand)
+CT/GA/GA:	3285	((converted) bottom strand)
+
+Final Cytosine Methylation Report
+=================================
+Total number of C's analysed:	47896652
+
+Total methylated C's in CpG context:	7790090
+Total methylated C's in CHG context:	4192760
+Total methylated C's in CHH context:	1730114
+Total methylated C's in Unknown context:	2950
+
+Total unmethylated C's in CpG context:	1116289
+Total unmethylated C's in CHG context:	3328728
+Total unmethylated C's in CHH context:	29738671
+Total unmethylated C's in Unknown context:	23789
+
+C methylated in CpG context:	87.5%
+C methylated in CHG context:	55.7%
+C methylated in CHH context:	5.5%
+C methylated in Unknown context (CN or CHN):	11.0%
+
+
+Bismark completed in 0d 1h 0m 26s

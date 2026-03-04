@@ -1,0 +1,228 @@
+Procesando ./quality/PL11_2_joinedq.fq con ustacks...
+ustacks parameters selected:
+  Input file: './quality/PL11_2_joinedq.fq'
+  Sample ID: 1
+  Min depth of coverage to create a stack (m): 3
+  Repeat removal algorithm: enabled
+  Max distance allowed between stacks (M): 4
+  Max distance allowed to align secondary reads: 6
+  Max number of stacks allowed per de novo locus: 3
+  Deleveraging algorithm: disabled
+  Gapped assembly: disabled
+  Model type: SNP
+  Alpha significance level for model: 0.05
+
+Loading RAD-Tags...1M...2M...3M...
+
+Loaded 3490132 reads; formed:
+  251452 stacks representing 2142465 primary reads (61.4%)
+  1229762 secondary stacks representing 1347667 secondary reads (38.6%)
+
+Stack coverage: mean=8.52; stdev=194.88; max=67576; n_reads=2142465(61.4%)
+Removing repetitive stacks: cov > 594 (mean+3*stdev)...
+  Blacklisted 6369 stacks.
+Coverage after repeat removal: mean=6.85; stdev=10.88; max=590; n_reads=1679695(48.1%)
+
+Assembling stacks (max. dist. M=4)...
+  Assembled 245083 stacks into 163091; blacklisted 5534 stacks.
+Coverage after assembling stacks: mean=6.97; stdev=6.99; max=142; n_reads=1097660(31.5%)
+
+Merging secondary stacks (max. dist. N=6 from consensus)...
+  Merged 491540 out of 1347667 secondary reads (36.5%), 57123 merged with gapped alignments.
+Coverage after merging secondary stacks: mean=10.09; stdev=40.64; max=13622; n_reads=1589200(45.5%)
+
+Final coverage: mean=10.09; stdev=40.64; max=13622; n_reads=1589200(45.5%)
+Calling consensus sequences and haplotypes for catalog assembly...
+Writing tags, SNPs, and alleles files...
+Refetching read IDs...done.
+ustacks is done.
+Procesando ./quality/PL22_2_joinedq.fq con ustacks...
+ustacks parameters selected:
+  Input file: './quality/PL22_2_joinedq.fq'
+  Sample ID: 2
+  Min depth of coverage to create a stack (m): 3
+  Repeat removal algorithm: enabled
+  Max distance allowed between stacks (M): 4
+  Max distance allowed to align secondary reads: 6
+  Max number of stacks allowed per de novo locus: 3
+  Deleveraging algorithm: disabled
+  Gapped assembly: disabled
+  Model type: SNP
+  Alpha significance level for model: 0.05
+
+Loading RAD-Tags...1M...2M...3M...
+
+Loaded 3478064 reads; formed:
+  251533 stacks representing 2127018 primary reads (61.2%)
+  1232744 secondary stacks representing 1351046 secondary reads (38.8%)
+
+Stack coverage: mean=8.46; stdev=189.40; max=65040; n_reads=2127018(61.2%)
+Removing repetitive stacks: cov > 577 (mean+3*stdev)...
+  Blacklisted 6448 stacks.
+Coverage after repeat removal: mean=6.80; stdev=10.40; max=575; n_reads=1666864(47.9%)
+
+Assembling stacks (max. dist. M=4)...
+  Assembled 245085 stacks into 164627; blacklisted 5496 stacks.
+Coverage after assembling stacks: mean=6.92; stdev=6.92; max=161; n_reads=1101331(31.7%)
+
+Merging secondary stacks (max. dist. N=6 from consensus)...
+  Merged 476124 out of 1351046 secondary reads (35.2%), 48572 merged with gapped alignments.
+Coverage after merging secondary stacks: mean=9.92; stdev=34.31; max=11385; n_reads=1577455(45.4%)
+
+Final coverage: mean=9.92; stdev=34.31; max=11385; n_reads=1577455(45.4%)
+Calling consensus sequences and haplotypes for catalog assembly...
+Writing tags, SNPs, and alleles files...
+Refetching read IDs...done.
+ustacks is done.
+Procesando ./quality/PL26_2_joinedq.fq con ustacks...
+ustacks parameters selected:
+  Input file: './quality/PL26_2_joinedq.fq'
+  Sample ID: 3
+  Min depth of coverage to create a stack (m): 3
+  Repeat removal algorithm: enabled
+  Max distance allowed between stacks (M): 4
+  Max distance allowed to align secondary reads: 6
+  Max number of stacks allowed per de novo locus: 3
+  Deleveraging algorithm: disabled
+  Gapped assembly: disabled
+  Model type: SNP
+  Alpha significance level for model: 0.05
+
+Loading RAD-Tags...1M...2M...3M...4M...5M...6M...7M...
+
+Loaded 7342630 reads; formed:
+  382061 stacks representing 5502051 primary reads (74.9%)
+  1651096 secondary stacks representing 1840579 secondary reads (25.1%)
+
+Stack coverage: mean=14.40; stdev=1244.35; max=484265; n_reads=5502051(74.9%)
+Removing repetitive stacks: cov > 3748 (mean+3*stdev)...
+  Blacklisted 10606 stacks.
+Coverage after repeat removal: mean=7.51; stdev=24.70; max=2750; n_reads=2789202(38.0%)
+
+Assembling stacks (max. dist. M=4)...
+  Assembled 371455 stacks into 274208; blacklisted 5193 stacks.
+Coverage after assembling stacks: mean=7.09; stdev=8.01; max=221; n_reads=1907787(26.0%)
+
+Merging secondary stacks (max. dist. N=6 from consensus)...
+  Merged 813826 out of 1840579 secondary reads (44.2%), 241955 merged with gapped alignments.
+Coverage after merging secondary stacks: mean=10.12; stdev=205.17; max=96940; n_reads=2721613(37.1%)
+
+Final coverage: mean=10.12; stdev=205.17; max=96940; n_reads=2721613(37.1%)
+Calling consensus sequences and haplotypes for catalog assembly...
+Writing tags, SNPs, and alleles files...
+Refetching read IDs...done.
+ustacks is done.
+Procesando ./quality/PL30_2_joinedq.fq con ustacks...
+ustacks parameters selected:
+  Input file: './quality/PL30_2_joinedq.fq'
+  Sample ID: 4
+  Min depth of coverage to create a stack (m): 3
+  Repeat removal algorithm: enabled
+  Max distance allowed between stacks (M): 4
+  Max distance allowed to align secondary reads: 6
+  Max number of stacks allowed per de novo locus: 3
+  Deleveraging algorithm: disabled
+  Gapped assembly: disabled
+  Model type: SNP
+  Alpha significance level for model: 0.05
+
+Loading RAD-Tags...1M...2M...
+
+Loaded 2823705 reads; formed:
+  206796 stacks representing 1722937 primary reads (61.0%)
+  1002149 secondary stacks representing 1100768 secondary reads (39.0%)
+
+Stack coverage: mean=8.33; stdev=181.39; max=59997; n_reads=1722937(61.0%)
+Removing repetitive stacks: cov > 553 (mean+3*stdev)...
+  Blacklisted 5223 stacks.
+Coverage after repeat removal: mean=6.69; stdev=10.13; max=549; n_reads=1348253(47.7%)
+
+Assembling stacks (max. dist. M=4)...
+  Assembled 201573 stacks into 136969; blacklisted 4017 stacks.
+Coverage after assembling stacks: mean=6.87; stdev=6.66; max=113; n_reads=913529(32.4%)
+
+Merging secondary stacks (max. dist. N=6 from consensus)...
+  Merged 408460 out of 1100768 secondary reads (37.1%), 53490 merged with gapped alignments.
+Coverage after merging secondary stacks: mean=9.95; stdev=42.75; max=11049; n_reads=1321989(46.8%)
+
+Final coverage: mean=9.95; stdev=42.75; max=11049; n_reads=1321989(46.8%)
+Calling consensus sequences and haplotypes for catalog assembly...
+Writing tags, SNPs, and alleles files...
+Refetching read IDs...done.
+ustacks is done.
+Procesando ./quality/PL54_2_joinedq.fq con ustacks...
+ustacks parameters selected:
+  Input file: './quality/PL54_2_joinedq.fq'
+  Sample ID: 5
+  Min depth of coverage to create a stack (m): 3
+  Repeat removal algorithm: enabled
+  Max distance allowed between stacks (M): 4
+  Max distance allowed to align secondary reads: 6
+  Max number of stacks allowed per de novo locus: 3
+  Deleveraging algorithm: disabled
+  Gapped assembly: disabled
+  Model type: SNP
+  Alpha significance level for model: 0.05
+
+Loading RAD-Tags...1M...2M...3M...4M...5M...
+
+Loaded 5789708 reads; formed:
+  297407 stacks representing 4407753 primary reads (76.1%)
+  1231345 secondary stacks representing 1381955 secondary reads (23.9%)
+
+Stack coverage: mean=14.82; stdev=1176.63; max=386453; n_reads=4407753(76.1%)
+Removing repetitive stacks: cov > 3545 (mean+3*stdev)...
+  Blacklisted 9623 stacks.
+Coverage after repeat removal: mean=7.41; stdev=23.74; max=2277; n_reads=2131651(36.8%)
+
+Assembling stacks (max. dist. M=4)...
+  Assembled 287784 stacks into 213055; blacklisted 4093 stacks.
+Coverage after assembling stacks: mean=7.05; stdev=8.14; max=294; n_reads=1474023(25.5%)
+
+Merging secondary stacks (max. dist. N=6 from consensus)...
+  Merged 477297 out of 1381955 secondary reads (34.5%), 59671 merged with gapped alignments.
+Coverage after merging secondary stacks: mean=9.34; stdev=20.48; max=3901; n_reads=1951320(33.7%)
+
+Final coverage: mean=9.34; stdev=20.48; max=3901; n_reads=1951320(33.7%)
+Calling consensus sequences and haplotypes for catalog assembly...
+Writing tags, SNPs, and alleles files...
+Refetching read IDs...done.
+ustacks is done.
+Procesando ./quality/PL6_2_joinedq.fq con ustacks...
+ustacks parameters selected:
+  Input file: './quality/PL6_2_joinedq.fq'
+  Sample ID: 6
+  Min depth of coverage to create a stack (m): 3
+  Repeat removal algorithm: enabled
+  Max distance allowed between stacks (M): 4
+  Max distance allowed to align secondary reads: 6
+  Max number of stacks allowed per de novo locus: 3
+  Deleveraging algorithm: disabled
+  Gapped assembly: disabled
+  Model type: SNP
+  Alpha significance level for model: 0.05
+
+Loading RAD-Tags...
+
+Loaded 28440 reads; formed:
+  2275 stacks representing 17620 primary reads (62.0%)
+  10095 secondary stacks representing 10820 secondary reads (38.0%)
+
+Stack coverage: mean=7.75; stdev=5.40; max=76; n_reads=17620(62.0%)
+Removing repetitive stacks: cov > 24 (mean+3*stdev)...
+  Blacklisted 36 stacks.
+Coverage after repeat removal: mean=7.45; stdev=4.62; max=24; n_reads=16682(58.7%)
+
+Assembling stacks (max. dist. M=4)...
+  Assembled 2239 stacks into 2175; blacklisted 4 stacks.
+Coverage after assembling stacks: mean=7.72; stdev=4.78; max=27; n_reads=16518(58.1%)
+
+Merging secondary stacks (max. dist. N=6 from consensus)...
+  Merged 4317 out of 10820 secondary reads (39.9%), 69 merged with gapped alignments.
+Coverage after merging secondary stacks: mean=9.73; stdev=6.22; max=82; n_reads=20835(73.3%)
+
+Final coverage: mean=9.73; stdev=6.22; max=82; n_reads=20835(73.3%)
+Calling consensus sequences and haplotypes for catalog assembly...
+Writing tags, SNPs, and alleles files...
+Refetching read IDs...done.
+ustacks is done.
