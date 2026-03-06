@@ -656,6 +656,87 @@ Rsq_all_CTXT_mod4
 
 ```
 
+```{r phenoDIST and genDIST matrices, include=FALSE}
+phenoDIST <- readRDS("PHENO_dist_matrix.rds")
+genDIST <- readRDS("SNP_dist_matrix.rds")
+```
+
+
+```{r phenoDIST dbRDA phenoDIST_mod1, include=FALSE}
+# dbRDA
+phenoDIST_mod1 <- capscale(
+  phenoDIST ~ maternal,
+  data = treatment,
+  add = FALSE
+)
+
+# Significancia global
+Sig_phenoDIST_mod1 <- anova(phenoDIST_mod1, permutations = 9999)
+Sig_phenoDIST_mod1
+
+# Significancia por término (esto lo hacen en García-Seoane cuando el phenoDIST_mod1elo global sale significativo)
+anova(phenoDIST_mod1, by = "term", permutations = 9999)
+
+# R² ajustado (En García-Seoane la reportan en el texto pero no en la tabla)
+# Boquete - "We also calculated individual adj. R2 for each predictorby phenoDIST_mod1eling the effect of each predictor while accounting for the others using partial constrained dbRDA"
+Rsq_phenoDIST_mod1 <- RsquareAdj(phenoDIST_mod1)
+Rsq_phenoDIST_mod1
+
+# FDR
+
+
+```
+
+```{r phenoDIST dbRDA phenoDIST_mod2, include=FALSE}
+# dbRDA
+phenoDIST_mod2 <- capscale(
+  phenoDIST ~ maternal * simulation,
+  data = treatment,
+  add = FALSE
+)
+
+# Significancia global
+Sig_phenoDIST_mod2 <- anova(phenoDIST_mod2, permutations = 9999)
+Sig_phenoDIST_mod2
+
+# Significancia por término (esto lo hacen en García-Seoane cuando el phenoDIST_mod2elo global sale significativo)
+Sig_terms_phenoDIST_mod2 <- anova(phenoDIST_mod2, by = "term", permutations = 9999)
+
+# R² ajustado (En García-Seoane la reportan en el texto pero no en la tabla)
+# Boquete - "We also calculated individual adj. R2 for each predictorby phenoDIST_mod2eling the effect of each predictor while accounting for the others using partial constrained dbRDA"
+Rsq_phenoDIST_mod2 <- RsquareAdj(phenoDIST_mod2)
+Rsq_phenoDIST_mod2
+
+# FDR
+
+
+```
+
+```{r genDIST dbRDA genDIST_mod1, include=FALSE}
+# dbRDA
+genDIST_mod1 <- capscale(
+  genDIST ~ maternal,
+  data = treatment,
+  add = FALSE
+)
+
+# Significancia global
+Sig_genDIST_mod1 <- anova(genDIST_mod1, permutations = 9999)
+Sig_genDIST_mod1
+
+# Significancia por término (esto lo hacen en García-Seoane cuando el genDIST_mod1elo global sale significativo)
+anova(genDIST_mod1, by = "term", permutations = 9999)
+
+# R² ajustado (En García-Seoane la reportan en el texto pero no en la tabla)
+# Boquete - "We also calculated individual adj. R2 for each predictorby genDIST_mod1eling the effect of each predictor while accounting for the others using partial constrained dbRDA"
+Rsq_genDIST_mod1 <- RsquareAdj(genDIST_mod1)
+Rsq_genDIST_mod1
+
+# FDR
+
+
+```
+
 We conducted dbRDA using vegan::capscale with the epigenetic distance matrix as response and the herbivory treatments as predictors. To account for genetic variability, we summarized the SNP data (`r ncol(dos_filtered) ` SNPs) into principal components using PCA, and included the first PC (that explains `r var_txt`% of the genetic variability) as a condition in a constrained dbRDA. We tested the significance of the model using a permutation test with `r n_permut` permutations and obtained adjusted R2 values using the function RsquareAdj from the vegan package. We visualized the structure of the data in a 2-D space using the constrained ordination axes (RDA axes). We ran the following models for all contexts together and separately for each sequence context:
 
 1.  Epigenetic distance \~ Maternal herbivory
@@ -774,10 +855,14 @@ for(ctx in contextos){
 tbl_models <- bind_rows(models_list)
 
 tbl_models$Ctxt <- recode(tbl_models$Ctxt,
-                          CpG="CpG",
+                          CpG="CG",
                           CHG="CHG",
                           CHH="CHH",
                           all_CTXT="All")
+
+tbl_models$Ctxt <- factor(tbl_models$Ctxt, 
+                          levels = c("All", "CG", "CHG", "CHH"))
+
 
 tbl_models <- tbl_models %>%
   arrange(Model, Ctxt)
@@ -792,10 +877,13 @@ tab1 <- tbl_models %>%
 tbl_terms <- bind_rows(terms_list)
 
 tbl_terms$Ctxt <- recode(tbl_terms$Ctxt,
-                         CpG="CpG",
+                         CpG="CG",
                          CHG="CHG",
                          CHH="CHH",
                          all_CTXT="All")
+
+tbl_terms$Ctxt <- factor(tbl_terms$Ctxt, 
+                         levels = c("All", "CG", "CHG", "CHH"))
 
 tbl_terms <- tbl_terms %>%
   arrange(Ctxt)
@@ -807,7 +895,8 @@ tab2 <- tbl_terms %>%
 # Nota de tabla
 #------------------------------------------------
 
-footnote_text <- paste0(
+caption_text <- paste0(
+"Table 1. Results of the distance-based redundancy analysis (dbRDA) showing the percentage of epigenetic variance (EpiDIST) explained by maternal environment (M), real-time herbivory simulation (S), and/or their interaction (M:S) across different genomic contexts. ",
 "The models include analyses with and without adjusting for genetic structure (PC). ",
 "PC: first principal component from genetic data explaining ", var_txt,
 "% of the variance in scaled allele frequencies. ",
@@ -822,7 +911,8 @@ footnote_text <- paste0(
 kable(tab1,
       booktabs = TRUE,
       digits = 3,
-      caption = "Table 1. Results of the distance-based redundancy analysis (dbRDA) showing the percentage of epigenetic variance (ED) explained by maternal environment (M), real-time herbivory simulation (S), and/or their interaction (M:S) across different genomic contexts.") %>%
+      caption = caption_text,
+      col.names = c("Model","Ctxt","df","SumOfSqs","F","Pr(>F)", "adj. R²")) %>%
 
   kable_styling(full_width = TRUE,
               position = "center") %>%
@@ -852,11 +942,306 @@ column_spec(1, width = "14em") %>%
   column_spec(3, width = "14em") %>%
   column_spec(2,4:ncol(tab2), width = "6em") %>%
 
-  collapse_rows(columns = 1:2, valign = "top") %>%
-
-  footnote(general = footnote_text,
-           general_title = "")
+  collapse_rows(columns = 1:2, valign = "top") 
 ```
+
+```{r Tabla suplementaria, echo=FALSE, results='asis', warning=FALSE, message=FALSE}
+
+#------------------------------------------------
+# Función para extraer resultados de modelos globales (simplificada)
+#------------------------------------------------
+
+get_model_stats_pheno <- function(anova_obj, rsq_obj, model_label){
+  
+  tab <- as.data.frame(anova_obj)
+  p <- tab$`Pr(>F)`[1]
+  
+  data.frame(
+    Model = model_label,
+    df = tab$Df[1],
+    SumOfSqs = tab$Variance[1],
+    F = tab$F[1],
+    p_value = paste0(fmt_p(p), add_sig(p)),
+    p_raw = p,
+    adj_R2 = rsq_obj$adj.r.squared
+  )
+}
+
+#------------------------------------------------
+# Función para extraer resultados de modelos globales (para genDIST)
+#------------------------------------------------
+
+get_model_stats_gen <- function(anova_obj, rsq_obj, model_label){
+  
+  tab <- as.data.frame(anova_obj)
+  p <- tab$`Pr(>F)`[1]
+  
+  data.frame(
+    Model = model_label,
+    df = tab$Df[1],
+    SumOfSqs = tab$Variance[1],
+    F = tab$F[1],
+    p_value = paste0(fmt_p(p), add_sig(p)),
+    p_raw = p,
+    adj_R2 = rsq_obj$adj.r.squared
+  )
+}
+
+#------------------------------------------------
+# Función para extraer resultados ANOVA by terms (simplificada, sin Ctxt)
+#------------------------------------------------
+
+get_term_stats_pheno <- function(term_obj){
+  
+  tab <- as.data.frame(term_obj)[1:3,]
+  
+  predictors <- c(
+    "Maternal herbivory",
+    "Real-time herbivory",
+    "Maternal × Real-time"
+  )
+  
+  p <- tab$`Pr(>F)`
+  
+  data.frame(
+    Model = "PhenoDIST ~ M * S",
+    Predictor = predictors,
+    df = tab$Df,
+    Variance = tab$Variance,
+    F = tab$F,
+    p_value = paste0(fmt_p(p), add_sig(p))
+  )
+}
+
+#------------------------------------------------
+# EXTRAER RESULTADOS - Tabla de modelos globales
+#------------------------------------------------
+
+# Modelos para phenoDIST
+models_pheno_list <- rbind(
+  get_model_stats_pheno(Sig_phenoDIST_mod1, Rsq_phenoDIST_mod1, "PhenoDIST ~ M"),
+  get_model_stats_pheno(Sig_phenoDIST_mod2, Rsq_phenoDIST_mod2, "PhenoDIST ~ M * S")
+)
+
+# Modelo para genDIST
+models_gen_list <- rbind(
+  get_model_stats_gen(Sig_genDIST_mod1, Rsq_genDIST_mod1, "GenDIST ~ M")
+)
+
+#------------------------------------------------
+# EXTRAER RESULTADOS - Tabla ANOVA by terms
+#------------------------------------------------
+
+# ANOVA by terms para phenoDIST
+terms_pheno <- get_term_stats_pheno(Sig_terms_phenoDIST_mod2)
+
+#------------------------------------------------
+# PREPARAR TABLA 1 - Modelos globales
+#------------------------------------------------
+
+# Combinar ambas tablas
+tab_sup_models <- bind_rows(models_pheno_list, models_gen_list)
+
+# Reordenar columnas y filas
+tab_sup_models <- tab_sup_models %>%
+  select(Model, df, SumOfSqs, F, p_value, adj_R2) %>%
+  arrange(Model)
+
+#------------------------------------------------
+# PREPARAR TABLA 2 - ANOVA by terms
+#------------------------------------------------
+
+tab_sup_terms <- terms_pheno %>%
+  select(Model, Predictor, df, Variance, F, p_value)
+
+
+#------------------------------------------------
+# TABLA 1 – Global model tests
+#------------------------------------------------
+
+kable(tab_sup_models,
+      booktabs = TRUE,
+      digits = 3,
+      caption = "Table 2. Results of distance-based redundancy analysis (dbRDA) showing the percentage of variance in phenotypic and genetic distance explained by maternal environment (M) and real-time herbivory simulation (S). The results of the ANOVA performed to test for the significance of each predictor in the model with the interaction term (ANOVA by terms) are also shown. Significance codes: *** p < 0.001, ** p < 0.01, * p < 0.05.",
+      col.names = c("Model", "df", "SumOfSqs", "F", "Pr(>F)", "adj. R²")) %>%
+  
+  kable_styling(full_width = TRUE,
+                position = "center") %>%
+  column_spec(1, width = "12em") %>%
+  column_spec(2, width = "14em") %>%
+  column_spec(3:ncol(tab_sup_models), width = "6em") %>%
+  
+  collapse_rows(columns = 1, valign = "top") %>%
+  
+  row_spec(nrow(tab_sup_models), extra_css = "border-bottom: 1.5px solid;")
+
+# PEGADO DE TABLAS
+cat("<div style='margin-top:-15px;'></div>")
+
+#------------------------------------------------
+# TABLA 2 – ANOVA by terms (solo para phenoDIST)
+#------------------------------------------------
+
+kable(tab_sup_terms,
+      booktabs = TRUE,
+      digits = 3,
+      col.names = c("ANOVA by terms", "Predictor", "df", "Variance", "F", "Pr(>F)")) %>%
+  
+  kable_styling(full_width = TRUE,
+                position = "center") %>%
+  column_spec(1, width = "14em") %>%
+  column_spec(2, width = "14em") %>%
+  column_spec(3:ncol(tab_sup_terms), width = "6em") %>%
+  
+  collapse_rows(columns = 1, valign = "top") 
+```
+
+```{r EXPORTAR TABLAS A WORD, include=FALSE}
+library(flextable)
+library(officer)
+
+# Para la tabla 1
+tab1_flex <- tab1 %>%
+  flextable() %>%
+  colformat_double(j = c("SumOfSqs","F","adj_R2"), digits = 3) %>%
+  set_header_labels(
+    Model = "Model",
+    Ctxt = "Ctxt",
+    df = "df",
+    SumOfSqs = "SumOfSqs",
+    F = "F",
+    p_value = "Pr(>F)",
+    adj_R2 = "adj. R²"
+  ) %>%
+  merge_v(j = ~ Model) %>%  # similar a collapse_rows
+  theme_booktabs() %>%
+  fontsize(size = 10) %>%
+  width(width = c(2.2, 0.8, 0.5, 1, 0.8, 0.8, 0.8)) %>%
+  set_caption(caption = caption_text)
+
+# Para la tabla 2
+tab2_flex <- tab2 %>%
+  flextable() %>%
+  colformat_double(j = c("Variance","F"), digits = 3) %>%
+  set_header_labels(
+    Model = "ANOVA by terms",
+    Ctxt = "Ctxt",
+    Predictor = "Predictor",
+    df = "df",
+    Variance = "Variance",
+    F = "F",
+    p_value = "Pr(>F)"
+  ) %>%
+  merge_v(j = ~ Model + Ctxt) %>%
+  theme_booktabs() %>%
+  width(width = c(1.8, 0.8, 1.8, 0.5, 1, 1, 1)) %>%
+  fontsize(size = 10)
+
+# Para la tabla suplementaria 1
+tab_sup_models_flex <- tab_sup_models %>%
+  flextable() %>%
+  colformat_double(j = c("SumOfSqs","F","adj_R2"), digits = 3) %>%
+  set_header_labels(
+    Model = "Model",
+    df = "df",
+    SumOfSqs = "SumOfSqs",
+    F = "F",
+    p_value = "Pr(>F)",
+    adj_R2 = "adj. R²"
+  ) %>%
+  merge_v(j = ~ Model) %>%  # similar a collapse_rows
+  theme_booktabs() %>%
+  fontsize(size = 10) %>%
+  width(width = c(2, 0.8, 1, 0.8, 1, 1)) %>%
+  set_caption("Table 2. Results of distance-based redundancy analysis (dbRDA) showing the percentage of variance in phenotypic and genetic distance explained by maternal environment (M) and real-time herbivory simulation (S). The results of the ANOVA performed to test for the significance of each predictor in the model with the interaction term (ANOVA by terms) are also shown. Significance codes: *** p < 0.001, ** p < 0.01, * p < 0.05.")
+
+# Para la tabla suplementaria 2
+tab_sup_terms_flex <- tab_sup_terms %>%
+  flextable() %>%
+  colformat_double(j = c("Variance","F"), digits = 3) %>%
+  set_header_labels(
+    Model = "ANOVA by terms",
+    Predictor = "Predictor",
+    df = "df",
+    Variance = "Variance",
+    F = "F",
+    p_value = "Pr(>F)"
+  ) %>%
+  theme_booktabs() %>%
+  width(width = c(2, 1.8, 0.5, 0.8, 1, 1)) %>%
+  fontsize(size = 10)
+
+# Guardar ambas tablas en un mismo documento Word
+doc <- read_docx() %>%
+  body_add_flextable(tab1_flex) %>%
+  body_add_par("", style = "Normal") %>%   # separador
+  body_add_flextable(tab2_flex) %>%
+    body_add_break() %>%
+  body_add_flextable(tab_sup_models_flex) %>%
+  body_add_par("", style = "Normal") %>%   # separador
+  body_add_flextable(tab_sup_terms_flex)
+      
+
+print(doc, target = "tablas_dbRDA.docx")
+```
+
+```{r preparación plots, include=FALSE}
+## --- Preparación común ---
+treatment$group <- with(treatment,
+  ifelse(maternal == "graz" & simulation == "clip", "0",
+  ifelse(maternal == "ungraz" & simulation == "clip", "1",
+  ifelse(maternal == "graz" & simulation == "unclip", "2", "3")))
+)
+
+treatment_colors <- c(
+  "0" = "#FF69B4",
+  "1" = "#00FF7F",
+  "2" = "#8B3A62",
+  "3" = "#008B45"
+)
+
+cols_alpha <- adjustcolor(
+  treatment_colors[treatment$group],
+  alpha.f = 0.6
+)
+```
+
+```{r función para plot, include=FALSE}
+plot_rda <- function(model, panel_label) {
+
+  eig <- summary(model)$cont$importance[2, 1:2] * 100
+  sc  <- scores(model, display = "sites", choices = 1:2)
+
+  xlim <- range(sc[,1]) * 1.1
+  ylim <- range(sc[,2]) * 1.1
+
+  plot(
+    sc,
+    pch = 19,
+    col = cols_alpha,
+    xlim = xlim,
+    ylim = ylim,
+    xlab = paste0("RDA1 (", round(eig[1], 1), "%)"),
+    ylab = paste0("RDA2 (", round(eig[2], 1), "%)")
+  )
+
+  mtext(paste(panel_label), side = 3, adj = 0, line = 0.5, font = 2)
+}
+```
+
+
+
+```{r Fig. 1, echo=FALSE, results='hold', warning=FALSE, message=FALSE}
+
+par(mfrow = c(2, 2), mar = c(4,4,2,1))
+
+plot_rda(CpG_mod1, "A")
+plot_rda(CHG_mod1, "B")
+plot_rda(CHH_mod1, "C")
+plot_rda(all_CTXT_mod1, "D")
+
+```
+
 
 
 ### CpG

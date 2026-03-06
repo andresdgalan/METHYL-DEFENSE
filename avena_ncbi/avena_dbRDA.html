@@ -609,9 +609,15 @@ Condition (PC)</p></li>
 <table class="table" style="color: black; margin-left: auto; margin-right: auto;">
 <caption>
 Table 1. Results of the distance-based redundancy analysis (dbRDA)
-showing the percentage of epigenetic variance (ED) explained by maternal
-environment (M), real-time herbivory simulation (S), and/or their
-interaction (M:S) across different genomic contexts.
+showing the percentage of epigenetic variance (EpiDIST) explained by
+maternal environment (M), real-time herbivory simulation (S), and/or
+their interaction (M:S) across different genomic contexts. The models
+include analyses with and without adjusting for genetic structure (PC).
+PC: first principal component from genetic data explaining 30.10% of the
+variance in scaled allele frequencies. Significance codes: *** p &lt;
+0.001, ** p &lt; 0.01, * p &lt; 0.05.The results of the ANOVA performed
+to test for the significance of each predictor in the model with the
+interaction term (ANOVA by terms) are also shown.
 </caption>
 <thead>
 <tr>
@@ -631,10 +637,10 @@ SumOfSqs
 F
 </th>
 <th style="text-align:left;">
-p_value
+Pr(&gt;F)
 </th>
 <th style="text-align:right;">
-adj_R2
+adj. R²
 </th>
 </tr>
 </thead>
@@ -660,6 +666,26 @@ All
 </td>
 <td style="text-align:right;width: 6em; ">
 0.071
+</td>
+</tr>
+<tr>
+<td style="text-align:left;width: 6em; ">
+CG
+</td>
+<td style="text-align:right;width: 6em; ">
+1
+</td>
+<td style="text-align:right;width: 6em; ">
+240957.3
+</td>
+<td style="text-align:right;width: 6em; ">
+9.000
+</td>
+<td style="text-align:left;width: 6em; ">
+&lt;0.001***
+</td>
+<td style="text-align:right;width: 6em; ">
+0.163
 </td>
 </tr>
 <tr>
@@ -703,26 +729,6 @@ CHH
 </td>
 </tr>
 <tr>
-<td style="text-align:left;width: 6em; ">
-CpG
-</td>
-<td style="text-align:right;width: 6em; ">
-1
-</td>
-<td style="text-align:right;width: 6em; ">
-240957.3
-</td>
-<td style="text-align:right;width: 6em; ">
-9.000
-</td>
-<td style="text-align:left;width: 6em; ">
-&lt;0.001***
-</td>
-<td style="text-align:right;width: 6em; ">
-0.163
-</td>
-</tr>
-<tr>
 <td style="text-align:left;width: 14em; vertical-align: top !important;" rowspan="4">
 ED ~ M * S
 </td>
@@ -743,6 +749,26 @@ All
 </td>
 <td style="text-align:right;width: 6em; ">
 0.075
+</td>
+</tr>
+<tr>
+<td style="text-align:left;width: 6em; ">
+CG
+</td>
+<td style="text-align:right;width: 6em; ">
+3
+</td>
+<td style="text-align:right;width: 6em; ">
+303551.4
+</td>
+<td style="text-align:right;width: 6em; ">
+3.813
+</td>
+<td style="text-align:left;width: 6em; ">
+&lt;0.001***
+</td>
+<td style="text-align:right;width: 6em; ">
+0.171
 </td>
 </tr>
 <tr>
@@ -786,26 +812,6 @@ CHH
 </td>
 </tr>
 <tr>
-<td style="text-align:left;width: 6em; ">
-CpG
-</td>
-<td style="text-align:right;width: 6em; ">
-3
-</td>
-<td style="text-align:right;width: 6em; ">
-303551.4
-</td>
-<td style="text-align:right;width: 6em; ">
-3.813
-</td>
-<td style="text-align:left;width: 6em; ">
-&lt;0.001***
-</td>
-<td style="text-align:right;width: 6em; ">
-0.171
-</td>
-</tr>
-<tr>
 <td style="text-align:left;width: 14em; vertical-align: top !important;" rowspan="4">
 ED ~ M * S + Condition(PC)
 </td>
@@ -826,6 +832,26 @@ All
 </td>
 <td style="text-align:right;width: 6em; ">
 0.018
+</td>
+</tr>
+<tr>
+<td style="text-align:left;width: 6em; ">
+CG
+</td>
+<td style="text-align:right;width: 6em; ">
+3
+</td>
+<td style="text-align:right;width: 6em; ">
+102946.4
+</td>
+<td style="text-align:right;width: 6em; ">
+1.334
+</td>
+<td style="text-align:left;width: 6em; ">
+0.002**
+</td>
+<td style="text-align:right;width: 6em; ">
+0.020
 </td>
 </tr>
 <tr>
@@ -869,26 +895,6 @@ CHH
 </td>
 </tr>
 <tr>
-<td style="text-align:left;width: 6em; ">
-CpG
-</td>
-<td style="text-align:right;width: 6em; ">
-3
-</td>
-<td style="text-align:right;width: 6em; ">
-102946.4
-</td>
-<td style="text-align:right;width: 6em; ">
-1.334
-</td>
-<td style="text-align:left;width: 6em; ">
-0.002**
-</td>
-<td style="text-align:right;width: 6em; ">
-0.020
-</td>
-</tr>
-<tr>
 <td style="text-align:left;width: 14em; vertical-align: top !important;" rowspan="4">
 ED ~ PC
 </td>
@@ -913,6 +919,26 @@ All
 </tr>
 <tr>
 <td style="text-align:left;width: 6em; ">
+CG
+</td>
+<td style="text-align:right;width: 6em; ">
+1
+</td>
+<td style="text-align:right;width: 6em; ">
+257375.2
+</td>
+<td style="text-align:right;width: 6em; ">
+9.763
+</td>
+<td style="text-align:left;width: 6em; ">
+&lt;0.001***
+</td>
+<td style="text-align:right;width: 6em; ">
+0.176
+</td>
+</tr>
+<tr>
+<td style="text-align:left;width: 6em; ">
 CHG
 </td>
 <td style="text-align:right;width: 6em; ">
@@ -932,43 +958,23 @@ CHG
 </td>
 </tr>
 <tr>
-<td style="text-align:left;width: 6em; ">
+<td style="text-align:left;width: 6em; border-bottom: 1.5px solid;">
 CHH
 </td>
-<td style="text-align:right;width: 6em; ">
+<td style="text-align:right;width: 6em; border-bottom: 1.5px solid;">
 1
 </td>
-<td style="text-align:right;width: 6em; ">
+<td style="text-align:right;width: 6em; border-bottom: 1.5px solid;">
 125995.2
 </td>
-<td style="text-align:right;width: 6em; ">
+<td style="text-align:right;width: 6em; border-bottom: 1.5px solid;">
 2.640
 </td>
-<td style="text-align:left;width: 6em; ">
+<td style="text-align:left;width: 6em; border-bottom: 1.5px solid;">
 &lt;0.001***
 </td>
-<td style="text-align:right;width: 6em; ">
+<td style="text-align:right;width: 6em; border-bottom: 1.5px solid;">
 0.038
-</td>
-</tr>
-<tr>
-<td style="text-align:left;width: 6em; border-bottom: 1.5px solid;">
-CpG
-</td>
-<td style="text-align:right;width: 6em; border-bottom: 1.5px solid;">
-1
-</td>
-<td style="text-align:right;width: 6em; border-bottom: 1.5px solid;">
-257375.2
-</td>
-<td style="text-align:right;width: 6em; border-bottom: 1.5px solid;">
-9.763
-</td>
-<td style="text-align:left;width: 6em; border-bottom: 1.5px solid;">
-&lt;0.001***
-</td>
-<td style="text-align:right;width: 6em; border-bottom: 1.5px solid;">
-0.176
 </td>
 </tr>
 </tbody>
@@ -976,7 +982,7 @@ CpG
 <div style="margin-top:-15px;">
 
 </div>
-<table class="table" style="color: black; margin-left: auto; margin-right: auto;border-bottom: 0;">
+<table class="table" style="color: black; margin-left: auto; margin-right: auto;">
 <thead>
 <tr>
 <th style="text-align:left;">
@@ -1040,7 +1046,7 @@ Real-time herbivory
 1.066
 </td>
 <td style="text-align:left;">
-0.202
+0.203
 </td>
 </tr>
 <tr>
@@ -1057,7 +1063,61 @@ Maternal × Real-time
 1.087
 </td>
 <td style="text-align:left;">
-0.161
+0.171
+</td>
+</tr>
+<tr>
+<td style="text-align:left;width: 6em; font-weight: bold;vertical-align: top !important;" rowspan="3">
+CG
+</td>
+<td style="text-align:left;width: 14em; ">
+Maternal herbivory
+</td>
+<td style="text-align:right;">
+1
+</td>
+<td style="text-align:right;">
+240957.31
+</td>
+<td style="text-align:right;">
+9.081
+</td>
+<td style="text-align:left;">
+&lt;0.001***
+</td>
+</tr>
+<tr>
+<td style="text-align:left;width: 14em; ">
+Real-time herbivory
+</td>
+<td style="text-align:right;">
+1
+</td>
+<td style="text-align:right;">
+30800.60
+</td>
+<td style="text-align:right;">
+1.161
+</td>
+<td style="text-align:left;">
+0.188
+</td>
+</tr>
+<tr>
+<td style="text-align:left;width: 14em; ">
+Maternal × Real-time
+</td>
+<td style="text-align:right;">
+1
+</td>
+<td style="text-align:right;">
+31793.53
+</td>
+<td style="text-align:right;">
+1.198
+</td>
+<td style="text-align:left;">
+0.170
 </td>
 </tr>
 <tr>
@@ -1094,7 +1154,7 @@ Real-time herbivory
 1.039
 </td>
 <td style="text-align:left;">
-0.227
+0.232
 </td>
 </tr>
 <tr>
@@ -1111,7 +1171,7 @@ Maternal × Real-time
 1.078
 </td>
 <td style="text-align:left;">
-0.152
+0.147
 </td>
 </tr>
 <tr>
@@ -1148,7 +1208,7 @@ Real-time herbivory
 1.049
 </td>
 <td style="text-align:left;">
-0.177
+0.186
 </td>
 </tr>
 <tr>
@@ -1165,26 +1225,150 @@ Maternal × Real-time
 1.038
 </td>
 <td style="text-align:left;">
-0.213
+0.204
+</td>
+</tr>
+</tbody>
+</table>
+<table class="table" style="color: black; margin-left: auto; margin-right: auto;">
+<caption>
+Table 2. Results of distance-based redundancy analysis (dbRDA) showing
+the percentage of variance in phenotypic and genetic distance explained
+by maternal environment (M) and real-time herbivory simulation (S). The
+results of the ANOVA performed to test for the significance of each
+predictor in the model with the interaction term (ANOVA by terms) are
+also shown. Significance codes: *** p &lt; 0.001, ** p &lt; 0.01, * p
+&lt; 0.05.
+</caption>
+<thead>
+<tr>
+<th style="text-align:left;">
+Model
+</th>
+<th style="text-align:right;">
+df
+</th>
+<th style="text-align:right;">
+SumOfSqs
+</th>
+<th style="text-align:right;">
+F
+</th>
+<th style="text-align:left;">
+Pr(&gt;F)
+</th>
+<th style="text-align:right;">
+adj. R²
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:left;width: 12em; ">
+GenDIST ~ M
+</td>
+<td style="text-align:right;width: 14em; ">
+1
+</td>
+<td style="text-align:right;width: 6em; ">
+156.524
+</td>
+<td style="text-align:right;width: 6em; ">
+17.065
+</td>
+<td style="text-align:left;width: 6em; ">
+&lt;0.001***
+</td>
+<td style="text-align:right;width: 6em; ">
+0.282
 </td>
 </tr>
 <tr>
-<td style="text-align:left;width: 6em; font-weight: bold;vertical-align: top !important;" rowspan="3">
-CpG
+<td style="text-align:left;width: 12em; ">
+PhenoDIST ~ M
+</td>
+<td style="text-align:right;width: 14em; ">
+1
+</td>
+<td style="text-align:right;width: 6em; ">
+4.713
+</td>
+<td style="text-align:right;width: 6em; ">
+11.763
+</td>
+<td style="text-align:left;width: 6em; ">
+&lt;0.001***
+</td>
+<td style="text-align:right;width: 6em; ">
+0.208
+</td>
+</tr>
+<tr>
+<td style="text-align:left;width: 12em; border-bottom: 1.5px solid;">
+PhenoDIST ~ M * S
+</td>
+<td style="text-align:right;width: 14em; border-bottom: 1.5px solid;">
+3
+</td>
+<td style="text-align:right;width: 6em; border-bottom: 1.5px solid;">
+6.641
+</td>
+<td style="text-align:right;width: 6em; border-bottom: 1.5px solid;">
+5.968
+</td>
+<td style="text-align:left;width: 6em; border-bottom: 1.5px solid;">
+&lt;0.001***
+</td>
+<td style="text-align:right;width: 6em; border-bottom: 1.5px solid;">
+0.267
+</td>
+</tr>
+</tbody>
+</table>
+<div style="margin-top:-15px;">
+
+</div>
+<table class="table" style="color: black; margin-left: auto; margin-right: auto;">
+<thead>
+<tr>
+<th style="text-align:left;">
+ANOVA by terms
+</th>
+<th style="text-align:left;">
+Predictor
+</th>
+<th style="text-align:right;">
+df
+</th>
+<th style="text-align:right;">
+Variance
+</th>
+<th style="text-align:right;">
+F
+</th>
+<th style="text-align:left;">
+Pr(&gt;F)
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:left;width: 14em; vertical-align: top !important;" rowspan="3">
+PhenoDIST ~ M * S
 </td>
 <td style="text-align:left;width: 14em; ">
 Maternal herbivory
 </td>
-<td style="text-align:right;">
+<td style="text-align:right;width: 6em; ">
 1
 </td>
-<td style="text-align:right;">
-240957.31
+<td style="text-align:right;width: 6em; ">
+4.713
 </td>
-<td style="text-align:right;">
-9.081
+<td style="text-align:right;width: 6em; ">
+12.704
 </td>
-<td style="text-align:left;">
+<td style="text-align:left;width: 6em; ">
 &lt;0.001***
 </td>
 </tr>
@@ -1192,50 +1376,37 @@ Maternal herbivory
 <td style="text-align:left;width: 14em; ">
 Real-time herbivory
 </td>
-<td style="text-align:right;">
+<td style="text-align:right;width: 6em; ">
 1
 </td>
-<td style="text-align:right;">
-30800.60
+<td style="text-align:right;width: 6em; ">
+1.327
 </td>
-<td style="text-align:right;">
-1.161
+<td style="text-align:right;width: 6em; ">
+3.577
 </td>
-<td style="text-align:left;">
-0.195
+<td style="text-align:left;width: 6em; ">
+0.003**
 </td>
 </tr>
 <tr>
 <td style="text-align:left;width: 14em; ">
 Maternal × Real-time
 </td>
-<td style="text-align:right;">
+<td style="text-align:right;width: 6em; ">
 1
 </td>
-<td style="text-align:right;">
-31793.53
+<td style="text-align:right;width: 6em; ">
+0.602
 </td>
-<td style="text-align:right;">
-1.198
+<td style="text-align:right;width: 6em; ">
+1.622
 </td>
-<td style="text-align:left;">
-0.171
+<td style="text-align:left;width: 6em; ">
+0.110
 </td>
 </tr>
 </tbody>
-<tfoot>
-<tr>
-<td style="padding: 0; " colspan="100%">
-<sup></sup> The models include analyses with and without adjusting for
-genetic structure (PC). PC: first principal component from genetic data
-explaining 30.10% of the variance in scaled allele frequencies.
-Significance codes: *** p &lt; 0.001, ** p &lt; 0.01, * p &lt; 0.05.The
-results of the ANOVA performed to test for the significance of each
-predictor in the model with the interaction term (ANOVA by terms) are
-also shown.
-</td>
-</tr>
-</tfoot>
 </table>
 <div id="cpg" class="section level3">
 <h3>CpG</h3>

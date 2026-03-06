@@ -345,6 +345,19 @@ ENV_dist_matrix_std <- ENV_dist_matrix_std[rownames(PHENO_dist_matrix_std), coln
 
 # Verificación
 identical(rownames(PHENO_dist_matrix_std), rownames(ENV_dist_matrix_std))
+
+saveRDS(PHENO_dist_matrix_std, file = "PHENO_dist_matrix_std.rds")
+saveRDS(SNP_dist_matrix_std, file = "SNP_dist_matrix_std.rds")
+saveRDS(CpG_dist_matrix_std, file = "CpG_dist_matrix_std.rds")
+saveRDS(CHG_dist_matrix_std, file = "CHG_dist_matrix_std.rds")
+saveRDS(CHH_dist_matrix_std, file = "CHH_dist_matrix_std.rds")
+saveRDS(all_CTXT_dist_matrix_std, file = "all_CTXT_dist_matrix_std.rds")
+
+saveRDS(PHENOTYPE_dist_matrix, file = "PHENO_dist_matrix.rds")
+saveRDS(SNP_dist_matrix, file = "SNP_dist_matrix.rds")
+saveRDS(CpG_dist_matrix, file = "CpG_dist_matrix.rds")
+saveRDS(CHG_dist_matrix, file = "CHG_dist_matrix.rds")
+saveRDS(CHH_dist_matrix, file = "CHH_dist_matrix.rds")
 ```
 
 ```{r Multicollinearity test, echo=FALSE, results='hold', warning=FALSE, message=FALSE}
