@@ -583,214 +583,139 @@ mmrr_all_ctxt$Coefficients
 ```
 
 
+
 ```{r MMRR TABLA, echo=FALSE, results='hold', warning=FALSE, message=FALSE}
-# Cargamos librerías necesarias
+library(dplyr)
 library(knitr)
 library(kableExtra)
 
-# Función para extraer los coeficientes de un predictor específico
-get_predictor_stats <- function(coef_matrix, predictor_name) {
-  # Buscamos la fila que contiene el predictor (XsGenetic, Xscpg, Xschg, Xschh, Xsall_ctxt, XsEnvironmental)
-  # Usamos grep flexible que busca el patrón sin importar mayúsculas/minúsculas
-  pattern <- paste0("Xs", predictor_name, "|", predictor_name)
-  row_idx <- grep(pattern, rownames(coef_matrix), ignore.case = TRUE)
-  
-  if (length(row_idx) > 0) {
-    return(data.frame(
-      Coefficient = coef_matrix[row_idx, "Coefficient"],
-      p_value_coef = coef_matrix[row_idx, "p.value"]
-    ))
-  } else {
-    return(data.frame(
-      Coefficient = NA,
-      p_value_coef = NA
-    ))
-  }
+# función para añadir significancia como en el paper
+format_p <- function(p){
+  if(is.na(p)) return("")
+  if(p < 0.001) return("<0.001***")
+  if(p < 0.01) return(paste0(sprintf("%.3f",p),"**"))
+  if(p < 0.05) return(paste0(sprintf("%.3f",p),"*"))
+  return(paste0(sprintf("%.3f",p)," ns"))
 }
 
-# Función principal para crear la tabla completa con todos los modelos
-create_mmrr_table <- function(mmrr_cpg, mmrr_chg, mmrr_chh, mmrr_all_ctxt, mmrr_gen) {
-  
-  # Lista para almacenar todas las filas
-  rows_list <- list()
-  
-  # Función interna para procesar cada modelo
-  process_model <- function(mmrr_obj, model_label, genetic_included, cpg_included, chg_included, chh_included, all_ctxt_included) {
-    
-    # Extraemos coeficientes para cada predictor
-    genetic_stats <- if(genetic_included) get_predictor_stats(mmrr_obj$Coefficients, "Genetic") else data.frame(Coefficient = NA, p_value_coef = NA)
-    cpg_stats <- if(cpg_included) get_predictor_stats(mmrr_obj$Coefficients, "cpg") else data.frame(Coefficient = NA, p_value_coef = NA)
-    chg_stats <- if(chg_included) get_predictor_stats(mmrr_obj$Coefficients, "chg") else data.frame(Coefficient = NA, p_value_coef = NA)
-    chh_stats <- if(chh_included) get_predictor_stats(mmrr_obj$Coefficients, "chh") else data.frame(Coefficient = NA, p_value_coef = NA)
-    all_ctxt_stats <- if(all_ctxt_included) get_predictor_stats(mmrr_obj$Coefficients, "all_ctxt") else data.frame(Coefficient = NA, p_value_coef = NA)
-    env_stats <- get_predictor_stats(mmrr_obj$Coefficients, "Environmental")
-    
-    # Creamos la fila
-    data.frame(
-      Model = model_label,
-      
-      # Overall regression
-      R2 = mmrr_obj$R2,
-      F = mmrr_obj$F_statistic,
-      p_value = mmrr_obj$F_p,
-      
-      # Genetic distance
-      Genetic_Coeff = genetic_stats$Coefficient,
-      Genetic_p = genetic_stats$p_value_coef,
-      
-      # CpG distance
-      CpG_Coeff = cpg_stats$Coefficient,
-      CpG_p = cpg_stats$p_value_coef,
-      
-      # CHG distance
-      CHG_Coeff = chg_stats$Coefficient,
-      CHG_p = chg_stats$p_value_coef,
-      
-      # CHH distance
-      CHH_Coeff = chh_stats$Coefficient,
-      CHH_p = chh_stats$p_value_coef,
-      
-      # All contexts distance
-      AllCtxt_Coeff = all_ctxt_stats$Coefficient,
-      AllCtxt_p = all_ctxt_stats$p_value_coef,
-      
-      # Environmental distance
-      Environmental_Coeff = env_stats$Coefficient,
-      Environmental_p = env_stats$p_value_coef,
-      
-      stringsAsFactors = FALSE,
-      row.names = NULL
-    )
-  }
-  
-  # Procesamos cada modelo con sus predictores específicos
-  rows_list[[1]] <- process_model(mmrr_cpg, "PhenD ~ CpGD + EnvD", 
-                                   genetic_included = FALSE, cpg_included = TRUE, 
-                                   chg_included = FALSE, chh_included = FALSE, all_ctxt_included = FALSE)
-  
-  rows_list[[2]] <- process_model(mmrr_chg, "PhenD ~ CHGD + GenD + EnvD", 
-                                   genetic_included = TRUE, cpg_included = FALSE, 
-                                   chg_included = TRUE, chh_included = FALSE, all_ctxt_included = FALSE)
-  
-  rows_list[[3]] <- process_model(mmrr_chh, "PhenD ~ CHHD + Gen + EnvD", 
-                                   genetic_included = TRUE, cpg_included = FALSE, 
-                                   chg_included = FALSE, chh_included = TRUE, all_ctxt_included = FALSE)
-  
-  rows_list[[4]] <- process_model(mmrr_all_ctxt, "PhenD ~ AllCtxtD + Gen + EnvD", 
-                                   genetic_included = TRUE, cpg_included = FALSE, 
-                                   chg_included = FALSE, chh_included = FALSE, all_ctxt_included = TRUE)
-  
-  rows_list[[5]] <- process_model(mmrr_gen, "PhenD ~ GenD + EnvD", 
-                                   genetic_included = TRUE, cpg_included = FALSE, 
-                                   chg_included = FALSE, chh_included = FALSE, all_ctxt_included = FALSE)
-  
-  # Combinamos todas las filas
-  results_tbl <- do.call(rbind, rows_list)
-  
-  # Calculamos FDR para el p-value global
-  results_tbl$FDR <- p.adjust(results_tbl$p_value, method = "fdr")
-  
-  # Reordenamos las columnas
-  results_tbl <- results_tbl[, c(
-    "Model", 
-    "R2", "F", "p_value", "FDR",
-    "Genetic_Coeff", "Genetic_p",
-    "CpG_Coeff", "CpG_p",
-    "CHG_Coeff", "CHG_p",
-    "CHH_Coeff", "CHH_p",
-    "AllCtxt_Coeff", "AllCtxt_p",
-    "Environmental_Coeff", "Environmental_p"
-  )]
-  
-  return(results_tbl)
-}
+# función que convierte un modelo MMRR en las filas de la tabla
+extract_mmrr <- function(model, response_name){
 
-# Creamos la tabla con todos los modelos
-results_tbl <- create_mmrr_table(mmrr_cpg, mmrr_chg, mmrr_chh, mmrr_all_ctxt, mmrr_gen)
+  coef_table <- model$Coefficients
 
-# Función para formatear valores numéricos
-# Función para formatear valores numéricos
-format_value <- function(x, is_pvalue = FALSE) {
-  if (is.na(x)) {
-    return("-")
-  } else if (is_pvalue && x < 0.001) {
-    return("<0.001")
-  } else {
-    return(sprintf("%.3f", x))
-  }
-}
-
-# Aplicamos formato a todas las columnas numéricas
-# Aplicamos formato a todas las columnas numéricas
-results_tbl_formatted <- results_tbl
-
-# Identificamos columnas que son p-valores
-pvalue_cols <- grep("_p$|p_value$|FDR$", names(results_tbl_formatted))
-
-# Aplicamos formato diferenciado
-for (i in 1:ncol(results_tbl_formatted)) {
-  col_name <- names(results_tbl_formatted)[i]
-  if (is.numeric(results_tbl_formatted[[i]])) {
-    if (col_name %in% names(results_tbl_formatted)[pvalue_cols] || col_name == "p_value" || col_name == "FDR") {
-      # Es una columna de p-valor
-      results_tbl_formatted[[i]] <- sapply(results_tbl_formatted[[i]], function(x) format_value(x, is_pvalue = TRUE))
-    } else {
-      # Es una columna de coeficiente o estadístico
-      results_tbl_formatted[[i]] <- sapply(results_tbl_formatted[[i]], function(x) format_value(x, is_pvalue = FALSE))
-    }
-  }
-}
-
-# Creamos la tabla con formato mejorado
-results_tbl_formatted %>%
-  kable(
-    caption = "Table 1. Results of Multiple Matrix Regression with Randomization (MMRR) showing overall model fit and individual predictor contributions for epigenetic (CpG, CHG, CHH, all contexts) and genetic models.",
-    booktabs = TRUE,
-    escape = FALSE,
-    col.names = c(
-      "Model", 
-      "R²", "F", "p-value", "FDR",
-      "Coeff", "p-value",  # Genetic
-      "Coeff", "p-value",  # CpG
-      "Coeff", "p-value",  # CHG
-      "Coeff", "p-value",  # CHH
-      "Coeff", "p-value",  # All contexts
-      "Coeff", "p-value"   # Environmental
-    )
-  ) %>%
-  kable_styling(
-    full_width = FALSE,
-    position = "center",
-    font_size = 10
-  ) %>%
-  
-  # Añadimos cabeceras múltiples para agrupar las columnas
-  add_header_above(c(
-    " " = 1,  # Model column
-    "Overall Regression" = 4,  # R², F, p-value, FDR
-    "Genetic Distance" = 2,
-    "CpG Distance" = 2,
-    "CHG Distance" = 2,
-    "CHH Distance" = 2,
-    "All Contexts Distance" = 2,
-    "Environmental Distance" = 2
-  )) %>%
-  
-  # Añadimos formato condicional para resaltar valores significativos (opcional)
-  column_spec(5, bold = ifelse(as.numeric(results_tbl$FDR) < 0.05, TRUE, FALSE)) %>%
-  
-  # Añadimos nota al pie
-  footnote(
-    general = paste0(
-      "Results of Multiple Matrix Regression with Randomization (MMRR). ",
-      "Overall model statistics include R² (proportion of variance explained), ",
-      "F-statistic, and associated p-value with FDR correction. ",
-      "Individual predictor statistics show the standardized coefficient and ",
-      "its p-value. '−' indicates the predictor was not included in the model. ",
-      "Significant FDR values (p < 0.05) are shown in bold."
-    ),
-    general_title = "Note:",
-    footnote_as_chunk = TRUE
+  predictor_names <- c(
+    "(Intercept)"="Intercept",
+    "XsGenetic"="GenDist",
+    "XsEnvironmental"="EnvironDist",
+    "Xsall_ctxt"="EpiDist-all",
+    "XsCpG"="EpiDist-CG",
+    "Xschg"="EpiDist-CHG",
+    "Xschh"="EpiDist-CHH"
   )
+
+  rows <- data.frame()
+
+  for(i in 1:nrow(coef_table)){
+
+    pred_raw <- rownames(coef_table)[i]
+
+    pred <- predictor_names[pred_raw]
+
+    rows <- rbind(
+      rows,
+      data.frame(
+        Response = response_name,
+        Predictor = pred,
+        Coeff = sprintf("%.3f",coef_table$Coefficient[i]),
+        tStat = sprintf("%.3f",coef_table$t.value[i]),
+        tPvalue = format_p(coef_table$p.value[i]),
+        Fstat = "",
+        FpVal = "",
+        R2 = ""
+      )
+    )
+  }
+
+  # fila overall model
+  rows <- rbind(
+    rows,
+    data.frame(
+      Response = "",
+      Predictor = "Overall model",
+      Coeff = "",
+      tStat = "",
+      tPvalue = "",
+      Fstat = sprintf("%.1f",model$F_statistic),
+      FpVal = format_p(model$F_p),
+      R2 = sprintf("%.3f",model$R2)
+    )
+  )
+
+  rows
+}
+
+# construir tabla completa
+table_mmrr <- bind_rows(
+  extract_mmrr(mmrr_all_ctxt,"PhenoDist"),
+  extract_mmrr(mmrr_cpg,"PhenoDist"),
+  extract_mmrr(mmrr_chg,"PhenoDist"),
+  extract_mmrr(mmrr_chh,"PhenoDist"),
+  extract_mmrr(mmrr_gen,"PhenoDist")
+)
+
+# mostrar Response solo una vez por bloque
+table_mmrr <- table_mmrr %>%
+  group_by(Response) %>%
+  mutate(Response = ifelse(row_number()==1, Response, "")) %>%
+  ungroup()
+
+# crear tabla final
+kable(
+  table_mmrr,
+  booktabs = TRUE,
+  col.names=c("Response","Predictor","Coeff.","tStat","tPvalue","Fstat","FpVal","R²"),
+  align=c("l","l","c","c","c","c","c","c"),
+  caption="Table 1. Results of the multiple matrix regression with randomization (MMRR) analysis showing regression coefficients for each predictor, t statistics and associated p-values, together with overall model statistics (F statistic, F p-value and R²). Significance codes: *** p < 0.001, ** p < 0.01, * p < 0.05."
+) %>%
+  kable_styling(
+    full_width = TRUE,
+    font_size = 10,
+    bootstrap_options = "none"
+) %>%
+  column_spec(1:ncol(table_mmrr),
+              extra_css = "min-width:90px;"
+  ) %>%
+  row_spec(0, extra_css = "border-top: 2px solid black; border-bottom: 2px solid black;") %>%
+  row_spec(nrow(table_mmrr), extra_css = "border-bottom: 2px solid black;")
+```
+
+```{r EXPORTAR A WORD, include=FALSE}
+library(flextable)
+library(officer)
+
+mmrr_flex <- table_mmrr %>%
+  flextable() %>%
+  set_header_labels(
+    Response = "Response",
+    Predictor = "Predictor",
+    Coeff = "Coeff.",
+    tStat = "tStat",
+    tPvalue = "tPvalue",
+    Fstat = "Fstat",
+    FpVal = "FpVal",
+    R2 = "R²"
+  ) %>%
+  merge_v(j = ~ Response) %>%  # igual que collapse_rows
+  theme_booktabs() %>%
+  fontsize(size = 10) %>%
+  width(width = c(1.1, 1.4, 0.9, 0.9, 1.2, 0.9, 1, 0.8)) %>%
+  set_caption(
+    "Table 1. Results of the multiple matrix regression with randomization (MMRR) analysis showing regression coefficients for each predictor, t statistics and associated p-values, together with overall model statistics (F statistic, F p-value and R²). Significance codes: *** p < 0.001, ** p < 0.01, * p < 0.05, ns p > 0.05."
+  )
+
+doc <- read_docx() %>%
+  body_add_flextable(mmrr_flex)
+
+print(doc, target = "table_mmrr.docx")
 ```
 

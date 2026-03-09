@@ -805,7 +805,7 @@ get_term_stats <- function(term_obj, ctxt){
   p <- tab$`Pr(>F)`
 
   data.frame(
-    Model = "ED ~ M * S",
+    Model = "EpiDist ~ M * S",
     Ctxt = ctxt,
     Predictor = predictors,
     df = tab$Df,
@@ -837,10 +837,10 @@ for(ctx in contextos){
   rsq_mod4 <- get(paste0("Rsq_", ctx, "_mod4"))
 
   models_list[[ctx]] <- rbind(
-    get_model_stats(sig_mod1, rsq_mod1, "ED ~ M", ctx),
-    get_model_stats(sig_mod2, rsq_mod2, "ED ~ M * S", ctx),
-    get_model_stats(sig_mod3, rsq_mod3, "ED ~ M * S + Condition(PC)", ctx),
-    get_model_stats(sig_mod4, rsq_mod4, "ED ~ PC", ctx)
+    get_model_stats(sig_mod1, rsq_mod1, "EpiDist ~ M", ctx),
+    get_model_stats(sig_mod2, rsq_mod2, "EpiDist ~ M * S", ctx),
+    get_model_stats(sig_mod3, rsq_mod3, "EpiDist ~ M * S + Condition(PC)", ctx),
+    get_model_stats(sig_mod4, rsq_mod4, "EpiDist ~ PC", ctx)
   )
 
   term_obj <- get(paste0("Sig_terms_", ctx, "_mod2"))
@@ -896,7 +896,7 @@ tab2 <- tbl_terms %>%
 #------------------------------------------------
 
 caption_text <- paste0(
-"Table 1. Results of the distance-based redundancy analysis (dbRDA) showing the percentage of epigenetic variance (EpiDIST) explained by maternal environment (M), real-time herbivory simulation (S), and/or their interaction (M:S) across different genomic contexts. ",
+"Table 1. Results of the distance-based redundancy analysis (dbRDA) showing the percentage of epigenetic variance (EpiDist) explained by maternal environment (M), real-time herbivory simulation (S), and/or their interaction (M:S) across different genomic contexts. ",
 "The models include analyses with and without adjusting for genetic structure (PC). ",
 "PC: first principal component from genetic data explaining ", var_txt,
 "% of the variance in scaled allele frequencies. ",
@@ -1004,7 +1004,7 @@ get_term_stats_pheno <- function(term_obj){
   p <- tab$`Pr(>F)`
   
   data.frame(
-    Model = "PhenoDIST ~ M * S",
+    Model = "PhenoDist ~ M * S",
     Predictor = predictors,
     df = tab$Df,
     Variance = tab$Variance,
@@ -1019,13 +1019,13 @@ get_term_stats_pheno <- function(term_obj){
 
 # Modelos para phenoDIST
 models_pheno_list <- rbind(
-  get_model_stats_pheno(Sig_phenoDIST_mod1, Rsq_phenoDIST_mod1, "PhenoDIST ~ M"),
-  get_model_stats_pheno(Sig_phenoDIST_mod2, Rsq_phenoDIST_mod2, "PhenoDIST ~ M * S")
+  get_model_stats_pheno(Sig_phenoDIST_mod1, Rsq_phenoDIST_mod1, "PhenoDist ~ M"),
+  get_model_stats_pheno(Sig_phenoDIST_mod2, Rsq_phenoDIST_mod2, "PhenoDist ~ M * S")
 )
 
 # Modelo para genDIST
 models_gen_list <- rbind(
-  get_model_stats_gen(Sig_genDIST_mod1, Rsq_genDIST_mod1, "GenDIST ~ M")
+  get_model_stats_gen(Sig_genDIST_mod1, Rsq_genDIST_mod1, "GenDist ~ M")
 )
 
 #------------------------------------------------
@@ -1185,14 +1185,19 @@ doc <- read_docx() %>%
 print(doc, target = "tablas_dbRDA.docx")
 ```
 
-```{r preparación plots, include=FALSE}
-## --- Preparación común ---
+
+```{r función para plot, include=FALSE}
+library(ggplot2)
+library(cowplot)
+
+# Preparación de datos (igual que antes)
 treatment$group <- with(treatment,
   ifelse(maternal == "graz" & simulation == "clip", "0",
   ifelse(maternal == "ungraz" & simulation == "clip", "1",
   ifelse(maternal == "graz" & simulation == "unclip", "2", "3")))
 )
 
+# Colores para grupos completos (mod2)
 treatment_colors <- c(
   "0" = "#FF69B4",
   "1" = "#00FF7F",
@@ -1200,297 +1205,138 @@ treatment_colors <- c(
   "3" = "#008B45"
 )
 
-cols_alpha <- adjustcolor(
-  treatment_colors[treatment$group],
-  alpha.f = 0.6
+# Colores para maternal (mod1) - solo dos colores
+maternal_colors <- c(
+  "graz" = "#8B3A62",
+  "ungraz" = "#008B45"
 )
-```
 
-```{r función para plot, include=FALSE}
-plot_rda <- function(model, panel_label) {
-
+plot_rda_gg <- function(model, model_type = "full") {
+  
   eig <- summary(model)$cont$importance[2, 1:2] * 100
-  sc  <- scores(model, display = "sites", choices = 1:2)
-
-  xlim <- range(sc[,1]) * 1.1
-  ylim <- range(sc[,2]) * 1.1
-
-  plot(
-    sc,
-    pch = 19,
-    col = cols_alpha,
-    xlim = xlim,
-    ylim = ylim,
-    xlab = paste0("RDA1 (", round(eig[1], 1), "%)"),
-    ylab = paste0("RDA2 (", round(eig[2], 1), "%)")
-  )
-
-  mtext(paste(panel_label), side = 3, adj = 0, line = 0.5, font = 2)
+  sc <- as.data.frame(scores(model, display = "sites", choices = 1:2))
+  
+  names(sc)[1:2] <- c("RDA1", "RDA2")
+  
+  sc$group <- if(model_type == "maternal") {
+    treatment$maternal
+  } else {
+    treatment$group
+  }
+  
+  colors_use <- if(model_type == "maternal") maternal_colors else treatment_colors
+  
+  # límite común para ambos ejes
+  lim <- max(abs(c(sc$RDA1, sc$RDA2)))
+  
+  ggplot(sc, aes(x = RDA1, y = RDA2, color = group)) +
+    geom_hline(yintercept = 0, linetype = "dashed", color = "grey70") +
+    geom_vline(xintercept = 0, linetype = "dashed", color = "grey70") +
+    geom_point(size = 2.5, alpha = 0.8) +
+    
+    scale_color_manual(values = colors_use) +
+    
+    labs(
+      x = paste0("RDA1 (", round(eig[1], 1), "%)"),
+      y = paste0("RDA2 (", round(eig[2], 1), "%)")
+    ) +
+    
+    coord_fixed(xlim = c(-lim, lim), ylim = c(-lim, lim)) +
+    
+    theme_classic() +
+    theme(
+      legend.position = "none",
+      panel.border = element_rect(color = "black", fill = NA, linewidth = 0.6)
+    )
 }
+
 ```
 
-
+```{r Leyenda Fig. 1, echo=FALSE, results='hold', warning=FALSE, message=FALSE}
+# Leyenda para Figura 1 - Maternal environment
+par(mar = c(0, 0, 0, 0))
+plot.new()
+legend("center", 
+       legend = c("Grazed", "Ungrazed"),
+       title = "Maternal environment",
+       col = maternal_colors,
+       pch = 19,
+       pt.cex = 2,
+       cex = 1.5,
+       horiz = TRUE,
+       bty = "o",
+       box.col = "gray50",
+       bg = "white")
+```
 
 ```{r Fig. 1, echo=FALSE, results='hold', warning=FALSE, message=FALSE}
 
-par(mfrow = c(2, 2), mar = c(4,4,2,1))
+# Crear los 4 plots para el modelo 1 (maternal)
+p1 <- plot_rda_gg(CpG_mod1, model_type = "maternal")
+p2 <- plot_rda_gg(CHG_mod1, model_type = "maternal")
+p3 <- plot_rda_gg(CHH_mod1, model_type = "maternal")
+p4 <- plot_rda_gg(all_CTXT_mod1, model_type = "maternal")
 
-plot_rda(CpG_mod1, "A")
-plot_rda(CHG_mod1, "B")
-plot_rda(CHH_mod1, "C")
-plot_rda(all_CTXT_mod1, "D")
-
-```
-
-
-
-### CpG
-
-```{r CpG RDA plots, echo=FALSE, results='hold', warning=FALSE, message=FALSE}
-
-## --- Preparación común ---
-treatment$group <- with(treatment,
-  ifelse(maternal == "graz" & simulation == "clip", "0",
-  ifelse(maternal == "ungraz" & simulation == "clip", "1",
-  ifelse(maternal == "graz" & simulation == "unclip", "2", "3")))
-)
-
-treatment_colors <- c(
-  "0" = "#FF69B4",
-  "1" = "#00FF7F",
-  "2" = "#8B3A62",
-  "3" = "#008B45"
-)
-
-cols_alpha <- adjustcolor(
-  treatment_colors[treatment$group],
-  alpha.f = 0.6
-)
-
-## Función para dibujar cada RDA
-plot_rda <- function(model, panel_label) {
-
-  eig <- summary(model)$cont$importance[2, 1:2] * 100
-  sc  <- scores(model, display = "sites", choices = 1:2)
-
-  xlim <- range(sc[,1]) * 1.1
-  ylim <- range(sc[,2]) * 1.1
-
-  plot(
-    sc,
-    type = "p",
-    pch = 19,
-    col = cols_alpha,
-    xlim = xlim,
-    ylim = ylim,
-    xlab = paste0("RDA1 (", round(eig[1], 1), "%)"),
-    ylab = paste0("RDA2 (", round(eig[2], 1), "%)")
-  )
-
-  ## etiqueta del panel (A–D)
-  mtext(panel_label, side = 3, adj = 0, line = 0.5, font = 2)
-}
-
-## --- Layout 2x2 ---
-par(mfrow = c(2, 2), mar = c(4, 4, 2, 1))
-
-plot_rda(CpG_mod1, "A")
-plot_rda(CpG_mod2, "B")
-plot_rda(CpG_mod3, "C")
-plot_rda(CpG_mod4, "D")
-
+plot_grid(p1, p2, labels = c('A', 'B'), label_size = 12, label_y = 0.83)
+plot_grid(p3, p4, labels = c('C', 'D'), label_size = 12, label_y = 0.83)
 
 ```
 
-Fig. 2. Epigenetic differentiation plots. Ordination plots of the distance-based redundancy analysis (dbRDA) carried out to test for epigenetic differences in CG context with all four models: 1. ED \~ M (A), 2. ED \~ M \* S (B), 3. ED \~ M \* S + Condition(PC) (C), 4. ED \~ PC (D). RDA1: first constrained ordination axis; RDA2: second constrained ordination axis. Samples are colored by group (i.e.: maternal environment x real-time herbivory simulation).
+Fig. 1. Epigenetic differentiation plots using methylation data for cytosines in CpG (A), CHG (B), CHH (C), and in all contexts. Ordination plots of the distance-based redundancy analysis (dbRDA) carried out to test for epigenetic differences with maternal environment as predictor (ED \~ M \* S).  RDA1: first constrained ordination axis; RDA2: second constrained ordination axis. Samples are colored by maternal environment.
 
-### CHG
+```{r Leyenda Fig. 2, echo=FALSE, results='hold', warning=FALSE, message=FALSE}
+# Leyenda para Figura 2 - Maternal + Real-time
+par(mar = c(0, 0, 0, 0))
+plot.new()
+legend("center", 
+       legend = c("Grazed + Clipped", "Grazed + Unclipped", "Ungrazed + Clipped", "Ungrazed + Unclipped"),
+       title = "Maternal + Real-time",
+       col = c(
+   "#FF69B4",
+   "#8B3A62",
+   "#00FF7F",
+   "#008B45"),
+       pch = 19,
+       pt.cex = 2,
+       cex = 1.5,
+       ncol = 1,
+       bty = "o",
+       box.col = "gray50",
+       bg = "white")
+```
 
-```{r CHG RDA plots, echo=FALSE, results='hold', warning=FALSE, message=FALSE}
+```{r Fig. 2, echo=FALSE, results='hold', warning=FALSE, message=FALSE}
 
-## --- Preparación común ---
-treatment$group <- with(treatment,
-  ifelse(maternal == "graz" & simulation == "clip", "0",
-  ifelse(maternal == "ungraz" & simulation == "clip", "1",
-  ifelse(maternal == "graz" & simulation == "unclip", "2", "3")))
-)
+# Crear los 4 plots para el modelo 2 (full)
+p1 <- plot_rda_gg(CpG_mod2, model_type = "full")
+p2 <- plot_rda_gg(CHG_mod2, model_type = "full")
+p3 <- plot_rda_gg(CHH_mod2, model_type = "full")
+p4 <- plot_rda_gg(all_CTXT_mod2, model_type = "full")
 
-treatment_colors <- c(
-  "0" = "#FF69B4",
-  "1" = "#00FF7F",
-  "2" = "#8B3A62",
-  "3" = "#008B45"
-)
+plot_grid(p1, p2, labels = c('A', 'B'), label_size = 12, label_y = 0.83)
+plot_grid(p3, p4, labels = c('C', 'D'), label_size = 12, label_y = 0.83)
+```
 
-cols_alpha <- adjustcolor(
-  treatment_colors[treatment$group],
-  alpha.f = 0.6
-)
+Fig. 2. Epigenetic differentiation plots using methylation data for cytosines in CpG (A), CHG (B), CHH (C), and in all contexts. Ordination plots of the distance-based redundancy analysis (dbRDA) carried out to test for epigenetic differences with maternal environment and real-time herbivory simulation as predictors (EpiDIST \~ M \* S).  RDA1: first constrained ordination axis; RDA2: second constrained ordination axis. Samples are colored by group (i.e.: maternal environment x real-time herbivory simulation).
 
-## Función para dibujar cada RDA
-plot_rda <- function(model, panel_label) {
 
-  eig <- summary(model)$cont$importance[2, 1:2] * 100
-  sc  <- scores(model, display = "sites", choices = 1:2)
+```{r Fig. 3, echo=FALSE, results='hold', warning=FALSE, message=FALSE}
 
-  xlim <- range(sc[,1]) * 1.1
-  ylim <- range(sc[,2]) * 1.1
+# Crear los 4 plots para el modelo 1 (maternal)
+p1 <- plot_rda_gg(phenoDIST_mod1, model_type = "maternal")
+p2 <- plot_rda_gg(phenoDIST_mod2, model_type = "full")
 
-  plot(
-    sc,
-    type = "p",
-    pch = 19,
-    col = cols_alpha,
-    xlim = xlim,
-    ylim = ylim,
-    xlab = paste0("RDA1 (", round(eig[1], 1), "%)"),
-    ylab = paste0("RDA2 (", round(eig[2], 1), "%)")
-  )
-
-  ## etiqueta del panel (A–D)
-  mtext(panel_label, side = 3, adj = 0, line = 0.5, font = 2)
-}
-
-## --- Layout 2x2 ---
-par(mfrow = c(2, 2), mar = c(4, 4, 2, 1))
-
-plot_rda(CHG_mod1, "A")
-plot_rda(CHG_mod2, "B")
-plot_rda(CHG_mod3, "C")
-plot_rda(CHG_mod4, "D")
-
+plot_grid(p1, p2, labels = c('A', 'B'), label_size = 12, label_y = 0.83)
 
 ```
 
-Fig. 2. Epigenetic differentiation plots. Ordination plots of the distance-based redundancy analysis (dbRDA) carried out to test for epigenetic differences in CHG context with all four models: 1. ED \~ M (A), 2. ED \~ M \* S (B), 3. ED \~ M \* S + Condition(PC) (C), 4. ED \~ PC (D). RDA1: first constrained ordination axis; RDA2: second constrained ordination axis. Samples are colored by group (i.e.: maternal environment x real-time herbivory simulation).
+Fig. 3. Phenotypic differentiation plots. Ordination plots of the distance-based redundancy analysis (dbRDA) carried out to test for phenotypic differences with both maternal environment as predictor (A: PhenoDIST \~ M), and the interaction of maternal environment and real-time herbivory as predictor (B: PhenoDIST \~ M \* S) (PhenoDIST \~ M \* S).  RDA1: first constrained ordination axis; RDA2: second constrained ordination axis. Samples are colored by group (i.e.: maternal environment x real-time herbivory simulation).
 
-### CHH
+```{r Fig. 4, echo=FALSE, results='hold', warning=FALSE, message=FALSE}
 
-```{r CHH RDA plots, echo=FALSE, results='hold', warning=FALSE, message=FALSE}
-
-## --- Preparación común ---
-treatment$group <- with(treatment,
-  ifelse(maternal == "graz" & simulation == "clip", "0",
-  ifelse(maternal == "ungraz" & simulation == "clip", "1",
-  ifelse(maternal == "graz" & simulation == "unclip", "2", "3")))
-)
-
-treatment_colors <- c(
-  "0" = "#FF69B4",
-  "1" = "#00FF7F",
-  "2" = "#8B3A62",
-  "3" = "#008B45"
-)
-
-cols_alpha <- adjustcolor(
-  treatment_colors[treatment$group],
-  alpha.f = 0.6
-)
-
-## Función para dibujar cada RDA
-plot_rda <- function(model, panel_label) {
-
-  eig <- summary(model)$cont$importance[2, 1:2] * 100
-  sc  <- scores(model, display = "sites", choices = 1:2)
-
-  xlim <- range(sc[,1]) * 1.1
-  ylim <- range(sc[,2]) * 1.1
-
-  plot(
-    sc,
-    type = "p",
-    pch = 19,
-    col = cols_alpha,
-    xlim = xlim,
-    ylim = ylim,
-    xlab = paste0("RDA1 (", round(eig[1], 1), "%)"),
-    ylab = paste0("RDA2 (", round(eig[2], 1), "%)")
-  )
-
-  ## etiqueta del panel (A–D)
-  mtext(panel_label, side = 3, adj = 0, line = 0.5, font = 2)
-}
-
-## --- Layout 2x2 ---
-par(mfrow = c(2, 2), mar = c(4, 4, 2, 1))
-
-plot_rda(CHH_mod1, "A")
-plot_rda(CHH_mod2, "B")
-plot_rda(CHH_mod3, "C")
-plot_rda(CHH_mod4, "D")
-
+# Crear los 4 plots para el modelo 2 (full)
+plot_rda_gg(genDIST_mod1, model_type = "maternal")
 
 ```
 
-Fig. 3. Epigenetic differentiation plots. Ordination plots of the distance-based redundancy analysis (dbRDA) carried out to test for epigenetic differences in CHH context with all four models: 1. ED \~ M (A), 2. ED \~ M \* S (B), 3. ED \~ M \* S + Condition(PC) (C), 4. ED \~ PC (D). RDA1: first constrained ordination axis; RDA2: second constrained ordination axis. Samples are colored by group (i.e.: maternal environment x real-time herbivory simulation).
-
-### all_CTXT
-
-```{r all_CTXT RDA plots, echo=FALSE, results='hold', warning=FALSE, message=FALSE}
-
-## --- Preparación común ---
-treatment$group <- with(treatment,
-  ifelse(maternal == "graz" & simulation == "clip", "0",
-  ifelse(maternal == "ungraz" & simulation == "clip", "1",
-  ifelse(maternal == "graz" & simulation == "unclip", "2", "3")))
-)
-
-treatment_colors <- c(
-  "0" = "#FF69B4",
-  "1" = "#00FF7F",
-  "2" = "#8B3A62",
-  "3" = "#008B45"
-)
-
-cols_alpha <- adjustcolor(
-  treatment_colors[treatment$group],
-  alpha.f = 0.6
-)
-
-## Función para dibujar cada RDA
-plot_rda <- function(model, panel_label) {
-
-  eig <- summary(model)$cont$importance[2, 1:2] * 100
-  sc  <- scores(model, display = "sites", choices = 1:2)
-
-  xlim <- range(sc[,1]) * 1.1
-  ylim <- range(sc[,2]) * 1.1
-
-  plot(
-    sc,
-    type = "p",
-    pch = 19,
-    col = cols_alpha,
-    xlim = xlim,
-    ylim = ylim,
-    xlab = paste0("RDA1 (", round(eig[1], 1), "%)"),
-    ylab = paste0("RDA2 (", round(eig[2], 1), "%)")
-  )
-
-  ## etiqueta del panel (A–D)
-  mtext(panel_label, side = 3, adj = 0, line = 0.5, font = 2)
-}
-
-## --- Layout 2x2 ---
-par(mfrow = c(2, 2), mar = c(4, 4, 2, 1))
-
-plot_rda(all_CTXT_mod1, "A")
-plot_rda(all_CTXT_mod2, "B")
-plot_rda(all_CTXT_mod3, "C")
-plot_rda(all_CTXT_mod4, "D")
-
-
-```
-
-Fig. 4. Epigenetic differentiation plots. Ordination plots of the distance-based redundancy analysis (dbRDA) carried out to test for epigenetic differences in all_CTXT context with all four models: 1. ED \~ M (A), 2. ED \~ M \* S (B), 3. ED \~ M \* S + Condition(PC) (C), 4. ED \~ PC (D). RDA1: first constrained ordination axis; RDA2: second constrained ordination axis. Samples are colored by group (i.e.: maternal environment x real-time herbivory simulation).
-
-```{r CpG PERMANOVA, include=FALSE}
-# PERMANOVA
-vegan::adonis2(CpG_dist_matrix ~ maternal * simulation,
-  data = treatment,
-  permutations = 9999,
-  method = "euclidean",
-  by = "terms")   # Probar a correr con by = NULL para ver la significación global
-
-```
-
+Fig. 4. Genetic differentiation plots. Ordination plots of the distance-based redundancy analysis (dbRDA) carried out to test for Genetic differences with maternal environment as predictor (GenDIST \~ M).  RDA1: first constrained ordination axis; RDA2: second constrained ordination axis. Samples are colored by maternal environment.
