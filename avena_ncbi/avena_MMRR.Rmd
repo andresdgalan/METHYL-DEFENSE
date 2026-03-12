@@ -719,3 +719,131 @@ doc <- read_docx() %>%
 print(doc, target = "table_mmrr.docx")
 ```
 
+
+```{r TABLA DESCRIPTIVOS METILACIÓN, echo=FALSE, results='hold', warning=FALSE, message=FALSE}
+library(dplyr)
+library(knitr)
+library(kableExtra)
+library(flextable)
+library(officer)
+
+### 1. ordenar treatment_table y crear grupo
+treatment_table <- treatment_table %>%
+  mutate(
+    maternal = ifelse(maternal=="graz","Graz","Ungraz"),
+    simulation = ifelse(simulation=="clip","Clip","Unclip"),
+    Group = paste(maternal, simulation, sep="_")
+  )
+
+group_order <- c(
+  "Graz_Clip",
+  "Graz_Unclip",
+  "Ungraz_Clip",
+  "Ungraz_Unclip"
+)
+
+treatment_table$Group <- factor(treatment_table$Group, levels = group_order)
+
+### 2. función para calcular mean y SD de una matriz por grupo
+calc_stats <- function(mat){
+
+  df <- data.frame(
+    id = colnames(mat)
+  ) %>%
+    left_join(treatment_table, by="id")
+
+  res <- data.frame()
+
+  for(g in group_order){
+
+    samples <- df$id[df$Group==g]
+
+    submat <- mat[,samples, drop=FALSE]
+
+    vals <- as.vector(submat)
+
+    res <- rbind(
+      res,
+      data.frame(
+        Group = g,
+        mean = mean(vals, na.rm=TRUE),
+        SD = sd(vals, na.rm=TRUE)
+      )
+    )
+  }
+
+  res
+}
+
+### 3. calcular estadísticas para cada contexto
+stats_all <- calc_stats(avena_all_CTXT_obj)
+stats_CG  <- calc_stats(avena_CpG_obj)
+stats_CHG <- calc_stats(avena_CHG_obj)
+stats_CHH <- calc_stats(avena_CHH_obj)
+
+### 4. unir todo en una tabla
+final_table <- data.frame(
+  Group = group_order,
+
+  all_mean = sprintf("%.2f", stats_all$mean),
+  all_SD   = sprintf("%.2f", stats_all$SD),
+
+  CG_mean  = sprintf("%.2f", stats_CG$mean),
+  CG_SD    = sprintf("%.2f", stats_CG$SD),
+
+  CHG_mean = sprintf("%.2f", stats_CHG$mean),
+  CHG_SD   = sprintf("%.2f", stats_CHG$SD),
+
+  CHH_mean = sprintf("%.2f", stats_CHH$mean),
+  CHH_SD   = sprintf("%.2f", stats_CHH$SD)
+)
+
+### 5. tabla estilo paper
+kable(
+  final_table,
+  booktabs = TRUE,
+  col.names=c(
+  "Group",
+  "mean","SD",
+  "mean","SD",
+  "mean","SD",
+  "mean","SD"
+  ),
+  align=c("l","c","c","c","c","c","c","c","c"),
+  caption="Table 4. Mean and standard deviation (SD) of DNA methylation for each sequence context (CG, CHG, CHH) and across all contexts for each group (i.e., each unique combination maternal environment and real-time herbivory simulation). Graz, Ungraz: Grazed and Ungrazed maternal environment. Clip, Unclip: Clipped and Unclipped plants."
+)%>%
+add_header_above(c(
+  " " = 1,
+  "all" = 2,
+  "CG" = 2,
+  "CHG" = 2,
+  "CHH" = 2
+)) %>%
+kable_styling(
+  full_width = TRUE,
+  font_size = 10,
+  bootstrap_options = "none"
+) %>%
+column_spec(1:ncol(final_table),
+            extra_css="min-width:90px;"
+) %>%
+row_spec(0, extra_css = "border-top:2px solid black; border-bottom:2px solid black;") %>%
+row_spec(nrow(final_table), extra_css = "border-bottom:2px solid black;")
+```
+
+```{r exportar TABLA DESCRIPTIVOS, include=FALSE}
+table_flex <- final_table %>%
+  flextable() %>%
+  theme_booktabs() %>%
+  fontsize(size = 10) %>%
+  width(width = c(1.3, rep(0.7,8))) %>%
+  set_caption(
+    "Table 4. Mean and standard deviation (SD) of DNA methylation for each sequence context (CG, CHG, CHH) and across all contexts for each group (i.e., each unique combination maternal environment and real-time herbivory simulation). Graz, Ungraz: Grazed and Ungrazed maternal environment. Clip, Unclip: Clipped and Unclipped plants."
+  )
+
+doc <- read_docx() %>%
+  body_add_flextable(table_flex)
+
+print(doc, target = "table_methylation_contexts.docx")
+```
+

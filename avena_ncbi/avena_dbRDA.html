@@ -600,44 +600,43 @@ axes (RDA axes). We ran the following models for all contexts together
 and separately for each sequence context:</p>
 <ol style="list-style-type: decimal">
 <li><p>Epigenetic distance ~ Maternal herbivory</p></li>
-<li><p>Epigenetic distance ~ Maternal herbivory * Real-time
-herbivory</p></li>
-<li><p>Epigenetic distance ~ Maternal herbivory * Real-time herbivory +
-Condition (PC)</p></li>
-<li><p>Epigenetic distance ~ PC</p></li>
+<li><p>Epigenetic distance ~ Real-time herbivory simulation</p></li>
+<li><p>Epigenetic distance ~ Genetic structure</p></li>
+<li><p>Epigenetic distance ~ Maternal herbivory * Real-time herbivory
+simulation</p></li>
+<li><p>Epigenetic distance ~ Maternal herbivory * Real-time herbivory
+simulation + Condition (Genetic structure)</p></li>
 </ol>
 <table class="table" style="color: black; margin-left: auto; margin-right: auto;">
 <caption>
 Table 1. Results of the distance-based redundancy analysis (dbRDA)
 showing the percentage of epigenetic variance (EpiDist) explained by
-maternal environment (M), real-time herbivory simulation (S), and/or
-their interaction (M:S) across different genomic contexts. The models
-include analyses with and without adjusting for genetic structure (PC).
-PC: first principal component from genetic data explaining 30.10% of the
-variance in scaled allele frequencies. Significance codes: *** p &lt;
-0.001, ** p &lt; 0.01, * p &lt; 0.05.The results of the ANOVA performed
-to test for the significance of each predictor in the model with the
-interaction term (ANOVA by terms) are also shown.
+maternal environment (Maternal), real-time herbivory simulation
+(Simulation), and/or their interaction (M<em>S) across different genomic
+contexts. The models include analyses with and without adjusting for
+genetic variability (GenVar). GenVar: first principal component from
+genetic data explaining 30.10% of the variance in scaled allele
+frequencies. Significance codes: </em>** p &lt; 0.001, ** p &lt; 0.01, *
+p &lt; 0.05.The results of the ANOVA performed to test for the
+significance of each predictor in the model with the interaction term
+(ANOVA by terms) are also shown.
 </caption>
 <thead>
 <tr>
 <th style="text-align:left;">
-Model
+Ctxt
 </th>
 <th style="text-align:left;">
-Ctxt
+Model
 </th>
 <th style="text-align:right;">
 df
 </th>
 <th style="text-align:right;">
-SumOfSqs
-</th>
-<th style="text-align:right;">
 F
 </th>
 <th style="text-align:left;">
-Pr(&gt;F)
+p-value
 </th>
 <th style="text-align:right;">
 adj. R²
@@ -646,17 +645,14 @@ adj. R²
 </thead>
 <tbody>
 <tr>
-<td style="text-align:left;width: 14em; vertical-align: top !important;" rowspan="4">
-EpiDist ~ M
+<td style="text-align:left;width: 14em; vertical-align: top !important;" rowspan="5">
+All
 </td>
 <td style="text-align:left;width: 6em; ">
-All
+EpiDist ~ Maternal
 </td>
 <td style="text-align:right;width: 6em; ">
 1
-</td>
-<td style="text-align:right;width: 6em; ">
-559159.7
 </td>
 <td style="text-align:right;width: 6em; ">
 4.147
@@ -670,242 +666,27 @@ All
 </tr>
 <tr>
 <td style="text-align:left;width: 6em; ">
-CG
+EpiDist ~ Simulation
 </td>
 <td style="text-align:right;width: 6em; ">
 1
 </td>
 <td style="text-align:right;width: 6em; ">
-240957.3
-</td>
-<td style="text-align:right;width: 6em; ">
-9.000
+0.979
 </td>
 <td style="text-align:left;width: 6em; ">
-&lt;0.001***
+0.443
 </td>
 <td style="text-align:right;width: 6em; ">
-0.163
+-0.001
 </td>
 </tr>
 <tr>
 <td style="text-align:left;width: 6em; ">
-CHG
+EpiDist ~ GenVar
 </td>
 <td style="text-align:right;width: 6em; ">
 1
-</td>
-<td style="text-align:right;width: 6em; ">
-192599.6
-</td>
-<td style="text-align:right;width: 6em; ">
-3.192
-</td>
-<td style="text-align:left;width: 6em; ">
-&lt;0.001***
-</td>
-<td style="text-align:right;width: 6em; ">
-0.051
-</td>
-</tr>
-<tr>
-<td style="text-align:left;width: 6em; ">
-CHH
-</td>
-<td style="text-align:right;width: 6em; ">
-1
-</td>
-<td style="text-align:right;width: 6em; ">
-125602.8
-</td>
-<td style="text-align:right;width: 6em; ">
-2.631
-</td>
-<td style="text-align:left;width: 6em; ">
-&lt;0.001***
-</td>
-<td style="text-align:right;width: 6em; ">
-0.038
-</td>
-</tr>
-<tr>
-<td style="text-align:left;width: 14em; vertical-align: top !important;" rowspan="4">
-EpiDist ~ M * S
-</td>
-<td style="text-align:left;width: 6em; ">
-All
-</td>
-<td style="text-align:right;width: 6em; ">
-3
-</td>
-<td style="text-align:right;width: 6em; ">
-848498.2
-</td>
-<td style="text-align:right;width: 6em; ">
-2.105
-</td>
-<td style="text-align:left;width: 6em; ">
-&lt;0.001***
-</td>
-<td style="text-align:right;width: 6em; ">
-0.075
-</td>
-</tr>
-<tr>
-<td style="text-align:left;width: 6em; ">
-CG
-</td>
-<td style="text-align:right;width: 6em; ">
-3
-</td>
-<td style="text-align:right;width: 6em; ">
-303551.4
-</td>
-<td style="text-align:right;width: 6em; ">
-3.813
-</td>
-<td style="text-align:left;width: 6em; ">
-&lt;0.001***
-</td>
-<td style="text-align:right;width: 6em; ">
-0.171
-</td>
-</tr>
-<tr>
-<td style="text-align:left;width: 6em; ">
-CHG
-</td>
-<td style="text-align:right;width: 6em; ">
-3
-</td>
-<td style="text-align:right;width: 6em; ">
-319949.4
-</td>
-<td style="text-align:right;width: 6em; ">
-1.773
-</td>
-<td style="text-align:left;width: 6em; ">
-&lt;0.001***
-</td>
-<td style="text-align:right;width: 6em; ">
-0.054
-</td>
-</tr>
-<tr>
-<td style="text-align:left;width: 6em; ">
-CHH
-</td>
-<td style="text-align:right;width: 6em; ">
-3
-</td>
-<td style="text-align:right;width: 6em; ">
-224997.4
-</td>
-<td style="text-align:right;width: 6em; ">
-1.574
-</td>
-<td style="text-align:left;width: 6em; ">
-&lt;0.001***
-</td>
-<td style="text-align:right;width: 6em; ">
-0.040
-</td>
-</tr>
-<tr>
-<td style="text-align:left;width: 14em; vertical-align: top !important;" rowspan="4">
-EpiDist ~ M * S + Condition(PC)
-</td>
-<td style="text-align:left;width: 6em; ">
-All
-</td>
-<td style="text-align:right;width: 6em; ">
-3
-</td>
-<td style="text-align:right;width: 6em; ">
-499141.7
-</td>
-<td style="text-align:right;width: 6em; ">
-1.264
-</td>
-<td style="text-align:left;width: 6em; ">
-&lt;0.001***
-</td>
-<td style="text-align:right;width: 6em; ">
-0.018
-</td>
-</tr>
-<tr>
-<td style="text-align:left;width: 6em; ">
-CG
-</td>
-<td style="text-align:right;width: 6em; ">
-3
-</td>
-<td style="text-align:right;width: 6em; ">
-102946.4
-</td>
-<td style="text-align:right;width: 6em; ">
-1.334
-</td>
-<td style="text-align:left;width: 6em; ">
-0.002**
-</td>
-<td style="text-align:right;width: 6em; ">
-0.020
-</td>
-</tr>
-<tr>
-<td style="text-align:left;width: 6em; ">
-CHG
-</td>
-<td style="text-align:right;width: 6em; ">
-3
-</td>
-<td style="text-align:right;width: 6em; ">
-219229.3
-</td>
-<td style="text-align:right;width: 6em; ">
-1.236
-</td>
-<td style="text-align:left;width: 6em; ">
-&lt;0.001***
-</td>
-<td style="text-align:right;width: 6em; ">
-0.016
-</td>
-</tr>
-<tr>
-<td style="text-align:left;width: 6em; ">
-CHH
-</td>
-<td style="text-align:right;width: 6em; ">
-3
-</td>
-<td style="text-align:right;width: 6em; ">
-176966.0
-</td>
-<td style="text-align:right;width: 6em; ">
-1.260
-</td>
-<td style="text-align:left;width: 6em; ">
-0.001**
-</td>
-<td style="text-align:right;width: 6em; ">
-0.018
-</td>
-</tr>
-<tr>
-<td style="text-align:left;width: 14em; vertical-align: top !important;" rowspan="4">
-EpiDist ~ PC
-</td>
-<td style="text-align:left;width: 6em; ">
-All
-</td>
-<td style="text-align:right;width: 6em; ">
-1
-</td>
-<td style="text-align:right;width: 6em; ">
-582094.1
 </td>
 <td style="text-align:right;width: 6em; ">
 4.335
@@ -919,13 +700,81 @@ All
 </tr>
 <tr>
 <td style="text-align:left;width: 6em; ">
+EpiDist ~ M * S
+</td>
+<td style="text-align:right;width: 6em; ">
+3
+</td>
+<td style="text-align:right;width: 6em; ">
+2.105
+</td>
+<td style="text-align:left;width: 6em; ">
+&lt;0.001***
+</td>
+<td style="text-align:right;width: 6em; ">
+0.075
+</td>
+</tr>
+<tr>
+<td style="text-align:left;width: 6em; ">
+EpiDist ~ M * S + Condition(GenVar)
+</td>
+<td style="text-align:right;width: 6em; ">
+3
+</td>
+<td style="text-align:right;width: 6em; ">
+1.264
+</td>
+<td style="text-align:left;width: 6em; ">
+&lt;0.001***
+</td>
+<td style="text-align:right;width: 6em; ">
+0.018
+</td>
+</tr>
+<tr>
+<td style="text-align:left;width: 14em; vertical-align: top !important;" rowspan="5">
 CG
+</td>
+<td style="text-align:left;width: 6em; ">
+EpiDist ~ Maternal
 </td>
 <td style="text-align:right;width: 6em; ">
 1
 </td>
 <td style="text-align:right;width: 6em; ">
-257375.2
+9.000
+</td>
+<td style="text-align:left;width: 6em; ">
+&lt;0.001***
+</td>
+<td style="text-align:right;width: 6em; ">
+0.163
+</td>
+</tr>
+<tr>
+<td style="text-align:left;width: 6em; ">
+EpiDist ~ Simulation
+</td>
+<td style="text-align:right;width: 6em; ">
+1
+</td>
+<td style="text-align:right;width: 6em; ">
+0.947
+</td>
+<td style="text-align:left;width: 6em; ">
+0.450
+</td>
+<td style="text-align:right;width: 6em; ">
+-0.001
+</td>
+</tr>
+<tr>
+<td style="text-align:left;width: 6em; ">
+EpiDist ~ GenVar
+</td>
+<td style="text-align:right;width: 6em; ">
+1
 </td>
 <td style="text-align:right;width: 6em; ">
 9.763
@@ -939,13 +788,81 @@ CG
 </tr>
 <tr>
 <td style="text-align:left;width: 6em; ">
+EpiDist ~ M * S
+</td>
+<td style="text-align:right;width: 6em; ">
+3
+</td>
+<td style="text-align:right;width: 6em; ">
+3.813
+</td>
+<td style="text-align:left;width: 6em; ">
+&lt;0.001***
+</td>
+<td style="text-align:right;width: 6em; ">
+0.171
+</td>
+</tr>
+<tr>
+<td style="text-align:left;width: 6em; ">
+EpiDist ~ M * S + Condition(GenVar)
+</td>
+<td style="text-align:right;width: 6em; ">
+3
+</td>
+<td style="text-align:right;width: 6em; ">
+1.334
+</td>
+<td style="text-align:left;width: 6em; ">
+0.003**
+</td>
+<td style="text-align:right;width: 6em; ">
+0.020
+</td>
+</tr>
+<tr>
+<td style="text-align:left;width: 14em; vertical-align: top !important;" rowspan="5">
 CHG
+</td>
+<td style="text-align:left;width: 6em; ">
+EpiDist ~ Maternal
 </td>
 <td style="text-align:right;width: 6em; ">
 1
 </td>
 <td style="text-align:right;width: 6em; ">
-198723.7
+3.192
+</td>
+<td style="text-align:left;width: 6em; ">
+&lt;0.001***
+</td>
+<td style="text-align:right;width: 6em; ">
+0.051
+</td>
+</tr>
+<tr>
+<td style="text-align:left;width: 6em; ">
+EpiDist ~ Simulation
+</td>
+<td style="text-align:right;width: 6em; ">
+1
+</td>
+<td style="text-align:right;width: 6em; ">
+0.976
+</td>
+<td style="text-align:left;width: 6em; ">
+0.483
+</td>
+<td style="text-align:right;width: 6em; ">
+-0.001
+</td>
+</tr>
+<tr>
+<td style="text-align:left;width: 6em; ">
+EpiDist ~ GenVar
+</td>
+<td style="text-align:right;width: 6em; ">
+1
 </td>
 <td style="text-align:right;width: 6em; ">
 3.302
@@ -958,23 +875,125 @@ CHG
 </td>
 </tr>
 <tr>
-<td style="text-align:left;width: 6em; border-bottom: 1.5px solid;">
+<td style="text-align:left;width: 6em; ">
+EpiDist ~ M * S
+</td>
+<td style="text-align:right;width: 6em; ">
+3
+</td>
+<td style="text-align:right;width: 6em; ">
+1.773
+</td>
+<td style="text-align:left;width: 6em; ">
+&lt;0.001***
+</td>
+<td style="text-align:right;width: 6em; ">
+0.054
+</td>
+</tr>
+<tr>
+<td style="text-align:left;width: 6em; ">
+EpiDist ~ M * S + Condition(GenVar)
+</td>
+<td style="text-align:right;width: 6em; ">
+3
+</td>
+<td style="text-align:right;width: 6em; ">
+1.236
+</td>
+<td style="text-align:left;width: 6em; ">
+&lt;0.001***
+</td>
+<td style="text-align:right;width: 6em; ">
+0.016
+</td>
+</tr>
+<tr>
+<td style="text-align:left;width: 14em; vertical-align: top !important;" rowspan="5">
 CHH
 </td>
-<td style="text-align:right;width: 6em; border-bottom: 1.5px solid;">
+<td style="text-align:left;width: 6em; ">
+EpiDist ~ Maternal
+</td>
+<td style="text-align:right;width: 6em; ">
 1
 </td>
-<td style="text-align:right;width: 6em; border-bottom: 1.5px solid;">
-125995.2
+<td style="text-align:right;width: 6em; ">
+2.631
+</td>
+<td style="text-align:left;width: 6em; ">
+&lt;0.001***
+</td>
+<td style="text-align:right;width: 6em; ">
+0.038
+</td>
+</tr>
+<tr>
+<td style="text-align:left;width: 6em; ">
+EpiDist ~ Simulation
+</td>
+<td style="text-align:right;width: 6em; ">
+1
+</td>
+<td style="text-align:right;width: 6em; ">
+1.003
+</td>
+<td style="text-align:left;width: 6em; ">
+0.337
+</td>
+<td style="text-align:right;width: 6em; ">
+0.000
+</td>
+</tr>
+<tr>
+<td style="text-align:left;width: 6em; ">
+EpiDist ~ GenVar
+</td>
+<td style="text-align:right;width: 6em; ">
+1
+</td>
+<td style="text-align:right;width: 6em; ">
+2.640
+</td>
+<td style="text-align:left;width: 6em; ">
+&lt;0.001***
+</td>
+<td style="text-align:right;width: 6em; ">
+0.038
+</td>
+</tr>
+<tr>
+<td style="text-align:left;width: 6em; ">
+EpiDist ~ M * S
+</td>
+<td style="text-align:right;width: 6em; ">
+3
+</td>
+<td style="text-align:right;width: 6em; ">
+1.574
+</td>
+<td style="text-align:left;width: 6em; ">
+&lt;0.001***
+</td>
+<td style="text-align:right;width: 6em; ">
+0.040
+</td>
+</tr>
+<tr>
+<td style="text-align:left;width: 6em; border-bottom: 1.5px solid;">
+EpiDist ~ M * S + Condition(GenVar)
 </td>
 <td style="text-align:right;width: 6em; border-bottom: 1.5px solid;">
-2.640
+3
+</td>
+<td style="text-align:right;width: 6em; border-bottom: 1.5px solid;">
+1.260
 </td>
 <td style="text-align:left;width: 6em; border-bottom: 1.5px solid;">
 &lt;0.001***
 </td>
 <td style="text-align:right;width: 6em; border-bottom: 1.5px solid;">
-0.038
+0.018
 </td>
 </tr>
 </tbody>
@@ -998,13 +1017,13 @@ Predictor
 df
 </th>
 <th style="text-align:right;">
-Variance
-</th>
-<th style="text-align:right;">
 F
 </th>
 <th style="text-align:left;">
-Pr(&gt;F)
+p-value
+</th>
+<th style="text-align:right;">
+adj. R²
 </th>
 </tr>
 </thead>
@@ -1023,13 +1042,13 @@ Maternal herbivory
 1
 </td>
 <td style="text-align:right;">
-559159.74
-</td>
-<td style="text-align:right;">
 4.162
 </td>
 <td style="text-align:left;">
 &lt;0.001***
+</td>
+<td style="text-align:right;">
+0.073
 </td>
 </tr>
 <tr>
@@ -1040,13 +1059,13 @@ Real-time herbivory
 1
 </td>
 <td style="text-align:right;">
-143256.75
-</td>
-<td style="text-align:right;">
 1.066
 </td>
 <td style="text-align:left;">
-0.207
+0.205
+</td>
+<td style="text-align:right;">
+0.001
 </td>
 </tr>
 <tr>
@@ -1057,13 +1076,13 @@ Maternal × Real-time
 1
 </td>
 <td style="text-align:right;">
-146081.69
-</td>
-<td style="text-align:right;">
 1.087
 </td>
 <td style="text-align:left;">
 0.167
+</td>
+<td style="text-align:right;">
+0.002
 </td>
 </tr>
 <tr>
@@ -1077,13 +1096,13 @@ Maternal herbivory
 1
 </td>
 <td style="text-align:right;">
-240957.31
-</td>
-<td style="text-align:right;">
 9.081
 </td>
 <td style="text-align:left;">
 &lt;0.001***
+</td>
+<td style="text-align:right;">
+0.168
 </td>
 </tr>
 <tr>
@@ -1094,13 +1113,13 @@ Real-time herbivory
 1
 </td>
 <td style="text-align:right;">
-30800.60
-</td>
-<td style="text-align:right;">
 1.161
 </td>
 <td style="text-align:left;">
-0.190
+0.188
+</td>
+<td style="text-align:right;">
+0.003
 </td>
 </tr>
 <tr>
@@ -1111,13 +1130,13 @@ Maternal × Real-time
 1
 </td>
 <td style="text-align:right;">
-31793.53
-</td>
-<td style="text-align:right;">
 1.198
 </td>
 <td style="text-align:left;">
-0.168
+0.175
+</td>
+<td style="text-align:right;">
+0.004
 </td>
 </tr>
 <tr>
@@ -1131,13 +1150,13 @@ Maternal herbivory
 1
 </td>
 <td style="text-align:right;">
-192599.63
-</td>
-<td style="text-align:right;">
 3.201
 </td>
 <td style="text-align:left;">
 &lt;0.001***
+</td>
+<td style="text-align:right;">
+0.052
 </td>
 </tr>
 <tr>
@@ -1148,13 +1167,13 @@ Real-time herbivory
 1
 </td>
 <td style="text-align:right;">
-62504.32
-</td>
-<td style="text-align:right;">
 1.039
 </td>
 <td style="text-align:left;">
-0.225
+0.234
+</td>
+<td style="text-align:right;">
+0.001
 </td>
 </tr>
 <tr>
@@ -1165,13 +1184,13 @@ Maternal × Real-time
 1
 </td>
 <td style="text-align:right;">
-64845.42
-</td>
-<td style="text-align:right;">
 1.078
 </td>
 <td style="text-align:left;">
 0.147
+</td>
+<td style="text-align:right;">
+0.002
 </td>
 </tr>
 <tr>
@@ -1185,13 +1204,13 @@ Maternal herbivory
 1
 </td>
 <td style="text-align:right;">
-125602.81
-</td>
-<td style="text-align:right;">
 2.637
 </td>
 <td style="text-align:left;">
 &lt;0.001***
+</td>
+<td style="text-align:right;">
+0.039
 </td>
 </tr>
 <tr>
@@ -1202,13 +1221,13 @@ Real-time herbivory
 1
 </td>
 <td style="text-align:right;">
-49951.82
-</td>
-<td style="text-align:right;">
 1.049
 </td>
 <td style="text-align:left;">
-0.181
+0.185
+</td>
+<td style="text-align:right;">
+0.001
 </td>
 </tr>
 <tr>
@@ -1219,13 +1238,13 @@ Maternal × Real-time
 1
 </td>
 <td style="text-align:right;">
-49442.74
-</td>
-<td style="text-align:right;">
 1.038
 </td>
 <td style="text-align:left;">
 0.214
+</td>
+<td style="text-align:right;">
+0.001
 </td>
 </tr>
 </tbody>
@@ -1234,11 +1253,10 @@ Maternal × Real-time
 <caption>
 Table 2. Results of distance-based redundancy analysis (dbRDA) showing
 the percentage of variance in phenotypic and genetic distance explained
-by maternal environment (M) and real-time herbivory simulation (S). The
-results of the ANOVA performed to test for the significance of each
-predictor in the model with the interaction term (ANOVA by terms) are
-also shown. Significance codes: *** p &lt; 0.001, ** p &lt; 0.01, * p
-&lt; 0.05.
+by maternal environment (Maternal) and real-time herbivory simulation
+(Simulation). The results of the ANOVA by terms performed to test for
+the significance of each predictor in the model are also shown.
+Significance codes: *** p &lt; 0.001, ** p &lt; 0.01, * p &lt; 0.05.
 </caption>
 <thead>
 <tr>
@@ -1249,13 +1267,10 @@ Model
 df
 </th>
 <th style="text-align:right;">
-SumOfSqs
-</th>
-<th style="text-align:right;">
 F
 </th>
 <th style="text-align:left;">
-Pr(&gt;F)
+p-value
 </th>
 <th style="text-align:right;">
 adj. R²
@@ -1265,33 +1280,10 @@ adj. R²
 <tbody>
 <tr>
 <td style="text-align:left;width: 12em; ">
-GenDist ~ M
+PhenoDist ~ Maternal
 </td>
 <td style="text-align:right;width: 14em; ">
 1
-</td>
-<td style="text-align:right;width: 6em; ">
-156.524
-</td>
-<td style="text-align:right;width: 6em; ">
-17.065
-</td>
-<td style="text-align:left;width: 6em; ">
-&lt;0.001***
-</td>
-<td style="text-align:right;width: 6em; ">
-0.282
-</td>
-</tr>
-<tr>
-<td style="text-align:left;width: 12em; ">
-PhenoDist ~ M
-</td>
-<td style="text-align:right;width: 14em; ">
-1
-</td>
-<td style="text-align:right;width: 6em; ">
-4.713
 </td>
 <td style="text-align:right;width: 6em; ">
 11.763
@@ -1304,23 +1296,54 @@ PhenoDist ~ M
 </td>
 </tr>
 <tr>
-<td style="text-align:left;width: 12em; border-bottom: 1.5px solid;">
+<td style="text-align:left;width: 12em; ">
+PhenoDist ~ Simulation
+</td>
+<td style="text-align:right;width: 14em; ">
+1
+</td>
+<td style="text-align:right;width: 6em; ">
+2.646
+</td>
+<td style="text-align:left;width: 6em; ">
+0.015*
+</td>
+<td style="text-align:right;width: 6em; ">
+0.039
+</td>
+</tr>
+<tr>
+<td style="text-align:left;width: 12em; ">
 PhenoDist ~ M * S
 </td>
-<td style="text-align:right;width: 14em; border-bottom: 1.5px solid;">
+<td style="text-align:right;width: 14em; ">
 3
 </td>
-<td style="text-align:right;width: 6em; border-bottom: 1.5px solid;">
-6.641
+<td style="text-align:right;width: 6em; ">
+5.968
+</td>
+<td style="text-align:left;width: 6em; ">
+&lt;0.001***
+</td>
+<td style="text-align:right;width: 6em; ">
+0.267
+</td>
+</tr>
+<tr>
+<td style="text-align:left;width: 12em; border-bottom: 1.5px solid;">
+GenDist ~ Maternal
+</td>
+<td style="text-align:right;width: 14em; border-bottom: 1.5px solid;">
+1
 </td>
 <td style="text-align:right;width: 6em; border-bottom: 1.5px solid;">
-5.968
+17.065
 </td>
 <td style="text-align:left;width: 6em; border-bottom: 1.5px solid;">
 &lt;0.001***
 </td>
 <td style="text-align:right;width: 6em; border-bottom: 1.5px solid;">
-0.267
+0.282
 </td>
 </tr>
 </tbody>
@@ -1341,13 +1364,13 @@ Predictor
 df
 </th>
 <th style="text-align:right;">
-Variance
-</th>
-<th style="text-align:right;">
 F
 </th>
 <th style="text-align:left;">
-Pr(&gt;F)
+p-value
+</th>
+<th style="text-align:right;">
+adj. R²
 </th>
 </tr>
 </thead>
@@ -1363,13 +1386,13 @@ Maternal herbivory
 1
 </td>
 <td style="text-align:right;width: 6em; ">
-4.713
-</td>
-<td style="text-align:right;width: 6em; ">
 12.704
 </td>
 <td style="text-align:left;width: 6em; ">
 &lt;0.001***
+</td>
+<td style="text-align:right;width: 6em; ">
+0.217
 </td>
 </tr>
 <tr>
@@ -1380,13 +1403,13 @@ Real-time herbivory
 1
 </td>
 <td style="text-align:right;width: 6em; ">
-1.327
-</td>
-<td style="text-align:right;width: 6em; ">
 3.577
 </td>
 <td style="text-align:left;width: 6em; ">
-0.002**
+0.001**
+</td>
+<td style="text-align:right;width: 6em; ">
+0.048
 </td>
 </tr>
 <tr>
@@ -1397,13 +1420,13 @@ Maternal × Real-time
 1
 </td>
 <td style="text-align:right;width: 6em; ">
-0.602
-</td>
-<td style="text-align:right;width: 6em; ">
 1.622
 </td>
 <td style="text-align:left;width: 6em; ">
-0.108
+0.103
+</td>
+<td style="text-align:right;width: 6em; ">
+0.013
 </td>
 </tr>
 </tbody>
