@@ -229,22 +229,25 @@ SNPclust <- hclust(SNP_dist_matrix)
 ```
 
 ```{r ENVIRONMENTAL distance matrix, include=FALSE}
-# Poner id como rownames en treatment
-rownames(treatment_table) <- treatment_table$id
+# Al final no voy a incluir esta matriz en los análisis porque es redundante con los dbRDA que precisamente mniran el efecto de los tratamientos
 
-# Convertir a factor
-treatment_table$maternal   <- as.factor(treatment_table$maternal)
-treatment_table$simulation <- as.factor(treatment_table$simulation)
 
-# Crear dataframe solo con factores
-env_data <- treatment_table[, c("maternal", "simulation")]
-
-# Distancia Gower
-ENV_dist_matrix <- 
-  daisy(env_data, metric = "gower")
-
-ENV <- as.matrix(ENV_dist_matrix)
-ENVclust <- hclust(ENV_dist_matrix)
+# # Poner id como rownames en treatment
+# rownames(treatment_table) <- treatment_table$id
+# 
+# # Convertir a factor
+# treatment_table$maternal   <- as.factor(treatment_table$maternal)
+# treatment_table$simulation <- as.factor(treatment_table$simulation)
+# 
+# # Crear dataframe solo con factores
+# env_data <- treatment_table[, c("maternal", "simulation")]
+# 
+# # Distancia Gower
+# ENV_dist_matrix <- 
+#   daisy(env_data, metric = "gower")
+# 
+# ENV <- as.matrix(ENV_dist_matrix)
+# ENVclust <- hclust(ENV_dist_matrix)
 
 ```
 
@@ -263,11 +266,11 @@ p4 <- as.ggplot(~heatmap(all_CTXT, Rowv = as.dendrogram(all_CTXTclust),
                          Colv = as.dendrogram(all_CTXTclust), symm = TRUE))
 p5 <- as.ggplot(~heatmap(SNP, Rowv = as.dendrogram(SNPclust), 
                          Colv = as.dendrogram(SNPclust), symm = TRUE))
-p6 <- as.ggplot(~heatmap(ENV, Rowv = as.dendrogram(ENVclust), 
-                         Colv = as.dendrogram(ENVclust), symm = TRUE))
+# p6 <- as.ggplot(~heatmap(ENV, Rowv = as.dendrogram(ENVclust), 
+#                         Colv = as.dendrogram(ENVclust), symm = TRUE))
 
 # Organizar en grid
-plot_grid(p1, p2, p3, p4, p5, p6, ncol = 2, labels = "auto")
+plot_grid(p1, p2, p3, p4, p5, ncol = 2, labels = "auto") # p6
 ```
 
 Fig. 1. Predictor ditstance matrices: a) CpG, b) CHG, c) CHH, d) all cytosine contexts, e) SNPs, f) Treatments.
@@ -295,7 +298,7 @@ CHH_dist_matrix <- as.matrix(CHH_dist_matrix)
 all_CTXT_dist_matrix <- as.matrix(all_CTXT_dist_matrix)
 SNP_dist_matrix <- as.matrix(SNP_dist_matrix)
 PHENOTYPE_dist_matrix <- as.matrix(PHENOTYPE_dist_matrix)
-ENV_dist_matrix <- as.matrix(ENV_dist_matrix)
+# ENV_dist_matrix <- as.matrix(ENV_dist_matrix)
 
 # Estandarizamos las matrices: mean=0;SD=1
 # Creamos una función
@@ -322,7 +325,7 @@ CHH_dist_matrix_std  <- standardize_matrix(CHH_dist_matrix)
 all_CTXT_dist_matrix_std  <- standardize_matrix(all_CTXT_dist_matrix)
 SNP_dist_matrix_std  <- standardize_matrix(SNP_dist_matrix)
 PHENO_dist_matrix_std <- standardize_matrix(PHENOTYPE_dist_matrix)
-ENV_dist_matrix_std  <- standardize_matrix(ENV_dist_matrix)
+# ENV_dist_matrix_std  <- standardize_matrix(ENV_dist_matrix)
 
 # Comprobamos que la media es 0 y la desviación estándar es 1
 mean(CpG_dist_matrix_std[lower.tri(CpG_dist_matrix_std)])
@@ -331,24 +334,24 @@ mean(SNP_dist_matrix_std[lower.tri(SNP_dist_matrix_std)])
 sd(SNP_dist_matrix_std[lower.tri(SNP_dist_matrix_std)])
 mean(PHENO_dist_matrix_std[lower.tri(PHENO_dist_matrix_std)])
 sd(PHENO_dist_matrix_std[lower.tri(PHENO_dist_matrix_std)])
-mean(ENV_dist_matrix_std[lower.tri(ENV_dist_matrix_std)])
-sd(ENV_dist_matrix_std[lower.tri(ENV_dist_matrix_std)])
+# mean(ENV_dist_matrix_std[lower.tri(ENV_dist_matrix_std)])
+# sd(ENV_dist_matrix_std[lower.tri(ENV_dist_matrix_std)])
 
 # Todas las matrices deben tener el mismo orden de muestras
 # Si alguna línea devuelve FALSE, hay que reordenar la matriz
 identical(rownames(PHENO_dist_matrix_std), rownames(SNP_dist_matrix_std))
 identical(rownames(PHENO_dist_matrix_std), rownames(CpG_dist_matrix_std))
-identical(rownames(PHENO_dist_matrix_std), rownames(ENV_dist_matrix_std))
+# identical(rownames(PHENO_dist_matrix_std), rownames(ENV_dist_matrix_std))
 identical(rownames(PHENO_dist_matrix_std), rownames(CHG_dist_matrix_std))
 identical(rownames(PHENO_dist_matrix_std), rownames(CHH_dist_matrix_std))
 identical(rownames(PHENO_dist_matrix_std), rownames(all_CTXT_dist_matrix_std))
 
 # Si alguna no coincide:
 # Reordenar filas y columnas de ENV para que coincidan con PHENO
-ENV_dist_matrix_std <- ENV_dist_matrix_std[rownames(PHENO_dist_matrix_std), colnames(PHENO_dist_matrix_std)]
+# ENV_dist_matrix_std <- ENV_dist_matrix_std[rownames(PHENO_dist_matrix_std), colnames(PHENO_dist_matrix_std)]
 
 # Verificación
-identical(rownames(PHENO_dist_matrix_std), rownames(ENV_dist_matrix_std))
+# identical(rownames(PHENO_dist_matrix_std), rownames(ENV_dist_matrix_std))
 
 saveRDS(PHENO_dist_matrix_std, file = "PHENO_dist_matrix_std.rds")
 saveRDS(SNP_dist_matrix_std, file = "SNP_dist_matrix_std.rds")
@@ -369,7 +372,7 @@ saveRDS(CHH_dist_matrix, file = "CHH_dist_matrix.rds")
 matrices <- list(
   SNP = SNP_dist_matrix_std,
   CpG = CpG_dist_matrix_std,
-  ENV = ENV_dist_matrix_std,
+#  ENV = ENV_dist_matrix_std,
   CHG = CHG_dist_matrix_std,
   CHH = CHH_dist_matrix_std,
   all_CTXT = all_CTXT_dist_matrix_std
@@ -475,97 +478,97 @@ MMRR <- function(Y, X, nperm = 999){
   )
 }
 
-# phenD ~ cpgD + envD ----
-# Lista de predictores
-cpg_list <- list(
- # Genetic = SNP_dist_matrix_std,
-  CpG = CpG_dist_matrix_std,
-  Environmental = ENV_dist_matrix_std
-)
-
-# Ejecutamos el modelo
-mmrr_cpg <- MMRR(
-  Y = PHENO_dist_matrix_std,
-  X = cpg_list,
-  nperm = 9999
-)
-
-# Resultados
-mmrr_cpg$R2
-mmrr_cpg$F_statistic
-mmrr_cpg$F_p
-mmrr_cpg$Coefficients
-
-
-# phenD ~ snpD + envD ----
-# Lista de predictores
-gen_list <- list(
-  Genetic = SNP_dist_matrix_std,
-  # CpG = CpG_dist_matrix_std,
-  Environmental = ENV_dist_matrix_std
-)
-
-# Ejecutamos el modelo
-mmrr_gen <- MMRR(
-  Y = PHENO_dist_matrix_std,
-  X = gen_list,
-  nperm = 9999
-)
-
-# Resultados
-mmrr_gen$R2
-mmrr_gen$F_statistic
-mmrr_gen$F_p
-mmrr_gen$Coefficients
-
-# phenD ~ chgD + snpD + envD ----
-# Lista de predictores
-chg_list <- list(
-  Genetic = SNP_dist_matrix_std,
-  chg = CHG_dist_matrix_std,
-  Environmental = ENV_dist_matrix_std
-)
-
-# Ejecutamos el modelo
-mmrr_chg <- MMRR(
-  Y = PHENO_dist_matrix_std,
-  X = chg_list,
-  nperm = 9999
-)
-
-# Resultados
-mmrr_chg$R2
-mmrr_chg$F_statistic
-mmrr_chg$F_p
-mmrr_chg$Coefficients
-
-# phenD ~ chhD + snpD + envD ----
-# Lista de predictores
-chh_list <- list(
-  Genetic = SNP_dist_matrix_std,
-  chh = CHH_dist_matrix_std,
-  Environmental = ENV_dist_matrix_std
-)
-
-# Ejecutamos el modelo
-mmrr_chh <- MMRR(
-  Y = PHENO_dist_matrix_std,
-  X = chh_list,
-  nperm = 9999
-)
-
-# Resultados
-mmrr_chh$R2
-mmrr_chh$F_statistic
-mmrr_chh$F_p
-mmrr_chh$Coefficients
+# # phenD ~ cpgD + envD ----
+# # Lista de predictores
+# cpg_list <- list(
+#  # Genetic = SNP_dist_matrix_std,
+#   CpG = CpG_dist_matrix_std,
+#   Environmental = ENV_dist_matrix_std
+# )
+# 
+# # Ejecutamos el modelo
+# mmrr_cpg <- MMRR(
+#   Y = PHENO_dist_matrix_std,
+#   X = cpg_list,
+#   nperm = 9999
+# )
+# 
+# # Resultados
+# mmrr_cpg$R2
+# mmrr_cpg$F_statistic
+# mmrr_cpg$F_p
+# mmrr_cpg$Coefficients
+# 
+# 
+# # phenD ~ snpD + envD ----
+# # Lista de predictores
+# gen_list <- list(
+#   Genetic = SNP_dist_matrix_std,
+#   # CpG = CpG_dist_matrix_std,
+#   Environmental = ENV_dist_matrix_std
+# )
+# 
+# # Ejecutamos el modelo
+# mmrr_gen <- MMRR(
+#   Y = PHENO_dist_matrix_std,
+#   X = gen_list,
+#   nperm = 9999
+# )
+# 
+# # Resultados
+# mmrr_gen$R2
+# mmrr_gen$F_statistic
+# mmrr_gen$F_p
+# mmrr_gen$Coefficients
+# 
+# # phenD ~ chgD + snpD + envD ----
+# # Lista de predictores
+# chg_list <- list(
+#   Genetic = SNP_dist_matrix_std,
+#   chg = CHG_dist_matrix_std,
+#   Environmental = ENV_dist_matrix_std
+# )
+# 
+# # Ejecutamos el modelo
+# mmrr_chg <- MMRR(
+#   Y = PHENO_dist_matrix_std,
+#   X = chg_list,
+#   nperm = 9999
+# )
+# 
+# # Resultados
+# mmrr_chg$R2
+# mmrr_chg$F_statistic
+# mmrr_chg$F_p
+# mmrr_chg$Coefficients
+# 
+# # phenD ~ chhD + snpD + envD ----
+# # Lista de predictores
+# chh_list <- list(
+#   Genetic = SNP_dist_matrix_std,
+#   chh = CHH_dist_matrix_std,
+#   Environmental = ENV_dist_matrix_std
+# )
+# 
+# # Ejecutamos el modelo
+# mmrr_chh <- MMRR(
+#   Y = PHENO_dist_matrix_std,
+#   X = chh_list,
+#   nperm = 9999
+# )
+# 
+# # Resultados
+# mmrr_chh$R2
+# mmrr_chh$F_statistic
+# mmrr_chh$F_p
+# mmrr_chh$Coefficients
 
 # phenD ~ all_ctxtD + snpD + envD ----
 # Lista de predictores
 all_ctxt_list <- list(
   Genetic = SNP_dist_matrix_std,
-  all_ctxt = all_CTXT_dist_matrix_std,
-  Environmental = ENV_dist_matrix_std
+  all_ctxt = all_CTXT_dist_matrix_std
+#  Environmental = ENV_dist_matrix_std
 )
 
 # Ejecutamos el modelo
@@ -605,12 +608,12 @@ extract_mmrr <- function(model, response_name){
 
   predictor_names <- c(
     "(Intercept)"="Intercept",
-    "XsGenetic"="GenDist",
-    "XsEnvironmental"="EnvironDist",
-    "Xsall_ctxt"="EpiDist-all",
-    "XsCpG"="EpiDist-CG",
-    "Xschg"="EpiDist-CHG",
-    "Xschh"="EpiDist-CHH"
+    "XsGenetic"="Genetic Dist.",
+   # "XsEnvironmental"="EnvironDist",
+    "Xsall_ctxt"="Epigenetic Dist."
+   # "XsCpG"="EpiDist-CG",
+  #  "Xschg"="EpiDist-CHG",
+   # "Xschh"="EpiDist-CHH"
   )
 
   rows <- data.frame()
@@ -656,11 +659,11 @@ extract_mmrr <- function(model, response_name){
 
 # construir tabla completa
 table_mmrr <- bind_rows(
-  extract_mmrr(mmrr_all_ctxt,"PhenoDist"),
-  extract_mmrr(mmrr_cpg,"PhenoDist"),
-  extract_mmrr(mmrr_chg,"PhenoDist"),
-  extract_mmrr(mmrr_chh,"PhenoDist"),
-  extract_mmrr(mmrr_gen,"PhenoDist")
+  extract_mmrr(mmrr_all_ctxt,"Phenotypic Dist.")
+#  extract_mmrr(mmrr_cpg,"PhenoDist"),
+#  extract_mmrr(mmrr_chg,"PhenoDist"),
+#  extract_mmrr(mmrr_chh,"PhenoDist"),
+#  extract_mmrr(mmrr_gen,"PhenoDist")
 )
 
 # mostrar Response solo una vez por bloque
@@ -727,19 +730,20 @@ library(kableExtra)
 library(flextable)
 library(officer)
 
-### 1. ordenar treatment_table y crear grupo
+### 1. ordenar treatment_table y crear grupos separados
 treatment_table <- treatment_table %>%
   mutate(
-    maternal = ifelse(maternal=="graz","Graz","Ungraz"),
-    simulation = ifelse(simulation=="clip","Clip","Unclip"),
+    maternal = ifelse(maternal=="graz","Grazed","Ungrazed"),
+    simulation = ifelse(simulation=="clip","Clipped","Unclipped"),
     Group = paste(maternal, simulation, sep="_")
   )
 
+# Definir el orden para los grupos
 group_order <- c(
-  "Graz_Clip",
-  "Graz_Unclip",
-  "Ungraz_Clip",
-  "Ungraz_Unclip"
+  "Grazed_Clipped",
+  "Grazed_Unclipped",
+  "Ungrazed_Clipped",
+  "Ungrazed_Unclipped"
 )
 
 treatment_table$Group <- factor(treatment_table$Group, levels = group_order)
@@ -781,54 +785,55 @@ stats_CG  <- calc_stats(avena_CpG_obj)
 stats_CHG <- calc_stats(avena_CHG_obj)
 stats_CHH <- calc_stats(avena_CHH_obj)
 
-### 4. unir todo en una tabla
+### 4. crear dataframe con columnas separadas
 final_table <- data.frame(
-  Group = group_order,
-
+  Transgenerational = c("Grazed", "Grazed", "Ungrazed", "Ungrazed"),
+  Realtime = c("Clipped", "Unclipped", "Clipped", "Unclipped"),
+  
   all_mean = sprintf("%.2f", stats_all$mean),
   all_SD   = sprintf("%.2f", stats_all$SD),
-
+  
   CG_mean  = sprintf("%.2f", stats_CG$mean),
   CG_SD    = sprintf("%.2f", stats_CG$SD),
-
+  
   CHG_mean = sprintf("%.2f", stats_CHG$mean),
   CHG_SD   = sprintf("%.2f", stats_CHG$SD),
-
+  
   CHH_mean = sprintf("%.2f", stats_CHH$mean),
   CHH_SD   = sprintf("%.2f", stats_CHH$SD)
 )
 
-### 5. tabla estilo paper
+### 5. tabla estilo paper con collapse_rows
 kable(
   final_table,
   booktabs = TRUE,
   col.names=c(
-  "Group",
-  "mean","SD",
-  "mean","SD",
-  "mean","SD",
-  "mean","SD"
+    "Transgenerational", "Real-time",
+    "mean", "SD",
+    "mean", "SD",
+    "mean", "SD",
+    "mean", "SD"
   ),
-  align=c("l","c","c","c","c","c","c","c","c"),
-  caption="Table 4. Mean and standard deviation (SD) of DNA methylation for each sequence context (CG, CHG, CHH) and across all contexts for each group (i.e., each unique combination maternal environment and real-time herbivory simulation). Graz, Ungraz: Grazed and Ungrazed maternal environment. Clip, Unclip: Clipped and Unclipped plants."
-)%>%
-add_header_above(c(
-  " " = 1,
-  "all" = 2,
-  "CG" = 2,
-  "CHG" = 2,
-  "CHH" = 2
-)) %>%
-kable_styling(
-  full_width = TRUE,
-  font_size = 10,
-  bootstrap_options = "none"
+  align=c("l", "l", "c", "c", "c", "c", "c", "c", "c", "c"),
+  caption="Table 4. Mean and standard deviation (SD) of DNA methylation for each sequence context (CG, CHG, CHH) and across all contexts for each group (i.e., each unique combination maternal environment and real-time herbivory simulation). Grazed, Ungrazed: Grazed and Ungrazed maternal environment. Clipped, Unclipped: Clipped and Unclipped plants."
 ) %>%
-column_spec(1:ncol(final_table),
-            extra_css="min-width:90px;"
-) %>%
-row_spec(0, extra_css = "border-top:2px solid black; border-bottom:2px solid black;") %>%
-row_spec(nrow(final_table), extra_css = "border-bottom:2px solid black;")
+  add_header_above(c(
+    " " = 2,
+    "all" = 2,
+    "CG" = 2,
+    "CHG" = 2,
+    "CHH" = 2
+  )) %>%
+  kable_styling(
+    full_width = TRUE,
+    font_size = 10,
+    bootstrap_options = "none"
+  ) %>%
+  column_spec(1:ncol(final_table),
+              extra_css = "min-width:90px;") %>%
+  collapse_rows(columns = 1, valign = "top") %>%  # Colapsar filas duplicadas en columna Transgenerational
+  row_spec(0, extra_css = "border-top:2px solid black; border-bottom:2px solid black;") %>%
+  row_spec(nrow(final_table), extra_css = "border-bottom:2px solid black;")
 ```
 
 ```{r exportar TABLA DESCRIPTIVOS, include=FALSE}
@@ -836,9 +841,10 @@ table_flex <- final_table %>%
   flextable() %>%
   theme_booktabs() %>%
   fontsize(size = 10) %>%
-  width(width = c(1.3, rep(0.7,8))) %>%
+  width(width = c(1.0, 1.0, rep(0.7, 8))) %>%
+  merge_v(j = ~ Transgenerational) %>%  # Colapsar filas duplicadas en columna Transgenerational
   set_caption(
-    "Table 4. Mean and standard deviation (SD) of DNA methylation for each sequence context (CG, CHG, CHH) and across all contexts for each group (i.e., each unique combination maternal environment and real-time herbivory simulation). Graz, Ungraz: Grazed and Ungrazed maternal environment. Clip, Unclip: Clipped and Unclipped plants."
+    "Table 4. Mean and standard deviation (SD) of DNA methylation for each sequence context (CG, CHG, CHH) and across all contexts for each group (i.e., each unique combination maternal environment and real-time herbivory simulation). Grazed, Ungrazed: Grazed and Ungrazed maternal environment. Clipped, Unclipped: Clipped and Unclipped plants."
   )
 
 doc <- read_docx() %>%

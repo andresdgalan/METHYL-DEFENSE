@@ -1356,7 +1356,7 @@ tab1_flex <- tab1 %>%
     p_value = "p-value",
     adj_R2 = "adj. R²"
   ) %>%
-  merge_v(j = ~ Model) %>%  # similar a collapse_rows
+  merge_v(j = ~ Ctxt) %>%  # similar a collapse_rows
   theme_booktabs() %>%
   fontsize(size = 10) %>%
   width(width = c(0.8, 2.2, 0.5, 0.8, 0.8, 0.8)) %>%
@@ -1408,7 +1408,7 @@ tab_sup_terms_flex <- tab_sup_terms %>%
     F = "F",
     p_value = "p-value",
     adj_R2 = "adj. R²"
-  ) %>%
+  ) %>% merge_v(j = ~ Model) %>%
   theme_booktabs() %>%
   width(width = c(2, 1.8, 0.5, 1, 1,0.8)) %>%
   fontsize(size = 10)
