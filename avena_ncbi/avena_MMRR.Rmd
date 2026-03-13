@@ -229,25 +229,23 @@ SNPclust <- hclust(SNP_dist_matrix)
 ```
 
 ```{r ENVIRONMENTAL distance matrix, include=FALSE}
-# Al final no voy a incluir esta matriz en los análisis porque es redundante con los dbRDA que precisamente mniran el efecto de los tratamientos
 
+# Poner id como rownames en treatment
+rownames(treatment_table) <- treatment_table$id
 
-# # Poner id como rownames en treatment
-# rownames(treatment_table) <- treatment_table$id
-# 
-# # Convertir a factor
-# treatment_table$maternal   <- as.factor(treatment_table$maternal)
-# treatment_table$simulation <- as.factor(treatment_table$simulation)
-# 
-# # Crear dataframe solo con factores
-# env_data <- treatment_table[, c("maternal", "simulation")]
-# 
-# # Distancia Gower
-# ENV_dist_matrix <- 
-#   daisy(env_data, metric = "gower")
-# 
-# ENV <- as.matrix(ENV_dist_matrix)
-# ENVclust <- hclust(ENV_dist_matrix)
+# Convertir a factor
+treatment_table$maternal   <- as.factor(treatment_table$maternal)
+treatment_table$simulation <- as.factor(treatment_table$simulation)
+
+# Crear dataframe solo con factores
+env_data <- treatment_table[, c("maternal", "simulation")]
+
+# Distancia Gower
+ENV_dist_matrix <-
+  daisy(env_data, metric = "gower")
+
+ENV <- as.matrix(ENV_dist_matrix)
+ENVclust <- hclust(ENV_dist_matrix)
 
 ```
 
@@ -266,11 +264,11 @@ p4 <- as.ggplot(~heatmap(all_CTXT, Rowv = as.dendrogram(all_CTXTclust),
                          Colv = as.dendrogram(all_CTXTclust), symm = TRUE))
 p5 <- as.ggplot(~heatmap(SNP, Rowv = as.dendrogram(SNPclust), 
                          Colv = as.dendrogram(SNPclust), symm = TRUE))
-# p6 <- as.ggplot(~heatmap(ENV, Rowv = as.dendrogram(ENVclust), 
-#                         Colv = as.dendrogram(ENVclust), symm = TRUE))
+p6 <- as.ggplot(~heatmap(ENV, Rowv = as.dendrogram(ENVclust), 
+                         Colv = as.dendrogram(ENVclust), symm = TRUE))
 
 # Organizar en grid
-plot_grid(p1, p2, p3, p4, p5, ncol = 2, labels = "auto") # p6
+plot_grid(p1, p2, p3, p4, p5, p6, ncol = 2, labels = "auto")
 ```
 
 Fig. 1. Predictor ditstance matrices: a) CpG, b) CHG, c) CHH, d) all cytosine contexts, e) SNPs, f) Treatments.
@@ -298,7 +296,7 @@ CHH_dist_matrix <- as.matrix(CHH_dist_matrix)
 all_CTXT_dist_matrix <- as.matrix(all_CTXT_dist_matrix)
 SNP_dist_matrix <- as.matrix(SNP_dist_matrix)
 PHENOTYPE_dist_matrix <- as.matrix(PHENOTYPE_dist_matrix)
-# ENV_dist_matrix <- as.matrix(ENV_dist_matrix)
+ENV_dist_matrix <- as.matrix(ENV_dist_matrix)
 
 # Estandarizamos las matrices: mean=0;SD=1
 # Creamos una función
@@ -325,7 +323,7 @@ CHH_dist_matrix_std  <- standardize_matrix(CHH_dist_matrix)
 all_CTXT_dist_matrix_std  <- standardize_matrix(all_CTXT_dist_matrix)
 SNP_dist_matrix_std  <- standardize_matrix(SNP_dist_matrix)
 PHENO_dist_matrix_std <- standardize_matrix(PHENOTYPE_dist_matrix)
-# ENV_dist_matrix_std  <- standardize_matrix(ENV_dist_matrix)
+ENV_dist_matrix_std  <- standardize_matrix(ENV_dist_matrix)
 
 # Comprobamos que la media es 0 y la desviación estándar es 1
 mean(CpG_dist_matrix_std[lower.tri(CpG_dist_matrix_std)])
@@ -334,24 +332,24 @@ mean(SNP_dist_matrix_std[lower.tri(SNP_dist_matrix_std)])
 sd(SNP_dist_matrix_std[lower.tri(SNP_dist_matrix_std)])
 mean(PHENO_dist_matrix_std[lower.tri(PHENO_dist_matrix_std)])
 sd(PHENO_dist_matrix_std[lower.tri(PHENO_dist_matrix_std)])
-# mean(ENV_dist_matrix_std[lower.tri(ENV_dist_matrix_std)])
-# sd(ENV_dist_matrix_std[lower.tri(ENV_dist_matrix_std)])
+mean(ENV_dist_matrix_std[lower.tri(ENV_dist_matrix_std)])
+sd(ENV_dist_matrix_std[lower.tri(ENV_dist_matrix_std)])
 
 # Todas las matrices deben tener el mismo orden de muestras
 # Si alguna línea devuelve FALSE, hay que reordenar la matriz
 identical(rownames(PHENO_dist_matrix_std), rownames(SNP_dist_matrix_std))
 identical(rownames(PHENO_dist_matrix_std), rownames(CpG_dist_matrix_std))
-# identical(rownames(PHENO_dist_matrix_std), rownames(ENV_dist_matrix_std))
+identical(rownames(PHENO_dist_matrix_std), rownames(ENV_dist_matrix_std))
 identical(rownames(PHENO_dist_matrix_std), rownames(CHG_dist_matrix_std))
 identical(rownames(PHENO_dist_matrix_std), rownames(CHH_dist_matrix_std))
 identical(rownames(PHENO_dist_matrix_std), rownames(all_CTXT_dist_matrix_std))
 
 # Si alguna no coincide:
 # Reordenar filas y columnas de ENV para que coincidan con PHENO
-# ENV_dist_matrix_std <- ENV_dist_matrix_std[rownames(PHENO_dist_matrix_std), colnames(PHENO_dist_matrix_std)]
+ENV_dist_matrix_std <- ENV_dist_matrix_std[rownames(PHENO_dist_matrix_std), colnames(PHENO_dist_matrix_std)]
 
 # Verificación
-# identical(rownames(PHENO_dist_matrix_std), rownames(ENV_dist_matrix_std))
+identical(rownames(PHENO_dist_matrix_std), rownames(ENV_dist_matrix_std))
 
 saveRDS(PHENO_dist_matrix_std, file = "PHENO_dist_matrix_std.rds")
 saveRDS(SNP_dist_matrix_std, file = "SNP_dist_matrix_std.rds")
@@ -372,7 +370,7 @@ saveRDS(CHH_dist_matrix, file = "CHH_dist_matrix.rds")
 matrices <- list(
   SNP = SNP_dist_matrix_std,
   CpG = CpG_dist_matrix_std,
-#  ENV = ENV_dist_matrix_std,
+  ENV = ENV_dist_matrix_std,
   CHG = CHG_dist_matrix_std,
   CHH = CHH_dist_matrix_std,
   all_CTXT = all_CTXT_dist_matrix_std
@@ -566,9 +564,9 @@ MMRR <- function(Y, X, nperm = 999){
 # phenD ~ all_ctxtD + snpD + envD ----
 # Lista de predictores
 all_ctxt_list <- list(
-  Genetic = SNP_dist_matrix_std,
-  all_ctxt = all_CTXT_dist_matrix_std
-#  Environmental = ENV_dist_matrix_std
+#  Genetic = SNP_dist_matrix_std
+ all_ctxt = all_CTXT_dist_matrix_std
+  # Environmental = ENV_dist_matrix_std
 )
 
 # Ejecutamos el modelo
@@ -578,11 +576,34 @@ mmrr_all_ctxt <- MMRR(
   nperm = 9999
 )
 
-# Resultados
-mmrr_all_ctxt$R2
-mmrr_all_ctxt$F_statistic
-mmrr_all_ctxt$F_p
-mmrr_all_ctxt$Coefficients
+row.names(mmrr_all_ctxt$Coefficients)[2] <- "Xsall_ctxt"
+
+# Lista de predictores
+GEN_list <- list(
+ Genetic = SNP_dist_matrix_std
+)
+
+mmrr_GEN <- MMRR(
+  Y = PHENO_dist_matrix_std,
+  X = GEN_list,
+  nperm = 9999
+)
+
+row.names(mmrr_GEN$Coefficients)[2] <- "XsGenetic"
+
+
+# Lista de predictores
+ENV_list <- list(
+ Environmental = ENV_dist_matrix_std
+)
+
+mmrr_ENV <- MMRR(
+  Y = PHENO_dist_matrix_std,
+  X = ENV_list,
+  nperm = 9999
+)
+
+row.names(mmrr_ENV$Coefficients)[2] <- "XsEnvironmental"
 ```
 
 
@@ -609,7 +630,7 @@ extract_mmrr <- function(model, response_name){
   predictor_names <- c(
     "(Intercept)"="Intercept",
     "XsGenetic"="Genetic Dist.",
-   # "XsEnvironmental"="EnvironDist",
+    "XsEnvironmental"="Environmental Dist.",
     "Xsall_ctxt"="Epigenetic Dist."
    # "XsCpG"="EpiDist-CG",
   #  "Xschg"="EpiDist-CHG",
@@ -659,7 +680,9 @@ extract_mmrr <- function(model, response_name){
 
 # construir tabla completa
 table_mmrr <- bind_rows(
-  extract_mmrr(mmrr_all_ctxt,"Phenotypic Dist.")
+  extract_mmrr(mmrr_all_ctxt,"Phenotypic Dist."),
+  extract_mmrr(mmrr_GEN,"Phenotypic Dist."),
+  extract_mmrr(mmrr_ENV,"Phenotypic Dist.")
 #  extract_mmrr(mmrr_cpg,"PhenoDist"),
 #  extract_mmrr(mmrr_chg,"PhenoDist"),
 #  extract_mmrr(mmrr_chh,"PhenoDist"),

@@ -572,11 +572,34 @@ mmrr_all_ctxt <- MMRR(
   nperm = 9999
 )
 
-# Resultados
-mmrr_all_ctxt$R2
-mmrr_all_ctxt$F_statistic
-mmrr_all_ctxt$F_p
-mmrr_all_ctxt$Coefficients
+row.names(mmrr_all_ctxt$Coefficients)[2] <- "Xsall_ctxt"
+
+# Lista de predictores
+GEN_list <- list(
+ Genetic = SNP_dist_matrix_std
+)
+
+mmrr_GEN <- MMRR(
+  Y = PHENO_dist_matrix_std,
+  X = GEN_list,
+  nperm = 9999
+)
+
+row.names(mmrr_GEN$Coefficients)[2] <- "XsGenetic"
+
+
+# Lista de predictores
+ENV_list <- list(
+ Environmental = ENV_dist_matrix_std
+)
+
+mmrr_ENV <- MMRR(
+  Y = PHENO_dist_matrix_std,
+  X = ENV_list,
+  nperm = 9999
+)
+
+row.names(mmrr_ENV$Coefficients)[2] <- "XsEnvironmental"
 ```
 
 
@@ -603,7 +626,7 @@ extract_mmrr <- function(model, response_name){
   predictor_names <- c(
     "(Intercept)"="Intercept",
     "XsGenetic"="Genetic Dist.",
-   # "XsEnvironmental"="EnvironDist",
+    "XsEnvironmental"="EnvironDist",
     "Xsall_ctxt"="Epigenetic Dist."
    # "XsCpG"="EpiDist-CG",
   #  "Xschg"="EpiDist-CHG",
@@ -653,7 +676,9 @@ extract_mmrr <- function(model, response_name){
 
 # construir tabla completa
 table_mmrr <- bind_rows(
-  extract_mmrr(mmrr_all_ctxt,"Phenotypic Dist.")
+  extract_mmrr(mmrr_all_ctxt,"Phenotypic Dist."),
+  extract_mmrr(mmrr_GEN,"Phenotypic Dist."),
+  extract_mmrr(mmrr_ENV,"Phenotypic Dist.")
 #  extract_mmrr(mmrr_cpg,"PhenoDist"),
 #  extract_mmrr(mmrr_chg,"PhenoDist"),
 #  extract_mmrr(mmrr_chh,"PhenoDist"),
