@@ -747,7 +747,6 @@ saveRDS(DMPs_CHG_GUvsUU, "DMPs_CHG_GUvsUU.rds")
 saveRDS(DMPs_CHG_GUvsGC, "DMPs_CHG_GUvsGC.rds")
 saveRDS(DMPs_CHG_UUvsUC, "DMPs_CHG_UUvsUC.rds")
 
-
 # Export results as tab-delimited text files
 write.table(DMPs_CHG_GUvsUU, "DMPs_CHG_GUvsUU.txt", sep = "\t", quote = FALSE, row.names = FALSE)
 write.table(DMPs_CHG_GUvsGC, "DMPs_CHG_GUvsGC.txt", sep = "\t", quote = FALSE, row.names = FALSE)

@@ -754,7 +754,6 @@ saveRDS(DMPs_CpG_GUvsUU, "DMPs_CpG_GUvsUU.rds")
 saveRDS(DMPs_CpG_GUvsGC, "DMPs_CpG_GUvsGC.rds")
 saveRDS(DMPs_CpG_UUvsUC, "DMPs_CpG_UUvsUC.rds")
 
-
 # Export results as tab-delimited text files
 write.table(DMPs_CpG_GUvsUU, "DMPs_CpG_GUvsUU.txt", sep = "\t", quote = FALSE, row.names = FALSE)
 write.table(DMPs_CpG_GUvsGC, "DMPs_CpG_GUvsGC.txt", sep = "\t", quote = FALSE, row.names = FALSE)
