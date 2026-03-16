@@ -1,0 +1,152 @@
+---
+title: "DMP Figure"
+author: "Andrés Delgado Galán"
+date: "2026-03-16"
+output: html_document
+---
+
+```{r}
+library(here)
+CpG_meth <- readRDS(here("avena_ncbi","CpG_meth.rds"))
+CHG_meth <- readRDS(here("avena_ncbi","CHG_meth.rds"))
+CHH_meth <- readRDS(here("avena_ncbi","CHH_meth.rds"))
+```
+
+
+```{r CpG DIFFERENTIAL METHYLATION ANALYSIS, include=FALSE}
+# I will create a function to then compare all against all
+
+# Function for pairwise comparison
+meth_diff <- 10
+p_value <- 0.05
+pairwise_diff <- function(meth_obj, g1, g2, min_diff = meth_diff, q_cutoff = p_value) {
+  
+  # Subset the object to only keep the two groups of interest
+  sub_obj <- reorganize(
+    meth_obj,
+    sample.ids = getSampleID(meth_obj)[meth_obj@treatment %in% c(g1, g2)],
+    treatment = meth_obj@treatment[meth_obj@treatment %in% c(g1, g2)]
+  )
+  
+  # Run differential methylation
+  diff <- calculateDiffMeth(
+    sub_obj,
+    overdispersion = "MN",
+    test = "Chisq"
+  )
+  
+  # Extract significant CpGs
+  sig <- getMethylDiff(diff, difference = min_diff, qvalue = q_cutoff)
+  
+  return(list(all = diff, significant = sig))
+}
+
+
+# MAKE COMPARISONS
+
+# GRAZED VS. UNGRAZED (WITHIN UNCLIPPED)
+res_GUvsUU <- pairwise_diff(CpG_meth, g1 = 2, g2 = 3)
+# UNCLIPPED VS. CLIPPED (WITHIN GRAZED)
+res_GUvsGC <- pairwise_diff(CpG_meth, g1 = 2, g2 = 0)
+ # UNCLIPPED VS. CLIPPED (WITHIN UNGRAZED)
+ res_UUvsUC <- pairwise_diff(CpG_meth, g1 = 3, g2 = 1)
+```
+
+
+## Differential methylation analysis
+
+
+
+Con la función "pairwise_diff()" de methylKit, podemos comparar el estado de metilación de cada citosina entre la población de cada tratamiento y la población control (Grazed es el control de Ungrazed y Unclipped es el control de Clipped). Obtenemos hipo- e hiper- metilaciones con respecto al control, y cada una de estas diferencias está asociada a un p-valor. En este caso hemos considerado como Differentially Methylated Positions (**DMPs**) cuando la **diferencia de metilación \> `r meth_diff`%** y el **p-valor \< `r p_value`**
+
+
+```{r CpG exporting table of DMPs, include=FALSE}
+
+# Apply function to all your result objects
+DMPs_CpG_GUvsUU <- res_GUvsUU$significant
+DMPs_CpG_GUvsGC <- res_GUvsGC$significant
+DMPs_CpG_UUvsUC <- res_UUvsUC$significant
+
+
+# Export results as tab-delimited text files
+write.table(DMPs_CpG_GUvsUU, "DMPs_CpG_GUvsUU.txt", sep = "\t", quote = FALSE, row.names = FALSE)
+write.table(DMPs_CpG_GUvsGC, "DMPs_CpG_GUvsGC.txt", sep = "\t", quote = FALSE, row.names = FALSE)
+write.table(DMPs_CpG_UUvsUC, "DMPs_CpG_UUvsUC.txt", sep = "\t", quote = FALSE, row.names = FALSE)
+
+```
+
+
+```{r CpG VOLCANO PLOTS FOR VISUALIZING DMPs, echo=FALSE, results='hold', warning=FALSE, message=FALSE}
+# Volcano plot function
+plot_volcano <- function(diff_obj, min_diff = 10, q_cutoff = 0.05, title = "") {
+  df <- as.data.frame(diff_obj)
+  
+  # Calculate variables
+  df$logq <- -log10(df$qvalue)
+  df$status <- ifelse(abs(df$meth.diff) >= min_diff & df$qvalue <= q_cutoff, "sig", "ns")
+  
+  # Plot
+  p <- ggplot(df, aes(x = meth.diff, y = logq)) +
+    geom_point(aes(color = status), alpha = 0.6, size = 1.5, show.legend = FALSE) +
+    scale_color_manual(values = c("sig" = "red", "ns" = "black")) +
+    geom_vline(xintercept = c(-min_diff, min_diff), linetype = "dashed", color = "blue") +
+    geom_hline(yintercept = -log10(q_cutoff), linetype = "dashed", color = "blue") +
+    labs(
+      x = "% Methylation Difference",
+      y = expression(-log[10]("q-value")),
+      title = title
+    ) +
+    theme_bw() +
+    theme(
+      axis.title = element_blank(),  # remove axis labels
+      axis.text = element_text(size = 9),
+      plot.title = element_text(size = 11, hjust = 0.5)
+    )
+  
+  return(p)
+}
+
+# Generate volcano plots
+p1 <- plot_volcano(res_GUvsUU$all, title = "Ungrazed (Unclipped)")
+p2 <- plot_volcano(res_GUvsGC$all, title = "Clipping (Grazed)")
+p3 <- plot_volcano(res_UUvsUC$all, title = "Clipping (Ungrazed)")
+
+
+grid.arrange(
+  p1, p2, p3, ncol = 3,
+  left   = textGrob(expression(-log[10](q-value)), rot = 90, gp = gpar(fontsize = 12)),
+  bottom = textGrob("% Methylation Difference", gp = gpar(fontsize = 12))
+)
+
+```
+
+```{r CpG DMPs table, echo=FALSE, results='hold', warning=FALSE, message=FALSE}
+# Extract the significant results
+sigUngrazed <- res_GUvsUU$significant
+sigClipped <- res_GUvsGC$significant
+sigUngrazedClipped <- res_UUvsUC$significant
+
+# Count positives and negatives
+n_posUngrazed <- sum(sigUngrazed$meth.diff > 0)
+n_negUngrazed <- sum(sigUngrazed$meth.diff < 0)
+
+n_posClipped <- sum(sigClipped$meth.diff > 0)
+n_negClipped <- sum(sigClipped$meth.diff < 0)
+
+n_posUngrazedClipped <- sum(sigUngrazedClipped$meth.diff > 0)
+n_negUngrazedClipped <- sum(sigUngrazedClipped$meth.diff < 0)
+
+
+# Build the table
+meth_table <- data.frame(
+  Condition = c("Hypermethylated", "Hypomethylated"),
+  UngrazedU = c(n_posUngrazed, n_negUngrazed),
+  ClippingG = c(n_posClipped, n_negClipped),
+  ClippingU = c(n_posUngrazedClipped, n_negUngrazedClipped)
+)
+
+# Show nice table in R Markdown
+knitr::kable(meth_table, align = "c", caption = "Differentially methylated sites")
+
+```
+
