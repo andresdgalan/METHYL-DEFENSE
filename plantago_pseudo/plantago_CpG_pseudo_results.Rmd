@@ -773,7 +773,6 @@ DMPs_CpG_GUvsGC <- add_contig_id(res_GUvsGC$significant, genome_position_map)
 DMPs_CpG_UUvsUC <- add_contig_id(res_UUvsUC$significant, genome_position_map)
 
 
-
 # Export results as tab-delimited text files
 write.table(DMPs_CpG_GUvsUU, "DMPs_CpG_GUvsUU.txt", sep = "\t", quote = FALSE, row.names = FALSE)
 write.table(DMPs_CpG_GUvsGC, "DMPs_CpG_GUvsGC.txt", sep = "\t", quote = FALSE, row.names = FALSE)

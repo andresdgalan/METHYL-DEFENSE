@@ -749,6 +749,7 @@ DMPs_CpG_GUvsUU <- res_GUvsUU$significant
 DMPs_CpG_GUvsGC <- res_GUvsGC$significant
 DMPs_CpG_UUvsUC <- res_UUvsUC$significant
 
+
 # Export results as tab-delimited text files
 write.table(DMPs_CpG_GUvsUU, "DMPs_CpG_GUvsUU.txt", sep = "\t", quote = FALSE, row.names = FALSE)
 write.table(DMPs_CpG_GUvsGC, "DMPs_CpG_GUvsGC.txt", sep = "\t", quote = FALSE, row.names = FALSE)
