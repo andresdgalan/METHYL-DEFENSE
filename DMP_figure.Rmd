@@ -7,6 +7,31 @@ output: html_document
 
 ```{r}
 library(here)
+
+# avena_CpG_GUvsUU <- readRDS(here("avena_ncbi","DMPs_CpG_GUvsUU.rds"))
+# avena_CpG_UUvsUC <- readRDS(here("avena_ncbi","DMPs_CpG_UUvsUC.rds"))
+# avena_CpG_GUvsGC <- readRDS(here("avena_ncbi","DMPs_CpG_GUvsGC.rds"))
+# 
+# avena_CHG_GUvsUU <- readRDS(here("avena_ncbi","DMPs_CHG_GUvsUU.rds"))
+# avena_CHG_UUvsUC <- readRDS(here("avena_ncbi","DMPs_CHG_UUvsUC.rds"))
+# avena_CHG_GUvsGC <- readRDS(here("avena_ncbi","DMPs_CHG_GUvsGC.rds"))
+# 
+# avena_CHH_GUvsUU <- readRDS(here("avena_ncbi","DMPs_CHH_GUvsUU.rds"))
+# avena_CHH_UUvsUC <- readRDS(here("avena_ncbi","DMPs_CHH_UUvsUC.rds"))
+# avena_CHH_GUvsGC <- readRDS(here("avena_ncbi","DMPs_CHH_GUvsGC.rds"))
+# 
+# plantago_CpG_GUvsUU <- readRDS(here("plantago_pseudo","DMPs_CpG_GUvsUU.rds"))
+# plantago_CpG_UUvsUC <- readRDS(here("plantago_pseudo","DMPs_CpG_UUvsUC.rds"))
+# plantago_CpG_GUvsGC <- readRDS(here("plantago_pseudo","DMPs_CpG_GUvsGC.rds"))
+# 
+# plantago_CHG_GUvsUU <- readRDS(here("plantago_pseudo","DMPs_CHG_GUvsUU.rds"))
+# plantago_CHG_UUvsUC <- readRDS(here("plantago_pseudo","DMPs_CHG_UUvsUC.rds"))
+# plantago_CHG_GUvsGC <- readRDS(here("plantago_pseudo","DMPs_CHG_GUvsGC.rds"))
+# 
+# plantago_CHH_GUvsUU <- readRDS(here("plantago_pseudo","DMPs_CHH_GUvsUU.rds"))
+# plantago_CHH_UUvsUC <- readRDS(here("plantago_pseudo","DMPs_CHH_UUvsUC.rds"))
+# plantago_CHH_GUvsGC <- readRDS(here("plantago_pseudo","DMPs_CHH_GUvsGC.rds"))
+
 CpG_meth <- readRDS(here("avena_ncbi","CpG_meth.rds"))
 CHG_meth <- readRDS(here("avena_ncbi","CHG_meth.rds"))
 CHH_meth <- readRDS(here("avena_ncbi","CHH_meth.rds"))
@@ -63,16 +88,14 @@ Con la función "pairwise_diff()" de methylKit, podemos comparar el estado de me
 ```{r CpG exporting table of DMPs, include=FALSE}
 
 # Apply function to all your result objects
-DMPs_CpG_GUvsUU <- res_GUvsUU$significant
-DMPs_CpG_GUvsGC <- res_GUvsGC$significant
-DMPs_CpG_UUvsUC <- res_UUvsUC$significant
+DMPs_CpG_GUvsUU <- res_GUvsUU
+DMPs_CpG_GUvsGC <- res_GUvsGC
+DMPs_CpG_UUvsUC <- res_UUvsUC
 
-
-# Export results as tab-delimited text files
-write.table(DMPs_CpG_GUvsUU, "DMPs_CpG_GUvsUU.txt", sep = "\t", quote = FALSE, row.names = FALSE)
-write.table(DMPs_CpG_GUvsGC, "DMPs_CpG_GUvsGC.txt", sep = "\t", quote = FALSE, row.names = FALSE)
-write.table(DMPs_CpG_UUvsUC, "DMPs_CpG_UUvsUC.txt", sep = "\t", quote = FALSE, row.names = FALSE)
-
+# Save objects
+saveRDS(DMPs_CpG_GUvsUU, "avena_DMPs_CpG_GUvsUU.rds")
+saveRDS(DMPs_CpG_GUvsGC, "avena_DMPs_CpG_GUvsGC.rds")
+saveRDS(DMPs_CpG_UUvsUC, "avena_DMPs_CpG_UUvsUC.rds")
 ```
 
 

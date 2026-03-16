@@ -268,7 +268,7 @@ na_percent_df <- data.frame(
   pct_missing = na_percent
 )
 
-
+saveRDS(CpG_meth, file = "CpG_meth.rds")
 ```
 
 ## SMP calling and filtering 
@@ -772,16 +772,22 @@ DMPs_CpG_GUvsUU <- add_contig_id(res_GUvsUU$significant, genome_position_map)
 DMPs_CpG_GUvsGC <- add_contig_id(res_GUvsGC$significant, genome_position_map)
 DMPs_CpG_UUvsUC <- add_contig_id(res_UUvsUC$significant, genome_position_map)
 
-# Save objects
-saveRDS(DMPs_CpG_GUvsUU, "DMPs_CpG_GUvsUU.rds")
-saveRDS(DMPs_CpG_GUvsGC, "DMPs_CpG_GUvsGC.rds")
-saveRDS(DMPs_CpG_UUvsUC, "DMPs_CpG_UUvsUC.rds")
 
 
 # Export results as tab-delimited text files
 write.table(DMPs_CpG_GUvsUU, "DMPs_CpG_GUvsUU.txt", sep = "\t", quote = FALSE, row.names = FALSE)
 write.table(DMPs_CpG_GUvsGC, "DMPs_CpG_GUvsGC.txt", sep = "\t", quote = FALSE, row.names = FALSE)
 write.table(DMPs_CpG_UUvsUC, "DMPs_CpG_UUvsUC.txt", sep = "\t", quote = FALSE, row.names = FALSE)
+
+# Guardamos también el objeto con las no significativas para la figura
+DMPs_CpG_GUvsUU <- res_GUvsUU
+DMPs_CpG_GUvsGC <- res_GUvsGC
+DMPs_CpG_UUvsUC <- res_UUvsUC
+
+# Save objects
+saveRDS(DMPs_CpG_GUvsUU, "DMPs_CpG_GUvsUU.rds")
+saveRDS(DMPs_CpG_GUvsGC, "DMPs_CpG_GUvsGC.rds")
+saveRDS(DMPs_CpG_UUvsUC, "DMPs_CpG_UUvsUC.rds")
 
 ```
 
