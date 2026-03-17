@@ -999,8 +999,8 @@ get_term_stats <- function(term_obj, rsq_terms, ctxt){
 
   predictors <- c(
     "Maternal herbivory",
-    "Real-time herbivory",
-    "Maternal × Real-time"
+    "Simulated herbivory",
+    "Maternal × Simulated"
   )
 
   p <- tab$`Pr(>F)`
@@ -1121,7 +1121,7 @@ tab2 <- tbl_terms %>%
 #------------------------------------------------
 
 caption_text <- paste0(
-"Table 1. Results of the distance-based redundancy analysis (dbRDA) showing the percentage of epigenetic variance (EpiDist) explained by maternal environment (Maternal), real-time herbivory simulation (Simulation), and/or their interaction (M*S) across different genomic contexts. ",
+"Table 1. Results of the distance-based redundancy analysis (dbRDA) showing the percentage of epigenetic variance (EpiDist) explained by maternal environment (Maternal), Simulated herbivory simulation (Simulation), and/or their interaction (M*S) across different genomic contexts. ",
 "The models include analyses with and without adjusting for genetic variability (GenVar). ",
 "GenVar: first principal component from genetic data explaining ", var_txt,
 "% of the variance in scaled allele frequencies. ",
@@ -1222,8 +1222,8 @@ get_term_stats_pheno <- function(term_obj, rsq_terms){
   
   predictors <- c(
     "Maternal herbivory",
-    "Real-time herbivory",
-    "Maternal × Real-time"
+    "Simulated herbivory",
+    "Maternal × Simulated"
   )
   
   p <- tab$`Pr(>F)`
@@ -1305,7 +1305,7 @@ tab_sup_terms <- terms_pheno %>%
 kable(tab_sup_models,
       booktabs = TRUE,
       digits = 3,
-      caption = "Table 2. Results of distance-based redundancy analysis (dbRDA) showing the percentage of variance in phenotypic and genetic distance explained by maternal environment (Maternal) and real-time herbivory simulation (Simulation). The results of the ANOVA by terms performed to test for the significance of each predictor in the model are also shown. Significance codes: *** p < 0.001, ** p < 0.01, * p < 0.05.",
+      caption = "Table 2. Results of distance-based redundancy analysis (dbRDA) showing the percentage of variance in phenotypic and genetic distance explained by maternal environment (Maternal) and Simulated herbivory simulation (Simulation). The results of the ANOVA by terms performed to test for the significance of each predictor in the model are also shown. Significance codes: *** p < 0.001, ** p < 0.01, * p < 0.05.",
       col.names = c("Model", "df", "F", "p-value", "adj. R²")) %>%
   
   kable_styling(full_width = TRUE,
@@ -1395,7 +1395,7 @@ tab_sup_models_flex <- tab_sup_models %>%
   theme_booktabs() %>%
   fontsize(size = 10) %>%
   width(width = c(2, 0.8, 0.8, 1, 1)) %>%
-  set_caption("Table 2. Results of distance-based redundancy analysis (dbRDA) showing the percentage of variance in phenotypic and genetic distance explained by maternal environment (Maternal) and real-time herbivory simulation (Simulation). The results of the ANOVA performed to test for the significance of each predictor in the model with the interaction term (ANOVA by terms) are also shown. Significance codes: *** p < 0.001, ** p < 0.01, * p < 0.05.")
+  set_caption("Table 2. Results of distance-based redundancy analysis (dbRDA) showing the percentage of variance in phenotypic and genetic distance explained by maternal environment (Maternal) and Simulated herbivory simulation (Simulation). The results of the ANOVA performed to test for the significance of each predictor in the model with the interaction term (ANOVA by terms) are also shown. Significance codes: *** p < 0.001, ** p < 0.01, * p < 0.05.")
 
 # Para la tabla suplementaria 2
 tab_sup_terms_flex <- tab_sup_terms %>%
@@ -1527,12 +1527,12 @@ plot_grid(p3, p4, labels = c('C', 'D'), label_size = 12, label_y = 0.83)
 Fig. 1. Epigenetic differentiation plots using methylation data for cytosines in CpG (A), CHG (B), CHH (C), and in all contexts. Ordination plots of the distance-based redundancy analysis (dbRDA) carried out to test for epigenetic differences with maternal environment as predictor (ED \~ M \* S).  RDA1: first constrained ordination axis; RDA2: second constrained ordination axis. Samples are colored by maternal environment.
 
 ```{r Leyenda Fig. 2, echo=FALSE, results='hold', warning=FALSE, message=FALSE}
-# Leyenda para Figura 2 - Maternal + Real-time
+# Leyenda para Figura 2 - Maternal + Simulated
 par(mar = c(0, 0, 0, 0))
 plot.new()
 legend("center", 
        legend = c("Grazed + Clipped", "Grazed + Unclipped", "Ungrazed + Clipped", "Ungrazed + Unclipped"),
-       title = "Maternal + Real-time",
+       title = "Maternal + Simulated",
        col = c(
    "#FF69B4",
    "#8B3A62",
@@ -1559,7 +1559,7 @@ plot_grid(p1, p2, labels = c('A', 'B'), label_size = 12, label_y = 0.83)
 plot_grid(p3, p4, labels = c('C', 'D'), label_size = 12, label_y = 0.83)
 ```
 
-Fig. 2. Epigenetic differentiation plots using methylation data for cytosines in CpG (A), CHG (B), CHH (C), and in all contexts. Ordination plots of the distance-based redundancy analysis (dbRDA) carried out to test for epigenetic differences with maternal environment and real-time herbivory simulation as predictors (EpiDIST \~ M \* S).  RDA1: first constrained ordination axis; RDA2: second constrained ordination axis. Samples are colored by group (i.e.: maternal environment x real-time herbivory simulation).
+Fig. 2. Epigenetic differentiation plots using methylation data for cytosines in CpG (A), CHG (B), CHH (C), and in all contexts. Ordination plots of the distance-based redundancy analysis (dbRDA) carried out to test for epigenetic differences with maternal environment and Simulated herbivory simulation as predictors (EpiDIST \~ M \* S).  RDA1: first constrained ordination axis; RDA2: second constrained ordination axis. Samples are colored by group (i.e.: maternal environment x real-time herbivory simulation).
 
 
 ```{r Fig. 3, echo=FALSE, results='hold', warning=FALSE, message=FALSE}

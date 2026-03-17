@@ -8,168 +8,184 @@ output: html_document
 ```{r}
 library(here)
 
-# avena_CpG_GUvsUU <- readRDS(here("avena_ncbi","DMPs_CpG_GUvsUU.rds"))
-# avena_CpG_UUvsUC <- readRDS(here("avena_ncbi","DMPs_CpG_UUvsUC.rds"))
-# avena_CpG_GUvsGC <- readRDS(here("avena_ncbi","DMPs_CpG_GUvsGC.rds"))
-# 
-# avena_CHG_GUvsUU <- readRDS(here("avena_ncbi","DMPs_CHG_GUvsUU.rds"))
-# avena_CHG_UUvsUC <- readRDS(here("avena_ncbi","DMPs_CHG_UUvsUC.rds"))
-# avena_CHG_GUvsGC <- readRDS(here("avena_ncbi","DMPs_CHG_GUvsGC.rds"))
-# 
-# avena_CHH_GUvsUU <- readRDS(here("avena_ncbi","DMPs_CHH_GUvsUU.rds"))
-# avena_CHH_UUvsUC <- readRDS(here("avena_ncbi","DMPs_CHH_UUvsUC.rds"))
-# avena_CHH_GUvsGC <- readRDS(here("avena_ncbi","DMPs_CHH_GUvsGC.rds"))
-# 
-# plantago_CpG_GUvsUU <- readRDS(here("plantago_pseudo","DMPs_CpG_GUvsUU.rds"))
-# plantago_CpG_UUvsUC <- readRDS(here("plantago_pseudo","DMPs_CpG_UUvsUC.rds"))
-# plantago_CpG_GUvsGC <- readRDS(here("plantago_pseudo","DMPs_CpG_GUvsGC.rds"))
-# 
-# plantago_CHG_GUvsUU <- readRDS(here("plantago_pseudo","DMPs_CHG_GUvsUU.rds"))
-# plantago_CHG_UUvsUC <- readRDS(here("plantago_pseudo","DMPs_CHG_UUvsUC.rds"))
-# plantago_CHG_GUvsGC <- readRDS(here("plantago_pseudo","DMPs_CHG_GUvsGC.rds"))
-# 
-# plantago_CHH_GUvsUU <- readRDS(here("plantago_pseudo","DMPs_CHH_GUvsUU.rds"))
-# plantago_CHH_UUvsUC <- readRDS(here("plantago_pseudo","DMPs_CHH_UUvsUC.rds"))
-# plantago_CHH_GUvsGC <- readRDS(here("plantago_pseudo","DMPs_CHH_GUvsGC.rds"))
+avena_CpG_GUvsUU <- readRDS(here("avena_ncbi","DMPs_CpG_GUvsUU.rds"))
+avena_CpG_UUvsUC <- readRDS(here("avena_ncbi","DMPs_CpG_UUvsUC.rds"))
+avena_CpG_GUvsGC <- readRDS(here("avena_ncbi","DMPs_CpG_GUvsGC.rds"))
 
-CpG_meth <- readRDS(here("avena_ncbi","CpG_meth.rds"))
-CHG_meth <- readRDS(here("avena_ncbi","CHG_meth.rds"))
-CHH_meth <- readRDS(here("avena_ncbi","CHH_meth.rds"))
+avena_CHG_GUvsUU <- readRDS(here("avena_ncbi","DMPs_CHG_GUvsUU.rds"))
+avena_CHG_UUvsUC <- readRDS(here("avena_ncbi","DMPs_CHG_UUvsUC.rds"))
+avena_CHG_GUvsGC <- readRDS(here("avena_ncbi","DMPs_CHG_GUvsGC.rds"))
+
+avena_CHH_GUvsUU <- readRDS(here("avena_ncbi","DMPs_CHH_GUvsUU.rds"))
+avena_CHH_UUvsUC <- readRDS(here("avena_ncbi","DMPs_CHH_UUvsUC.rds"))
+avena_CHH_GUvsGC <- readRDS(here("avena_ncbi","DMPs_CHH_GUvsGC.rds"))
+
+plantago_CpG_GUvsUU <- readRDS(here("plantago_pseudo","DMPs_CpG_GUvsUU.rds"))
+plantago_CpG_UUvsUC <- readRDS(here("plantago_pseudo","DMPs_CpG_UUvsUC.rds"))
+plantago_CpG_GUvsGC <- readRDS(here("plantago_pseudo","DMPs_CpG_GUvsGC.rds"))
+
+plantago_CHG_GUvsUU <- readRDS(here("plantago_pseudo","DMPs_CHG_GUvsUU.rds"))
+plantago_CHG_UUvsUC <- readRDS(here("plantago_pseudo","DMPs_CHG_UUvsUC.rds"))
+plantago_CHG_GUvsGC <- readRDS(here("plantago_pseudo","DMPs_CHG_GUvsGC.rds"))
+
+plantago_CHH_GUvsUU <- readRDS(here("plantago_pseudo","DMPs_CHH_GUvsUU.rds"))
+plantago_CHH_UUvsUC <- readRDS(here("plantago_pseudo","DMPs_CHH_UUvsUC.rds"))
+plantago_CHH_GUvsGC <- readRDS(here("plantago_pseudo","DMPs_CHH_GUvsGC.rds"))
 ```
 
 
-```{r CpG DIFFERENTIAL METHYLATION ANALYSIS, include=FALSE}
-# I will create a function to then compare all against all
+```{r Función para Volcano plots, include=FALSE}
+library(ggplot2)
+library(ggbreak)
 
-# Function for pairwise comparison
-meth_diff <- 10
-p_value <- 0.05
-pairwise_diff <- function(meth_obj, g1, g2, min_diff = meth_diff, q_cutoff = p_value) {
+plot_volcano2 <- function(diff_obj,
+                          min_diff = 10,
+                          q_cutoff = 0.05,
+                          show_x = FALSE,
+                          show_y = FALSE,
+                          y_scale = "plantago") {
   
-  # Subset the object to only keep the two groups of interest
-  sub_obj <- reorganize(
-    meth_obj,
-    sample.ids = getSampleID(meth_obj)[meth_obj@treatment %in% c(g1, g2)],
-    treatment = meth_obj@treatment[meth_obj@treatment %in% c(g1, g2)]
-  )
-  
-  # Run differential methylation
-  diff <- calculateDiffMeth(
-    sub_obj,
-    overdispersion = "MN",
-    test = "Chisq"
-  )
-  
-  # Extract significant CpGs
-  sig <- getMethylDiff(diff, difference = min_diff, qvalue = q_cutoff)
-  
-  return(list(all = diff, significant = sig))
-}
-
-
-# MAKE COMPARISONS
-
-# GRAZED VS. UNGRAZED (WITHIN UNCLIPPED)
-res_GUvsUU <- pairwise_diff(CpG_meth, g1 = 2, g2 = 3)
-# UNCLIPPED VS. CLIPPED (WITHIN GRAZED)
-res_GUvsGC <- pairwise_diff(CpG_meth, g1 = 2, g2 = 0)
- # UNCLIPPED VS. CLIPPED (WITHIN UNGRAZED)
- res_UUvsUC <- pairwise_diff(CpG_meth, g1 = 3, g2 = 1)
-```
-
-
-## Differential methylation analysis
-
-
-
-Con la función "pairwise_diff()" de methylKit, podemos comparar el estado de metilación de cada citosina entre la población de cada tratamiento y la población control (Grazed es el control de Ungrazed y Unclipped es el control de Clipped). Obtenemos hipo- e hiper- metilaciones con respecto al control, y cada una de estas diferencias está asociada a un p-valor. En este caso hemos considerado como Differentially Methylated Positions (**DMPs**) cuando la **diferencia de metilación \> `r meth_diff`%** y el **p-valor \< `r p_value`**
-
-
-```{r CpG exporting table of DMPs, include=FALSE}
-
-# Apply function to all your result objects
-DMPs_CpG_GUvsUU <- res_GUvsUU
-DMPs_CpG_GUvsGC <- res_GUvsGC
-DMPs_CpG_UUvsUC <- res_UUvsUC
-
-# Save objects
-saveRDS(DMPs_CpG_GUvsUU, "avena_DMPs_CpG_GUvsUU.rds")
-saveRDS(DMPs_CpG_GUvsGC, "avena_DMPs_CpG_GUvsGC.rds")
-saveRDS(DMPs_CpG_UUvsUC, "avena_DMPs_CpG_UUvsUC.rds")
-```
-
-
-```{r CpG VOLCANO PLOTS FOR VISUALIZING DMPs, echo=FALSE, results='hold', warning=FALSE, message=FALSE}
-# Volcano plot function
-plot_volcano <- function(diff_obj, min_diff = 10, q_cutoff = 0.05, title = "") {
   df <- as.data.frame(diff_obj)
   
-  # Calculate variables
   df$logq <- -log10(df$qvalue)
   df$status <- ifelse(abs(df$meth.diff) >= min_diff & df$qvalue <= q_cutoff, "sig", "ns")
   
-  # Plot
+  # resumen
+  sig <- df[df$status == "sig", ]
+  n_total <- nrow(sig)
+  n_pos <- sum(sig$meth.diff > 0)
+  n_neg <- sum(sig$meth.diff < 0)
+  
+  perc_pos <- ifelse(n_total > 0, round(100 * n_pos / n_total), 0)
+  perc_neg <- ifelse(n_total > 0, round(100 * n_neg / n_total), 0)
+  
+  label_txt <- paste0(n_total, " (", perc_neg, "%↓ ", perc_pos, "%↑)")
+  
+  
+  y_scale_main <- switch(y_scale,
+  "plantago" = scale_y_continuous(
+    breaks = c(0, 2, 4, 6, 8)),
+  "avenaCHG" = scale_y_continuous(
+    breaks = c(0, 20, 40, 60)),
+  "avenaCHH" = scale_y_continuous(
+    breaks = c(0, 20, 40, 60, 110)),
+  "avenaCpG" = scale_y_continuous(
+    breaks = c(0, 20, 40, 60, 155, 220))
+)
+  
+  y_limits <- switch(y_scale,
+  "plantago" = coord_cartesian(ylim = c(0, 8)),
+  "avenaCHG" = coord_cartesian(ylim = c(0, 60)),
+  "avenaCHH" = coord_cartesian(ylim = c(0, 114)),
+  "avenaCpG" = coord_cartesian(ylim = c(0, 223))
+)
+  
+  y_breaks <- switch(y_scale,
+  "avenaCHH" = list(scale_y_break(c(60, 110), scales = 0.1)),
+  
+  "avenaCpG" = list(
+    scale_y_break(c(60, 155), scales = 0.1),
+    scale_y_break(c(157, 220), scales = 0.05)
+  ),
+  
+  NULL
+)
+  
   p <- ggplot(df, aes(x = meth.diff, y = logq)) +
-    geom_point(aes(color = status), alpha = 0.6, size = 1.5, show.legend = FALSE) +
+    geom_point(aes(color = status), alpha = 0.6, size = 1) +
     scale_color_manual(values = c("sig" = "red", "ns" = "black")) +
-    geom_vline(xintercept = c(-min_diff, min_diff), linetype = "dashed", color = "blue") +
-    geom_hline(yintercept = -log10(q_cutoff), linetype = "dashed", color = "blue") +
-    labs(
-      x = "% Methylation Difference",
-      y = expression(-log[10]("q-value")),
-      title = title
-    ) +
+    
+    geom_vline(xintercept = c(-min_diff, min_diff), linetype = "dashed", color = "blue", linewidth = 0.3) +
+    geom_hline(yintercept = -log10(q_cutoff), linetype = "dashed", color = "blue", linewidth = 0.3) +
+    
+    scale_x_continuous(
+      limits = c(-100, 100),
+      breaks = c(-100, -50, 0, 50, 100),
+      expand = expansion(mult = 0.05)
+    ) + 
+    
     theme_bw() +
     theme(
-      axis.title = element_blank(),  # remove axis labels
-      axis.text = element_text(size = 9),
-      plot.title = element_text(size = 11, hjust = 0.5)
-    )
+      legend.position = "none",
+      panel.grid = element_blank(),
+      
+      # quitar espacios
+      plot.margin = margin(0, 0, 0, 0),
+      
+      axis.title = element_blank(),
+      axis.text.x = if (show_x) element_text(size = 8) else element_blank(),
+      axis.text.y = if (show_y) element_text(size = 8) else element_blank(),
+      axis.ticks = if (show_x | show_y) element_line() else element_blank()
+    ) +
+    
+    annotate("text",
+         x = Inf, y = Inf,
+         label = label_txt,
+         hjust = 1.3, vjust = 1.4, # más abajo y más izquierda que la esquina
+         size = 2.8)
+  
+  # añadir escala base
+p <- p + y_scale_main
+
+# solo aplicar límites si NO hay breaks
+if (is.null(y_breaks)) {
+  p <- p + y_limits
+}
+
+# añadir breaks (si hay)
+if (!is.null(y_breaks)) {
+  for (br in y_breaks) {
+    p <- p + br
+  }
+}
   
   return(p)
 }
 
-# Generate volcano plots
-p1 <- plot_volcano(res_GUvsUU$all, title = "Ungrazed (Unclipped)")
-p2 <- plot_volcano(res_GUvsGC$all, title = "Clipping (Grazed)")
-p3 <- plot_volcano(res_UUvsUC$all, title = "Clipping (Ungrazed)")
-
-
-grid.arrange(
-  p1, p2, p3, ncol = 3,
-  left   = textGrob(expression(-log[10](q-value)), rot = 90, gp = gpar(fontsize = 12)),
-  bottom = textGrob("% Methylation Difference", gp = gpar(fontsize = 12))
-)
-
 ```
 
-```{r CpG DMPs table, echo=FALSE, results='hold', warning=FALSE, message=FALSE}
-# Extract the significant results
-sigUngrazed <- res_GUvsUU$significant
-sigClipped <- res_GUvsGC$significant
-sigUngrazedClipped <- res_UUvsUC$significant
+```{r helper para construir cada fila, include=FALSE}
+make_row <- function(res1, res2, res3, show_x = FALSE, show_y = FALSE, y_scale) {
+  list(
+    plot_volcano2(res1$all, show_x = show_x, show_y = show_y, y_scale = y_scale),
+    plot_volcano2(res2$all, show_x = show_x, show_y = FALSE, y_scale = y_scale),
+    plot_volcano2(res3$all, show_x = show_x, show_y = FALSE, y_scale = y_scale)
+  )
+}
 
-# Count positives and negatives
-n_posUngrazed <- sum(sigUngrazed$meth.diff > 0)
-n_negUngrazed <- sum(sigUngrazed$meth.diff < 0)
+rows <- list(
 
-n_posClipped <- sum(sigClipped$meth.diff > 0)
-n_negClipped <- sum(sigClipped$meth.diff < 0)
+  # Avena
+  make_row(avena_CpG_GUvsUU, avena_CpG_GUvsGC, avena_CpG_UUvsUC, show_x = FALSE, show_y = TRUE, y_scale = "avenaCpG"),
+  make_row(avena_CHG_GUvsUU, avena_CHG_GUvsGC, avena_CHG_UUvsUC, show_x = FALSE, show_y = TRUE, y_scale = "avenaCHG"),
+  make_row(avena_CHH_GUvsUU, avena_CHH_GUvsGC, avena_CHH_UUvsUC, show_x = FALSE, show_y = TRUE, y_scale = "avenaCHH"),
+  # Plantago
+  make_row(plantago_CpG_GUvsUU, plantago_CpG_GUvsGC, plantago_CpG_UUvsUC, show_x = FALSE, show_y = TRUE, y_scale = "plantago"),
+  make_row(plantago_CHG_GUvsUU, plantago_CHG_GUvsGC, plantago_CHG_UUvsUC, show_x = FALSE, show_y = TRUE, y_scale = "plantago"),
+  make_row(plantago_CHH_GUvsUU, plantago_CHH_GUvsGC, plantago_CHH_UUvsUC, show_x = TRUE, show_y = TRUE, y_scale = "plantago")
+)
+```
 
-n_posUngrazedClipped <- sum(sigUngrazedClipped$meth.diff > 0)
-n_negUngrazedClipped <- sum(sigUngrazedClipped$meth.diff < 0)
 
+```{r CpG VOLCANO PLOTS FOR VISUALIZING DMPs, echo=FALSE, results='hold', warning=FALSE, message=FALSE}
 
-# Build the table
-meth_table <- data.frame(
-  Condition = c("Hypermethylated", "Hypomethylated"),
-  UngrazedU = c(n_posUngrazed, n_negUngrazed),
-  ClippingG = c(n_posClipped, n_negClipped),
-  ClippingU = c(n_posUngrazedClipped, n_negUngrazedClipped)
+# MONTAJE DEL COWPLOT
+library(cowplot)
+
+plot_matrix <- plot_grid(
+  plotlist = unlist(rows, recursive = FALSE),
+  ncol = 3,
+  align = "hv",
+  axis = "tblr"
 )
 
-# Show nice table in R Markdown
-knitr::kable(meth_table, align = "c", caption = "Differentially methylated sites")
+# COMBINAR TODO
+final_plot <- plot_grid(
+  plot_grid(plot_matrix, ncol = 1, rel_heights = c(0.07, 1)),
+  ncol = 2,
+  rel_widths = c(1, 0.12)
+)
 
+ggsave("volcano_plots.svg", final_plot, width = 10, height = 14)
 ```
 
