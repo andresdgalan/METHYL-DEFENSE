@@ -80,17 +80,7 @@ plot_volcano2 <- function(diff_obj,
   "avenaCpG" = coord_cartesian(ylim = c(0, 223))
 )
   
-  y_breaks <- switch(y_scale,
-  "avenaCHH" = list(scale_y_break(c(60, 110), scales = 0.1)),
-  
-  "avenaCpG" = list(
-    scale_y_break(c(60, 155), scales = 0.1),
-    scale_y_break(c(157, 220), scales = 0.05)
-  ),
-  
-  NULL
-)
-  
+
   p <- ggplot(df, aes(x = meth.diff, y = logq)) +
     geom_point(aes(color = status), alpha = 0.6, size = 1) +
     scale_color_manual(values = c("sig" = "red", "ns" = "black")) +
@@ -124,20 +114,8 @@ plot_volcano2 <- function(diff_obj,
          hjust = 1.3, vjust = 1.4, # más abajo y más izquierda que la esquina
          size = 2.8)
   
-  # añadir escala base
+# añadir escala base
 p <- p + y_scale_main
-
-# solo aplicar límites si NO hay breaks
-if (is.null(y_breaks)) {
-  p <- p + y_limits
-}
-
-# añadir breaks (si hay)
-if (!is.null(y_breaks)) {
-  for (br in y_breaks) {
-    p <- p + br
-  }
-}
   
   return(p)
 }
