@@ -43,7 +43,8 @@ plot_volcano2 <- function(diff_obj,
                           q_cutoff = 0.05,
                           show_x = FALSE,
                           show_y = FALSE,
-                          y_scale = "plantago") {
+                          y_scale = "plantago",
+                          y_max = NULL) {
   
   df <- as.data.frame(diff_obj)
   
@@ -63,27 +64,32 @@ plot_volcano2 <- function(diff_obj,
   
   
   y_scale_main <- switch(y_scale,
-  "plantago" = scale_y_continuous(
-    breaks = c(0, 2, 4, 6, 8)),
-  "avenaCHG" = scale_y_continuous(
-    breaks = c(0, 20, 40, 60)),
-  "avenaCHH" = scale_y_continuous(
-    breaks = c(0, 20, 40, 60, 110)),
-  "avenaCpG" = scale_y_continuous(
-    breaks = c(0, 20, 40, 60, 155, 220))
-)
   
-  y_limits <- switch(y_scale,
-  "plantago" = coord_cartesian(ylim = c(0, 8)),
-  "avenaCHG" = coord_cartesian(ylim = c(0, 60)),
-  "avenaCHH" = coord_cartesian(ylim = c(0, 114)),
-  "avenaCpG" = coord_cartesian(ylim = c(0, 223))
+  "plantago" = scale_y_continuous(
+    limits = c(0, y_max),
+    breaks = c(0, 2, 4, 6, 8)
+  ),
+  
+  "avenaCHG" = scale_y_continuous(
+    limits = c(0, y_max),
+    breaks = c(0, 20, 40, 60)
+  ),
+  
+  "avenaCHH" = scale_y_continuous(
+    limits = c(0, y_max),
+    breaks = c(0, 20, 40, 60, 110)
+  ),
+  
+  "avenaCpG" = scale_y_continuous(
+    limits = c(0, y_max),
+    breaks = c(0, 20, 40, 60, 155, 220)
+  )
 )
   
 
   p <- ggplot(df, aes(x = meth.diff, y = logq)) +
     geom_point(aes(color = status), alpha = 0.6, size = 1) +
-    scale_color_manual(values = c("sig" = "red", "ns" = "black")) +
+    scale_color_manual(values = c("sig" = "#FF0000", "ns" = "#000000")) +
     
     geom_vline(xintercept = c(-min_diff, min_diff), linetype = "dashed", color = "blue", linewidth = 0.3) +
     geom_hline(yintercept = -log10(q_cutoff), linetype = "dashed", color = "blue", linewidth = 0.3) +
@@ -100,7 +106,7 @@ plot_volcano2 <- function(diff_obj,
       panel.grid = element_blank(),
       
       # quitar espacios
-      plot.margin = margin(0, 0, 0, 0),
+      plot.margin = margin(1, 1, 1, 1),
       
       axis.title = element_blank(),
       axis.text.x = if (show_x) element_text(size = 8) else element_blank(),
@@ -116,6 +122,16 @@ plot_volcano2 <- function(diff_obj,
   
 # añadir escala base
 p <- p + y_scale_main
+
+# añadir cortes de eje según el caso
+if (y_scale == "avenaCHH") {
+  p <- p + scale_y_break(c(60, 110))
+}
+
+if (y_scale == "avenaCpG") {
+  p <- p + scale_y_break(c(60, 155)) +
+           scale_y_break(c(157, 220))
+}
   
   return(p)
 }
@@ -124,10 +140,23 @@ p <- p + y_scale_main
 
 ```{r helper para construir cada fila, include=FALSE}
 make_row <- function(res1, res2, res3, show_x = FALSE, show_y = FALSE, y_scale) {
+  
+  # combinar datos de la fila
+  df_all <- rbind(
+    as.data.frame(res1$all),
+    as.data.frame(res2$all),
+    as.data.frame(res3$all)
+  )
+  
+  logq_all <- -log10(df_all$qvalue)
+  
+# límite en el límite de los datos
+  y_max <- max(logq_all, na.rm = TRUE)
+  
   list(
-    plot_volcano2(res1$all, show_x = show_x, show_y = show_y, y_scale = y_scale),
-    plot_volcano2(res2$all, show_x = show_x, show_y = FALSE, y_scale = y_scale),
-    plot_volcano2(res3$all, show_x = show_x, show_y = FALSE, y_scale = y_scale)
+    plot_volcano2(res1$all, show_x = show_x, show_y = show_y, y_scale = y_scale, y_max = y_max),
+    plot_volcano2(res2$all, show_x = show_x, show_y = FALSE, y_scale = y_scale, y_max = y_max),
+    plot_volcano2(res3$all, show_x = show_x, show_y = FALSE, y_scale = y_scale, y_max = y_max)
   )
 }
 
@@ -137,6 +166,7 @@ rows <- list(
   make_row(avena_CpG_GUvsUU, avena_CpG_GUvsGC, avena_CpG_UUvsUC, show_x = FALSE, show_y = TRUE, y_scale = "avenaCpG"),
   make_row(avena_CHG_GUvsUU, avena_CHG_GUvsGC, avena_CHG_UUvsUC, show_x = FALSE, show_y = TRUE, y_scale = "avenaCHG"),
   make_row(avena_CHH_GUvsUU, avena_CHH_GUvsGC, avena_CHH_UUvsUC, show_x = FALSE, show_y = TRUE, y_scale = "avenaCHH"),
+
   # Plantago
   make_row(plantago_CpG_GUvsUU, plantago_CpG_GUvsGC, plantago_CpG_UUvsUC, show_x = FALSE, show_y = TRUE, y_scale = "plantago"),
   make_row(plantago_CHG_GUvsUU, plantago_CHG_GUvsGC, plantago_CHG_UUvsUC, show_x = FALSE, show_y = TRUE, y_scale = "plantago"),
@@ -164,6 +194,70 @@ final_plot <- plot_grid(
   rel_widths = c(1, 0.12)
 )
 
-ggsave("volcano_plots.svg", final_plot, width = 10, height = 14)
+ggsave("volcano_jump.svg", final_plot, width = 10, height = 14)
+ggsave("volcano_jump.png", final_plot, dpi = 300)
+```
+
+```{r De 3 en 3 para reducir tamaño, include=FALSE}
+
+# nombres de salida en el mismo orden que tus filas
+file_names <- c(
+  "volcano_avenaCpG.svg",
+  "volcano_avenaCHG.svg",
+  "volcano_avenaCHH.svg",
+  "volcano_plantagoCpG.svg",
+  "volcano_plantagoCHG.svg",
+  "volcano_plantagoCHH.svg"
+)
+
+# loop para guardar cada fila
+for (i in seq_along(rows)) {
+  
+  # cada fila tiene 3 plots → los combinamos en una fila
+  row_plot <- plot_grid(
+    plotlist = rows[[i]],
+    ncol = 3,
+    align = "hv",
+    axis = "tblr"
+  )
+  
+  # guardar svg
+  ggsave(
+    filename = file_names[i],
+    plot = row_plot,
+    width = 10,
+    height = 3   # más bajito porque es solo una fila
+  )
+}
+```
+
+```{r De 1 en 1 para reducir tamaño, include=FALSE}
+library(svglite)
+# aplanar lista (igual que usas en plot_matrix)
+all_plots <- unlist(rows, recursive = FALSE)
+
+# nombres EXACTOS en el mismo orden
+file_names <- c(
+  "avena_CpG_GUvsUU", "avena_CpG_GUvsGC", "avena_CpG_UUvsUC",
+  "avena_CHG_GUvsUU", "avena_CHG_GUvsGC", "avena_CHG_UUvsUC",
+  "avena_CHH_GUvsUU", "avena_CHH_GUvsGC", "avena_CHH_UUvsUC",
+  "plantago_CpG_GUvsUU", "plantago_CpG_GUvsGC", "plantago_CpG_UUvsUC",
+  "plantago_CHG_GUvsUU", "plantago_CHG_GUvsGC", "plantago_CHG_UUvsUC",
+  "plantago_CHH_GUvsUU", "plantago_CHH_GUvsGC", "plantago_CHH_UUvsUC"
+)
+
+# exportar uno a uno
+for (i in seq_along(all_plots)) {
+  
+  ggsave(
+    filename = paste0("volcano_", file_names[i], ".svg"),
+    plot = all_plots[[i]],
+    width = 3.3,   # aprox 10 / 3 → mismo aspecto que en la grid
+    height = 2.3,   # ajusta si quieres más aire vertical
+    device = svglite
+  )
+}
+
+
 ```
 
