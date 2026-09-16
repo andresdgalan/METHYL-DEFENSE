@@ -222,7 +222,7 @@ dos_filtered <- dos[, keep]
 
 # Distancia genética
 SNP_dist_matrix <- 
-  dist(dos, method = "euclidean")
+  dist(dos_filtered, method = "euclidean")
 
 SNP <- as.matrix(SNP_dist_matrix)
 SNPclust <- hclust(SNP_dist_matrix)
@@ -359,10 +359,13 @@ saveRDS(CHH_dist_matrix_std, file = "CHH_dist_matrix_std.rds")
 saveRDS(all_CTXT_dist_matrix_std, file = "all_CTXT_dist_matrix_std.rds")
 
 saveRDS(PHENOTYPE_dist_matrix, file = "PHENO_dist_matrix.rds")
-saveRDS(SNP_dist_matrix, file = "SNP_dist_matrix.rds")
 saveRDS(CpG_dist_matrix, file = "CpG_dist_matrix.rds")
 saveRDS(CHG_dist_matrix, file = "CHG_dist_matrix.rds")
 saveRDS(CHH_dist_matrix, file = "CHH_dist_matrix.rds")
+saveRDS(all_CTXT, file = "EPI_dist_matrix.rds")
+saveRDS(ENV, file = "ENV_dist_matrix.rds")
+saveRDS(SNP, file = "SNP_dist_matrix.rds")
+saveRDS(P, file = "PHENO_dist_matrix.rds")
 ```
 
 ```{r Multicollinearity test, echo=FALSE, results='hold', warning=FALSE, message=FALSE}
@@ -604,6 +607,23 @@ mmrr_ENV <- MMRR(
 )
 
 row.names(mmrr_ENV$Coefficients)[2] <- "XsEnvironmental"
+
+
+# Lista de predictores
+total_list <- list(
+  Genetic = SNP_dist_matrix_std,
+ all_ctxt = all_CTXT_dist_matrix_std,
+   Environmental = ENV_dist_matrix_std
+)
+
+# Ejecutamos el modelo
+mmrr_total <- MMRR(
+  Y = PHENO_dist_matrix_std,
+  X = total_list,
+  nperm = 9999
+)
+
+# row.names(mmrr_total$Coefficients)[2] <- "Xsall_ctxt"
 ```
 
 
@@ -876,3 +896,178 @@ doc <- read_docx() %>%
 print(doc, target = "table_methylation_contexts.docx")
 ```
 
+```{r VARIANCE PARTITIONING OF PHENOTYPIC VARIATION, include=FALSE}
+############################################################
+# VARIANCE PARTITIONING OF PHENOTYPIC VARIATION
+#
+# Objective:
+# Quantify the unique and shared contributions of genetic,
+# epigenetic and environmental variation to phenotypic
+# variation.
+#
+# Rationale:
+# MMRR identifies associations between distance matrices,
+# but when predictor matrices are highly correlated
+# (e.g. genetic and epigenetic distances), regression
+# coefficients can become difficult to interpret.
+#
+# Variance partitioning provides complementary information
+# by decomposing the explained phenotypic variation into:
+#
+# - Unique genetic component
+# - Unique epigenetic component
+# - Unique environmental component
+# - Shared fractions among predictors
+#
+# Because capscale()/varpart() require explanatory variables
+# rather than distance matrices, each predictor distance
+# matrix is first represented by a small number of PCoA axes.
+############################################################
+
+library(vegan)
+
+############################################################
+# 1. RESPONSE MATRIX
+############################################################
+
+# Phenotypic distance matrix
+pheno_dist <- as.dist(PHENOTYPE_dist_matrix)
+
+############################################################
+# 2. PRINCIPAL COORDINATE ANALYSIS (PCoA)
+############################################################
+
+# Genetic distances
+gen_pcoa <- cmdscale(
+  as.dist(SNP_dist_matrix),
+  eig = TRUE,
+  k = 10
+)
+
+# Epigenetic distances
+epi_pcoa <- cmdscale(
+  as.dist(all_CTXT_dist_matrix),
+  eig = TRUE,
+  k = 10
+)
+
+# Environmental distances
+env_pcoa <- cmdscale(
+  as.dist(ENV_dist_matrix),
+  eig = TRUE,
+  k = 10
+)
+
+############################################################
+# 3. EXAMINE EIGENVALUES
+############################################################
+
+# Proportion of variance explained by each axis
+
+gen_var <- gen_pcoa$eig / sum(gen_pcoa$eig[gen_pcoa$eig > 0])
+epi_var <- epi_pcoa$eig / sum(epi_pcoa$eig[epi_pcoa$eig > 0])
+env_var <- env_pcoa$eig / sum(env_pcoa$eig[env_pcoa$eig > 0])
+
+cumsum(gen_var)
+cumsum(epi_var)
+cumsum(env_var)
+
+############################################################
+# 4. RETAIN LEADING AXES
+############################################################
+
+# The number of axes can be adjusted after inspecting
+# cumulative explained variance above.
+#
+# With n = 40 individuals, retaining a small number
+# of axes helps avoid overfitting.
+
+GEN <- as.data.frame(gen_pcoa$points[, 1:3])
+EPI <- as.data.frame(epi_pcoa$points[, 1:3])
+ENV <- as.data.frame(env_pcoa$points[, 1:2])
+
+############################################################
+# 5. VARIANCE PARTITIONING
+############################################################
+
+vp <- varpart(
+  pheno_dist,
+  GEN,
+  EPI,
+  ENV
+)
+
+# Numerical results
+vp
+
+# Venn diagram
+plot(vp)
+
+
+############################################################
+# 6. CORRELATION BETWEEN GENETIC AND EPIGENETIC DISTANCES
+############################################################
+
+cor(
+  SNP_dist_matrix[lower.tri(SNP_dist_matrix)],
+  all_CTXT_dist_matrix[lower.tri(all_CTXT_dist_matrix)]
+)
+
+library(ggplot2)
+
+############################################################
+# Extraer fracciones únicas desde varpart
+############################################################
+
+vp_df <- data.frame(
+  fraction = c(
+    "Genetic",
+    "Epigenetic",
+    "Environmental"
+  ),
+  R2_adj = vp$part$indfract$Adj.R.square[1:3]
+)
+
+# Los R² ajustados negativos suelen representarse como 0
+vp_df$PlotR2 <- pmax(vp_df$R2_adj, 0)
+
+############################################################
+# Gráfico
+############################################################
+
+ggplot(
+  vp_df,
+  aes(
+    x = reorder(fraction, PlotR2),
+    y = PlotR2,
+    fill = fraction
+  )
+) +
+  geom_col(width = 0.45) +
+  geom_text(
+    aes(label = sprintf("%.3f", R2_adj)),
+    hjust = -0.15,
+    size = 5
+  ) +
+  coord_flip() +
+  scale_y_continuous(
+    limits = c(
+      0,
+      max(vp_df$PlotR2) * 1.25
+    )
+  ) +
+  labs(
+    x = NULL,
+    y = expression("Adjusted "*R^2),
+    title = "Unique contributions to phenotypic variation"
+  ) +
+  theme_classic(base_size = 14) +
+  theme(
+    legend.position = "none",
+    panel.border = element_rect(
+      colour = "black",
+      fill = NA,
+      linewidth = 0.8
+    )
+  )
+```

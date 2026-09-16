@@ -194,9 +194,13 @@ final_plot <- plot_grid(
   rel_widths = c(1, 0.12)
 )
 
-#ggsave("volcano_jump.svg", final_plot, width = 10, height = 14)
-#ggsave("volcano_jump.png", final_plot, dpi = 300)
-ggsave("volcano_jump.pdf", final_plot)
+
+# #ggsave("volcano_jump.svg", final_plot, width = 10, height = 14)
+# #ggsave("volcano_jump.png", final_plot, dpi = 300)
+# ggsave("volcano_jump.pdf", final_plot)
+
+ggsave("volcano_jump.svg", final_plot, width = 10, height = 14)
+ggsave("volcano_jump.png", final_plot, dpi = 300)
 ```
 
 ```{r De 3 en 3 para reducir tamaño, include=FALSE}
@@ -260,5 +264,433 @@ for (i in seq_along(all_plots)) {
 }
 
 
+```
+
+
+```{r Cytosine Intersect}
+############################################################
+# Intersección de DMCs entre comparaciones
+#
+# Objetivo:
+# Evaluar si las mismas citosinas aparecen como DMCs en
+# parental, within-generation e interacción.
+#
+# Cada citosina queda identificada por:
+# chr:start
+############################################################
+
+library(methylKit)
+library(dplyr)
+
+############################################################
+# Extraer posiciones DMC
+############################################################
+
+get_sites <- function(x){
+
+  df <- getData(x$significant)
+
+  paste(
+    df$chr,
+    df$start,
+    sep = ":"
+  )
+
+}
+
+############################################################
+# Calcular Overlap
+############################################################
+
+overlap_coefficient <- function(a, b){
+
+  length(intersect(a, b)) /
+    min(length(a), length(b))
+
+}
+
+############################################################
+# Resumen para un conjunto de tres comparaciones
+############################################################
+
+intersection_summary <- function(comp1,
+                                 comp2,
+                                 comp3,
+                                 name1 = "GUvsUU",
+                                 name2 = "UUvsUC",
+                                 name3 = "GUvsGC"){
+
+  s1 <- unique(get_sites(comp1))
+  s2 <- unique(get_sites(comp2))
+  s3 <- unique(get_sites(comp3))
+
+  data.frame(
+
+    metric = c(
+      paste0("n_", name1),
+      paste0("n_", name2),
+      paste0("n_", name3),
+
+      paste0(name1, "_inter_", name2),
+      paste0(name1, "_inter_", name3),
+      paste0(name2, "_inter_", name3),
+
+      "all_three",
+
+      paste0("Overlap_", name1, "_", name2),
+      paste0("Overlap_", name1, "_", name3),
+      paste0("Overlap_", name2, "_", name3)
+    ),
+
+    value = c(
+
+      length(s1),
+      length(s2),
+      length(s3),
+
+      length(intersect(s1, s2)),
+      length(intersect(s1, s3)),
+      length(intersect(s2, s3)),
+
+      length(
+        Reduce(
+          intersect,
+          list(s1, s2, s3)
+        )
+      ),
+
+      overlap_coefficient(s1, s2),
+      overlap_coefficient(s1, s3),
+      overlap_coefficient(s2, s3)
+
+    )
+
+  )
+
+}
+
+# Tabla
+all_results <- bind_rows(
+
+  intersection_summary(
+    avena_CpG_GUvsUU,
+    avena_CpG_UUvsUC,
+    avena_CpG_GUvsGC
+  ) %>%
+    mutate(species = "Avena",
+           context = "CpG"),
+
+  intersection_summary(
+    avena_CHG_GUvsUU,
+    avena_CHG_UUvsUC,
+    avena_CHG_GUvsGC
+  ) %>%
+    mutate(species = "Avena",
+           context = "CHG"),
+
+  intersection_summary(
+    avena_CHH_GUvsUU,
+    avena_CHH_UUvsUC,
+    avena_CHH_GUvsGC
+  ) %>%
+    mutate(species = "Avena",
+           context = "CHH"),
+
+  intersection_summary(
+    plantago_CpG_GUvsUU,
+    plantago_CpG_UUvsUC,
+    plantago_CpG_GUvsGC
+  ) %>%
+    mutate(species = "Plantago",
+           context = "CpG"),
+
+  intersection_summary(
+    plantago_CHG_GUvsUU,
+    plantago_CHG_UUvsUC,
+    plantago_CHG_GUvsGC
+  ) %>%
+    mutate(species = "Plantago",
+           context = "CHG"),
+
+  intersection_summary(
+    plantago_CHH_GUvsUU,
+    plantago_CHH_UUvsUC,
+    plantago_CHH_GUvsGC
+  ) %>%
+    mutate(species = "Plantago",
+           context = "CHH")
+
+)
+
+all_results
+
+all_results <- all_results %>%
+  mutate(
+    value = round(value, 3)
+  )
+
+options(scipen = 999)
+
+write.csv(
+  all_results,
+  "DMC_intersections_summary.csv",
+  row.names = FALSE
+)
+```
+
+```{r Cytosine and sign intersect}
+############################################################
+# Intersección de DMCs considerando
+# posición + dirección de metilación
+#
+# Una DMC solo se considera compartida si:
+# 1) Es la misma citosina (chr:start)
+# 2) Tiene la misma dirección (hyper/hypo)
+############################################################
+
+library(methylKit)
+library(dplyr)
+
+############################################################
+# Extraer sitio y dirección
+############################################################
+
+get_signed_sites <- function(x){
+
+  df <- getData(x$significant)
+
+  data.frame(
+
+    site = paste(
+      df$chr,
+      df$start,
+      sep = ":"
+    ),
+
+    direction = ifelse(
+      df$meth.diff > 0,
+      "hyper",
+      "hypo"
+    ),
+
+    stringsAsFactors = FALSE
+
+  )
+
+}
+
+############################################################
+# Crear identificador sitio-dirección
+############################################################
+
+signed_set <- function(x){
+
+  df <- get_signed_sites(x)
+
+  paste(
+    df$site,
+    df$direction,
+    sep = "_"
+  )
+
+}
+
+############################################################
+# Índice de Overlap
+############################################################
+
+overlap_coefficient <- function(a, b){
+
+  length(intersect(a, b)) /
+    min(length(a), length(b))
+
+}
+
+############################################################
+# Resumen de intersecciones
+############################################################
+
+intersection_summary_signed <- function(comp1,
+                                        comp2,
+                                        comp3,
+                                        name1 = "GUvsUU",
+                                        name2 = "UUvsUC",
+                                        name3 = "GUvsGC"){
+
+  s1 <- unique(signed_set(comp1))
+  s2 <- unique(signed_set(comp2))
+  s3 <- unique(signed_set(comp3))
+
+  data.frame(
+
+    metric = c(
+      paste0("n_", name1),
+      paste0("n_", name2),
+      paste0("n_", name3),
+
+      paste0(name1, "_inter_", name2),
+      paste0(name1, "_inter_", name3),
+      paste0(name2, "_inter_", name3),
+
+      "all_three",
+
+      paste0("Overlap_", name1, "_", name2),
+      paste0("Overlap_", name1, "_", name3),
+      paste0("Overlap_", name2, "_", name3)
+    ),
+
+    value = c(
+
+      length(s1),
+      length(s2),
+      length(s3),
+
+      length(intersect(s1, s2)),
+      length(intersect(s1, s3)),
+      length(intersect(s2, s3)),
+
+      length(
+        Reduce(
+          intersect,
+          list(s1, s2, s3)
+        )
+      ),
+
+      overlap_coefficient(s1, s2),
+      overlap_coefficient(s1, s3),
+      overlap_coefficient(s2, s3)
+
+    )
+
+  )
+
+}
+
+############################################################
+# Tabla completa
+############################################################
+
+all_results_signed <- bind_rows(
+
+  intersection_summary_signed(
+    avena_CpG_GUvsUU,
+    avena_CpG_UUvsUC,
+    avena_CpG_GUvsGC
+  ) %>%
+    mutate(
+      species = "Avena",
+      context = "CpG"
+    ),
+
+  intersection_summary_signed(
+    avena_CHG_GUvsUU,
+    avena_CHG_UUvsUC,
+    avena_CHG_GUvsGC
+  ) %>%
+    mutate(
+      species = "Avena",
+      context = "CHG"
+    ),
+
+  intersection_summary_signed(
+    avena_CHH_GUvsUU,
+    avena_CHH_UUvsUC,
+    avena_CHH_GUvsGC
+  ) %>%
+    mutate(
+      species = "Avena",
+      context = "CHH"
+    ),
+
+  intersection_summary_signed(
+    plantago_CpG_GUvsUU,
+    plantago_CpG_UUvsUC,
+    plantago_CpG_GUvsGC
+  ) %>%
+    mutate(
+      species = "Plantago",
+      context = "CpG"
+    ),
+
+  intersection_summary_signed(
+    plantago_CHG_GUvsUU,
+    plantago_CHG_UUvsUC,
+    plantago_CHG_GUvsGC
+  ) %>%
+    mutate(
+      species = "Plantago",
+      context = "CHG"
+    ),
+
+  intersection_summary_signed(
+    plantago_CHH_GUvsUU,
+    plantago_CHH_UUvsUC,
+    plantago_CHH_GUvsGC
+  ) %>%
+    mutate(
+      species = "Plantago",
+      context = "CHH"
+    )
+
+)
+
+############################################################
+# Formato de salida
+############################################################
+
+all_results_signed <- all_results_signed %>%
+  mutate(
+    value = round(value, 3)
+  )
+
+options(scipen = 999)
+
+############################################################
+# Guardar tabla
+############################################################
+
+write.csv(
+  all_results_signed,
+  "DMC_intersections_signed_summary.csv",
+  row.names = FALSE
+)
+
+all_results_signed
+```
+
+
+```{r Plot}
+library(dplyr)
+library(eulerr)
+
+make_euler <- function(df){
+
+  A   <- df$value[df$metric=="n_GUvsUU"]
+  B   <- df$value[df$metric=="n_UUvsUC"]
+  C   <- df$value[df$metric=="n_GUvsGC"]
+
+  AB  <- df$value[df$metric=="GUvsUU_inter_UUvsUC"]
+  AC  <- df$value[df$metric=="GUvsUU_inter_GUvsGC"]
+  BC  <- df$value[df$metric=="UUvsUC_inter_GUvsGC"]
+
+  ABC <- df$value[df$metric=="all_three"]
+
+  fit <- euler(c(
+    "GUvsUU" = A - AB - AC + ABC,
+    "UUvsUC" = B - AB - BC + ABC,
+    "GUvsGC" = C - AC - BC + ABC,
+    "GUvsUU&UUvsUC" = AB - ABC,
+    "GUvsUU&GUvsGC" = AC - ABC,
+    "UUvsUC&GUvsGC" = BC - ABC,
+    "GUvsUU&UUvsUC&GUvsGC" = ABC
+  ))
+
+  plot(fit)
+}
+
+split(all_results_signed,
+      list(all_results_signed$species,
+           all_results_signed$context)) |>
+  lapply(make_euler)
 ```
 

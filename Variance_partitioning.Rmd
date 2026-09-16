@@ -1,0 +1,339 @@
+---
+title: "Variance partitioning"
+author: "Andrés Delgado Galán"
+date: "2026-06-16"
+output: html_document
+---
+
+```{r DIST matrices, include=FALSE}
+library(here)
+
+a.phenoDIST <- readRDS(here("avena_ncbi", "PHENO_dist_matrix.rds"))
+a.genDIST <- readRDS(here("avena_ncbi","SNP_dist_matrix.rds"))
+a.epiDIST <- readRDS(here("avena_ncbi", "EPI_dist_matrix.rds"))
+a.envDIST <- readRDS(here("avena_ncbi","ENV_dist_matrix.rds"))
+
+p.phenoDIST <- readRDS(here("plantago_pseudo", "PHENO_dist_matrix.rds"))
+p.genDIST <- readRDS(here("plantago_pseudo","SNP_dist_matrix.rds"))
+p.epiDIST <- readRDS(here("plantago_pseudo", "EPI_dist_matrix.rds"))
+p.envDIST <- readRDS(here("plantago_pseudo","ENV_dist_matrix.rds"))
+```
+
+```{r Variance partirioning, include=FALSE}
+############################################################
+# VARIANCE PARTITIONING OF PHENOTYPIC VARIATION
+#
+# Objective:
+# Quantify the unique and shared contributions of genetic,
+# epigenetic and environmental variation to phenotypic
+# variation.
+#
+# Rationale:
+# MMRR identifies associations between distance matrices,
+# but when predictor matrices are highly correlated
+# (e.g. genetic and epigenetic distances), regression
+# coefficients can become difficult to interpret.
+#
+# Variance partitioning provides complementary information
+# by decomposing the explained phenotypic variation into:
+#
+# - Unique genetic component
+# - Unique epigenetic component
+# - Unique environmental component
+# - Shared fractions among predictors
+#
+# Because capscale()/varpart() require explanatory variables
+# rather than distance matrices, each predictor distance
+# matrix is first represented by a small number of PCoA axes.
+############################################################
+
+library(vegan)
+
+############################################################
+# 1. PRINCIPAL COORDINATE ANALYSIS (PCoA)
+############################################################
+# Función para procesar cada especie
+procesar_especie <- function(phenoDIST, genDIST, epiDIST, envDIST, especie_nombre) {
+  
+  # Genetic distances
+  gen_pcoa <- cmdscale(genDIST,
+    eig = TRUE,
+    k = 10
+  )
+  
+  # Epigenetic distances
+  epi_pcoa <- cmdscale(epiDIST,
+    eig = TRUE,
+    k = 10
+  )
+  
+  # Environmental distances
+  env_pcoa <- cmdscale(envDIST,
+    eig = TRUE,
+    k = 10
+  )
+  
+  ############################################################
+  # 2. EXAMINE EIGENVALUES
+  ############################################################
+  
+  # Proportion of variance explained by each axis
+  
+  gen_var <- gen_pcoa$eig / sum(gen_pcoa$eig[gen_pcoa$eig > 0])
+  epi_var <- epi_pcoa$eig / sum(epi_pcoa$eig[epi_pcoa$eig > 0])
+  env_var <- env_pcoa$eig / sum(env_pcoa$eig[env_pcoa$eig > 0])
+  
+  cat("\n", especie_nombre, "- Cumulative variance:\n")
+  cat("Genetic:\n")
+  print(cumsum(gen_var))
+  cat("Epigenetic:\n")
+  print(cumsum(epi_var))
+  cat("Environmental:\n")
+  print(cumsum(env_var))
+  
+  ############################################################
+  # 3. RETAIN LEADING AXES
+  ############################################################
+  
+  # The number of axes can be adjusted after inspecting
+  # cumulative explained variance above.
+  #
+  # With n = 40 individuals, retaining a small number
+  # of axes helps avoid overfitting.
+  
+  GEN <- as.data.frame(gen_pcoa$points[, 1:8])
+  EPI <- as.data.frame(epi_pcoa$points[, 1:8])
+  ENV <- as.data.frame(env_pcoa$points[, 1:2])
+  
+  ############################################################
+  # 4. VARIANCE PARTITIONING
+  ############################################################
+  
+  vp <- varpart(
+    phenoDIST,
+    GEN,
+    EPI,
+    ENV
+  )
+  
+  return(vp)
+}
+
+# Ejecutar para ambas especies
+vp_plantago <- procesar_especie(p.phenoDIST, p.genDIST, p.epiDIST, p.envDIST, "Plantago")
+vp_avena <- procesar_especie(a.phenoDIST, a.genDIST, a.epiDIST, a.envDIST, "Avena")
+```
+
+```{r Figura, echo=FALSE, results='hold', warning=FALSE, message=FALSE}
+
+############################################################
+# VARIANCE PARTITIONING VENN DIAGRAMS
+# P. lagopus and A. barbata
+############################################################
+
+library(ggplot2)
+library(ggforce)
+library(cowplot)
+
+############################################################
+# EXTRAER FRACCIONES DE VARPART
+############################################################
+
+extract_varpart <- function(vp){
+
+  vals <- vp$part$indfract$Adj.R.square
+
+  return(vals)
+}
+
+############################################################
+# No contar valores negativos
+############################################################
+
+add_label <- function(value, x, y, bold = FALSE, prefix = "") {
+
+  if (value < 0) return(NULL)
+
+  annotate(
+    "text",
+    x = x,
+    y = y,
+    label = paste0(prefix, sprintf("%.3f", value)),
+    size = 5,
+    fontface = ifelse(bold, "bold", "plain")
+  )
+}
+
+############################################################
+# DIBUJAR PANEL
+############################################################
+
+make_venn_panel <- function(frac, title){
+
+  labs_frac <- sprintf("%.3f", frac)
+
+  ggplot() +
+
+    ########################################################
+    # CIRCULOS
+    ########################################################
+
+    geom_circle(
+      aes(x0 = 3.0, y0 = 5.0, r = 1.7),
+      fill = "#4C72B0",
+      alpha = 0.35,
+      colour = "black",
+      linewidth = 0.8
+    ) +
+
+    geom_circle(
+      aes(x0 = 5.0, y0 = 5.0, r = 1.7),
+      fill = "#DD8452",
+      alpha = 0.35,
+      colour = "black",
+      linewidth = 0.8
+    ) +
+
+    geom_circle(
+      aes(x0 = 4.0, y0 = 3.4, r = 1.7),
+      fill = "#55A868",
+      alpha = 0.35,
+      colour = "black",
+      linewidth = 0.8
+    ) +
+
+    ########################################################
+    # FRACCIONES
+    ########################################################
+
+    add_label(frac[1], 2.1, 5.2) +  # Genetic unique
+  add_label(frac[2], 5.9, 5.2) +  # Epigenetic unique
+  add_label(frac[3], 4.0, 2.1) +  # Environmental unique
+  add_label(frac[4], 4.0, 5.5) +  # Genetic + Epigenetic
+  add_label(frac[5], 5.0, 3.9) +  # Epigenetic + Environmental
+  add_label(frac[6], 3.0, 3.9) +  # Genetic + Environmental
+  add_label(frac[7], 4.0, 4.5, bold = TRUE) +  # Triple overlap
+  add_label(frac[8], 5.3, 0.5, prefix = "Residuals: ") +
+
+    ########################################################
+    # PANEL
+    ########################################################
+
+    coord_fixed() +
+
+    xlim(1.1, 7.1) +
+    ylim(0.5, 7.0) +
+
+    labs(title = title) +
+
+    theme_void(base_size = 14) +
+
+    theme(
+      plot.title = element_text(
+        hjust = 0.5,
+        face = "italic",
+        size = 14
+      ),
+
+      panel.border = element_rect(
+        colour = "black",
+        fill = NA,
+        linewidth = 0.9
+      )
+    )
+}
+
+############################################################
+# EXTRAER RESULTADOS
+############################################################
+
+frac_plantago <- extract_varpart(vp_plantago)
+frac_avena    <- extract_varpart(vp_avena)
+
+############################################################
+# CREAR PANELES
+############################################################
+
+p1 <- make_venn_panel(
+  frac_plantago,
+  "P. lagopus"
+)
+
+p2 <- make_venn_panel(
+  frac_avena,
+  "A. barbata"
+)
+
+############################################################
+# LEYENDA
+############################################################
+
+legend_df <- data.frame(
+  Variable = c(
+    "Genetic",
+    "Epigenetic",
+    "Environmental"
+  ),
+  x = 1,
+  y = c(3,2,1)
+)
+
+legend_plot <- ggplot(
+  legend_df,
+  aes(x, y, colour = Variable)
+) +
+
+  geom_point(size = 6) +
+
+  scale_colour_manual(
+    values = c(
+      Genetic      = "#4C72B0",
+      Epigenetic   = "#DD8452",
+      Environmental= "#55A868"
+    )
+  ) +
+
+  theme_void() +
+
+  theme(
+    legend.position = "right",
+    legend.title = element_blank(),
+    legend.text = element_text(size = 12)
+  )
+
+legend <- get_legend(legend_plot)
+
+############################################################
+# FIGURA FINAL
+############################################################
+
+final_plot <- plot_grid(
+  p1,
+  p2,
+  legend,
+  nrow = 1,
+  rel_widths = c(1, 1, 0.35)
+)
+
+print(final_plot)
+
+############################################################
+# EXPORTAR
+############################################################
+
+ggsave(
+  "variance_partitioning_venn.pdf",
+  final_plot,
+  width = 10,
+  height = 5
+)
+
+ggsave(
+  "variance_partitioning_venn.png",
+  final_plot,
+  width = 10,
+  height = 5,
+  dpi = 600
+)
+
+```
