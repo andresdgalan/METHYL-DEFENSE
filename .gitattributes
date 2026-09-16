@@ -1,2 +1,6 @@
 *.rds filter=lfs diff=lfs merge=lfs -text
 avena_ncbi/*.rds filter=lfs diff=lfs merge=lfs -text
+*.csv filter=lfs diff=lfs merge=lfs -text
+*.fa filter=lfs diff=lfs merge=lfs -text
+*.gff3 filter=lfs diff=lfs merge=lfs -text
+.RDataTmp1 filter=lfs diff=lfs merge=lfs -text
