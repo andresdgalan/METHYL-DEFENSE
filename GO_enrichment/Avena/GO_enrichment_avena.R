@@ -145,7 +145,7 @@ background_Cs <- convert_genbank_to_chr(
 
 # Como lo hace McNew
 # Incluir promotores 2kb upstream del TSS
-gene.obj <- readTranscriptFeatures(here("GO_enrichment/Avena/longest.bed"),remove.unusual=FALSE,
+gene.obj <- readTranscriptFeatures(here("GO_enrichment/Avena/gff3.bed"),remove.unusual=FALSE, # También probé con longest.bed
                                    up.flank=2000,down.flank=0,unique.prom=TRUE)
 
 GUvsUU_annotation <- annotateWithGeneParts(as(avena_all_GUvsUU, "GRanges"), gene.obj)
@@ -153,25 +153,30 @@ UUvsUC_annotation <- annotateWithGeneParts(as(avena_all_UUvsUC, "GRanges"), gene
 GUvsGC_annotation <- annotateWithGeneParts(as(avena_all_GUvsGC, "GRanges"), gene.obj)
 background_annotation <- annotateWithGeneParts(as(background_Cs, "GRanges"), gene.obj)
 
-# Corregimos feature.name para que sea el nombre del gen
+# Corregimos feature.name para que sea el nombre del TRANSCRITO (TAMBIÉN LO HICE CON EL DEL GEN)
+# GUvsUU_annotation@dist.to.TSS$feature.name <- sub(
+#   "^AVBAR\\.10000a\\.r1\\..*G([0-9]+)\\.\\d+$",         # eSTA VERSIÓN SERÍA PARA QUITAR EL NÚMERO DE TRANSCRITO
+#   "AVBAR.10000a.r1.1AG\\1",
+#   GUvsUU_annotation@dist.to.TSS$feature.name
+# )
 GUvsUU_annotation@dist.to.TSS$feature.name <- sub(
-  "^AVBAR\\.10000a\\.r1\\..*G([0-9]+)\\.\\d+$",
-  "AVBAR.10000a.r1.1AG\\1",
+  "^AVBAR\\.10000a\\.r1\\..*G([0-9]+)(\\.\\d+)$",
+  "AVBAR.10000a.r1.1AG\\1\\2",
   GUvsUU_annotation@dist.to.TSS$feature.name
 )
 UUvsUC_annotation@dist.to.TSS$feature.name <- sub(
-  "^AVBAR\\.10000a\\.r1\\..*G([0-9]+)\\.\\d+$",
-  "AVBAR.10000a.r1.1AG\\1",
+  "^AVBAR\\.10000a\\.r1\\..*G([0-9]+)(\\.\\d+)$",
+  "AVBAR.10000a.r1.1AG\\1\\2",
   UUvsUC_annotation@dist.to.TSS$feature.name
 )
 GUvsGC_annotation@dist.to.TSS$feature.name <- sub(
-  "^AVBAR\\.10000a\\.r1\\..*G([0-9]+)\\.\\d+$",
-  "AVBAR.10000a.r1.1AG\\1",
+  "^AVBAR\\.10000a\\.r1\\..*G([0-9]+)(\\.\\d+)$",
+  "AVBAR.10000a.r1.1AG\\1\\2",
   GUvsGC_annotation@dist.to.TSS$feature.name
 )
 background_annotation@dist.to.TSS$feature.name <- sub(
-  "^AVBAR\\.10000a\\.r1\\..*G([0-9]+)\\.\\d+$",
-  "AVBAR.10000a.r1.1AG\\1",
+  "^AVBAR\\.10000a\\.r1\\..*G([0-9]+)(\\.\\d+)$",
+  "AVBAR.10000a.r1.1AG\\1\\2",
   background_annotation@dist.to.TSS$feature.name
 )
 
@@ -186,7 +191,7 @@ summarise_annotation <- function(annotation, name) {
   # Save annotation table
   write.csv(
     anno,
-    here("GO_enrichment", "Avena", paste0(name, "_annotation.csv")),
+    here("GO_enrichment", "Avena", paste0(name, "_annotation_TRANSCRIPT.csv")),
     row.names = FALSE
   )
   
@@ -226,11 +231,11 @@ library(dplyr)
 library(tidyr)
 
 TERM2GENE <- GOfeature %>%
-  select(gID, GO) %>%
+  select(tID, GO) %>%                                 # sería gID para genes
   filter(!is.na(GO), GO != "", GO != "nan") %>%
   separate_rows(GO, sep = ",") %>%
   filter(grepl("^GO:\\d+$", GO)) %>%
-  select(term = GO, gene = gID)
+  select(term = GO, gene = tID)                     # sería gID para genes
 
 # Overrepresented biological processes, molecular functions, and cellular 
 # components were identified with an FDR-adjusted threshold of alpha-value 
@@ -256,5 +261,11 @@ UUvsUC_GO <- run_go_enrichment(
 
 GUvsGC_GO <- run_go_enrichment(
   GUvsGC_anno$feature.name)
+
+as.data.frame(GUvsUU_GO)
+as.data.frame(UUvsUC_GO)
+as.data.frame(GUvsGC_GO)
+
+
 
 
