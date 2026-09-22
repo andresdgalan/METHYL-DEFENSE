@@ -212,6 +212,74 @@ RsquareAdj(mod_pc)
 # FDR
 ```
 
+```{r prepare epigenetic data to include in constrained dbRDA, include=FALSE}
+
+
+#missing data handling / imputation (replace NA by locus median)
+# impute by median allele dosage per SNP:
+for(j in seq_len(ncol(avena_all_CTXT_obj))){
+  nas <- is.na(avena_all_CTXT_obj[,j])
+  if(any(nas)) avena_all_CTXT_obj[nas,j] <- median(avena_all_CTXT_obj[,j], na.rm=TRUE)
+}
+
+# PRINCIPAL COMPONENT ANALYSIS
+EPIpca <- prcomp(avena_all_CTXT_obj)
+
+# cALCULA EL % QUE EXPLICA CADA PC
+EPIvar_exp <- EPIpca$sdev^2
+EPIperc_var <- EPIvar_exp / sum(EPIvar_exp) * 100
+EPIperc_var
+
+# CREA UNA TABLA PARA VISUALIZAR QUÉ PCS SON IMPORTANTES
+EPIvar_table <- data.frame(
+  PC = paste0("PC", seq_along(EPIperc_var)),
+  Variance = EPIvar_exp,
+  Percent = EPIperc_var,
+  Cumulative = cumsum(EPIperc_var)
+)
+
+# Tabla con el porcentaje de variabilidad genética, total y acumulado, que explica cada PC
+EPIvar_table
+
+# Decidir con cuántos PCs nos quedamos:
+EPIcum_var <- cumsum(EPIpca$sdev^2 / sum(EPIpca$sdev^2) * 100)
+which(EPIcum_var <= 35)
+
+
+# sELECCIONA LOS PCs QUE VAYAS A USAR
+EPIgen_pcs <- as.data.frame(EPIpca$x[, 1:1])
+colnames(EPIgen_pcs) <- paste0("PC", 1:1)
+EPIvar_explained <- EPIvar_table$Cumulative[EPIvar_table$PC == "PC1"]
+EPIvar_txt <- sprintf("%.2f", EPIvar_explained)
+
+
+# VER SI COINCIDE EL ORDEN DE LAS MUESTRAS EN EL PCA Y EN LOS METADATOS
+all(rownames(EPIgen_pcs) == treatment_table$id)
+
+# COMBINAR PCs CON METADATOS
+treatment_pcs <- cbind(treatment, gen_pcs)
+
+# dbRDA
+mod_pc <- capscale(
+  CpG_dist_matrix ~ maternal * simulation + Condition(PC1:PC1),
+  data = treatment_pcs,
+  add = FALSE
+)
+
+# Significancia global
+anova(mod_pc, permutations = 9999)
+
+# Significancia por término (esto lo hacen en García-Seoane cuando el mod_pcelo global sale significativo)
+anova(mod_pc, by = "term", permutations = 9999)
+
+# R² ajustado (En García-Seoane la reportan en el texto pero no en la tabla)
+# Boquete - "We also calculated individual adj. R2 for each predictorby mod_pceling the effect of each predictor while accounting for the others using partial constrained dbRDA"
+RsquareAdj(mod_pc)
+
+# FDR
+```
+
+
 In these analyses we evaluate how much epigenetic variability is explained by the herbivory treatments and their interaction. We analysed overall epigenetic variability and separately for each context. We used the methylation percent of each SMP (`r ncol(CpG_meth_matrix) ` in CpG, `r ncol(CHG_meth_matrix) ` in CHG, `r ncol(CHH_meth_matrix) ` in CHH) to construct an euclidean epigenetic distance matrix between samples (`r nrow(CpG_meth_matrix) `) using cluster::daisy.
 
 ```{r CpG dbRDA CpG_mod1, include=FALSE}
