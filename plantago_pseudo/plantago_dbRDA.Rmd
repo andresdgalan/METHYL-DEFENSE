@@ -25,11 +25,11 @@ library(vcfR)        # read and manipulate VCF files
 library(adegenet)
 
 # Cargamos SMPs de los tres contextos
-# avena_CpG_obj <- readRDS(here("avena_ncbi", "avena_ncbi_CpG_meth_matrix.rds"))
-# avena_CHG_obj <- readRDS(here("avena_ncbi", "avena_ncbi_CHG_meth_matrix.rds"))
-# avena_CHH_obj <- readRDS(here("avena_ncbi", "avena_ncbi_CHH_meth_matrix.rds"))
+# plantago_CpG_obj <- readRDS(here("plantago_ncbi", "plantago_ncbi_CpG_meth_matrix.rds"))
+# plantago_CHG_obj <- readRDS(here("plantago_ncbi", "plantago_ncbi_CHG_meth_matrix.rds"))
+# plantago_CHH_obj <- readRDS(here("plantago_ncbi", "plantago_ncbi_CHH_meth_matrix.rds"))
 
-# avena_all_CTXT_obj <- rbind(avena_CpG_obj, avena_CHG_obj, avena_CHH_obj)
+# plantago_all_CTXT_obj <- rbind(plantago_CpG_obj, plantago_CHG_obj, plantago_CHH_obj)
 
 plantago_CpG_obj <- readRDS(here("plantago_pseudo", "plantago_pseudo_CpG_meth_matrix.rds"))
 plantago_CHG_obj <- readRDS(here("plantago_pseudo", "plantago_pseudo_CHG_meth_matrix.rds"))
@@ -207,6 +207,63 @@ RsquareAdj(mod_pc)
 
 # FDR
 ```
+
+```{r prepare epigenetic data to include in constrained dbRDA, include=FALSE}
+
+#Trasponemos la matriz porque PCA rquiere muestras en filas y sitios en columnas
+plantago_all_t <- t(plantago_all_CTXT_obj)
+
+#missing data handling / imputation (replace NA by locus median)
+colSums(is.na(plantago_all_CTXT_obj))
+(colSums(is.na(plantago_all_CTXT_obj))/nrow(plantago_all_CTXT_obj))*100
+# impute by median methylation per SMP:
+for(j in seq_len(ncol(plantago_all_t))){
+  nas <- is.na(plantago_all_t[,j])
+  if(any(nas)) plantago_all_t[nas,j] <- median(plantago_all_t[,j], na.rm=TRUE)
+}
+
+# PRINCIPAL COMPONENT ANALYSIS
+EPIpca <- prcomp(plantago_all_t)
+
+# cALCULA EL % QUE EXPLICA CADA PC
+EPIvar_exp <- EPIpca$sdev^2
+EPIperc_var <- EPIvar_exp / sum(EPIvar_exp) * 100
+EPIperc_var
+
+# CREA UNA TABLA PARA VISUALIZAR QUÉ PCS SON IMPORTANTES
+EPIvar_table <- data.frame(
+  PC = paste0("PC", seq_along(EPIperc_var)),
+  Variance = EPIvar_exp,
+  Percent = EPIperc_var,
+  Cumulative = cumsum(EPIperc_var)
+)
+
+# Tabla con el porcentaje de variabilidad genética, total y acumulado, que explica cada PC
+EPIvar_table
+
+# Decidir con cuántos PCs nos quedamos:
+EPIcum_var <- cumsum(EPIpca$sdev^2 / sum(EPIpca$sdev^2) * 100)
+which(EPIcum_var <= 35)
+
+
+# sELECCIONA LOS PCs QUE VAYAS A USAR
+EPIgen_pcs <- as.data.frame(EPIpca$x[, 1:3])
+colnames(EPIgen_pcs) <- paste0("PC", 1:3)
+EPIvar_explained <- EPIvar_table$Cumulative[EPIvar_table$PC == "PC3"]
+EPIvar_txt <- sprintf("%.2f", EPIvar_explained)
+
+
+# VER SI COINCIDE EL ORDEN DE LAS MUESTRAS EN EL PCA Y EN LOS METADATOS
+all(rownames(EPIgen_pcs) == treatment$id)
+
+# COMBINAR PCs CON METADATOS
+EPItreatment_pcs <- cbind(treatment, EPIgen_pcs)
+
+# Para cuando se usen PCs de genética y PCs de Epigenética en el mismo modelo
+gen_pcs$GENPC1 <- gen_pcs$PC1
+GENEPItreatment_pcs <- cbind(EPItreatment_pcs, GENPC1 = gen_pcs$GENPC1)
+```
+
 
 In these analyses we evaluate how much epigenetic variability is explained by the herbivory treatments and their interaction. We analysed overall epigenetic variability and separately for each context. We used the methylation percent of each SMP (`r ncol(CpG_meth_matrix) ` in CpG, `r ncol(CHG_meth_matrix) ` in CHG, `r ncol(CHH_meth_matrix) ` in CHH) to construct an euclidean epigenetic distance matrix between samples (`r nrow(CpG_meth_matrix) `) using cluster::daisy.
 
@@ -842,7 +899,7 @@ Rsq_phenoDIST_mod1
 ```{r phenoDIST dbRDA phenoDIST_mod2, include=FALSE}
 # dbRDA
 phenoDIST_mod2 <- capscale(
-  phenoDIST ~ maternal * simulation,
+  phenoDIST ~ simulation,
   data = treatment,
   add = FALSE
 )
@@ -852,12 +909,108 @@ Sig_phenoDIST_mod2 <- anova(phenoDIST_mod2, permutations = 9999)
 Sig_phenoDIST_mod2
 
 # Significancia por término (esto lo hacen en García-Seoane cuando el phenoDIST_mod2elo global sale significativo)
-Sig_terms_phenoDIST_mod2 <- anova(phenoDIST_mod2, by = "term", permutations = 9999)
+anova(phenoDIST_mod2, by = "term", permutations = 9999)
+
+# R² ajustado (En García-Seoane la reportan en el texto pero no en la tabla)
+# Boquete - "We also calculated individual adj. R2 for each predictorby phenoDIST_mod2eling the effect of each predictor while accounting for the others using partial constrained dbRDA"
+Rsq_phenoDIST_mod2 <- RsquareAdj(phenoDIST_mod2)
+Rsq_phenoDIST_mod2
+
+# FDR
+
+
+```
+
+```{r phenoDIST dbRDA phenoDIST_mod3, include=FALSE}
+
+#  !!!
+#  !!!
+
+# MIRAR POR QUÉ EN MOUNGER (2022) USAN CONDITION... NO LE VEO EL SENTIDO PERO SEGURAMENTE LO TENGA
+
+#  !!!
+#  !!!
+
+# dbRDA
+phenoDIST_mod3 <- capscale(
+  phenoDIST ~ PC1, # Condition(PC1),
+  data = treatment_pcs,
+  add = FALSE
+)
+
+n_permut <- 9999
+# Significancia global
+Sig_phenoDIST_mod3 <- anova(phenoDIST_mod3, permutations = n_permut)
+Sig_phenoDIST_mod3
+
+# Significancia por término (esto lo hacen en García-Seoane cuando el phenoDIST_mod3elo global sale significativo)
+anova(phenoDIST_mod3, by = "term", permutations = n_permut)
+
+# R² ajustado (En García-Seoane la reportan en el texto pero no en la tabla)
+# Boquete - "We also calculated individual adj. R2 for each predictorby phenoDIST_mod3eling the effect of each predictor while accounting for the others using partial constrained dbRDA"
+Rsq_phenoDIST_mod3 <- RsquareAdj(phenoDIST_mod3)
+Rsq_phenoDIST_mod3
+
+# FDR
+
+
+```
+
+```{r phenoDIST dbRDA phenoDIST_mod4, include=FALSE}
+
+#  !!!
+#  !!!
+
+# MIRAR POR QUÉ EN MOUNGER (2022) USAN CONDITION... NO LE VEO EL SENTIDO PERO SEGURAMENTE LO TENGA
+
+#  !!!
+#  !!!
+
+# dbRDA
+phenoDIST_mod4 <- capscale(
+  phenoDIST ~ PC1:PC3, # Condition(PC1:PC3),
+  data = EPItreatment_pcs,
+  add = FALSE
+)
+
+n_permut <- 9999
+# Significancia global
+Sig_phenoDIST_mod4 <- anova(phenoDIST_mod4, permutations = n_permut)
+Sig_phenoDIST_mod4
+
+# Significancia por término (esto lo hacen en García-Seoane cuando el phenoDIST_mod4elo global sale significativo)
+anova(phenoDIST_mod4, by = "term", permutations = n_permut)
+
+# R² ajustado (En García-Seoane la reportan en el texto pero no en la tabla)
+# Boquete - "We also calculated individual adj. R2 for each predictorby phenoDIST_mod4eling the effect of each predictor while accounting for the others using partial constrained dbRDA"
+Rsq_phenoDIST_mod4 <- RsquareAdj(phenoDIST_mod4)
+Rsq_phenoDIST_mod4
+
+# FDR
+
+
+```
+
+
+```{r phenoDIST dbRDA phenoDIST_mod5, include=FALSE}
+# dbRDA
+phenoDIST_mod5 <- capscale(
+  phenoDIST ~ maternal * simulation,
+  data = treatment,
+  add = FALSE
+)
+
+# Significancia global
+Sig_phenoDIST_mod5 <- anova(phenoDIST_mod5, permutations = 9999)
+Sig_phenoDIST_mod5
+
+# Significancia por término (esto lo hacen en García-Seoane cuando el phenoDIST_mod5elo global sale significativo)
+Sig_terms_phenoDIST_mod5 <- anova(phenoDIST_mod5, by = "term", permutations = 9999)
 
 # R² ajustado (En García-Seoane la reportan en el texto pero no en la tabla)
 # Boquete - "We also calculated individual adj. R2 for each predictor by modeling the effect of each predictor while accounting for the others using partial constrained dbRDA"
-Rsq_phenoDIST_mod2 <- RsquareAdj(phenoDIST_mod2)
-Rsq_phenoDIST_mod2
+Rsq_phenoDIST_mod5 <- RsquareAdj(phenoDIST_mod5)
+Rsq_phenoDIST_mod5
 
 # FDR
 
@@ -878,29 +1031,85 @@ R2_interaction_phenoDIST <- RsquareAdj(mod_interaction_phenoDIST)$adj.r.squared
 
 ```
 
-```{r phenoDIST dbRDA phenoDIST_mod5, include=FALSE}
+```{r phenoDIST dbRDA phenoDIST_mod6, include=FALSE}
+
+#  !!!
+#  !!!
+
+# MIRAR POR QUÉ EN MOUNGER (2022) USAN CONDITION... NO LE VEO EL SENTIDO PERO SEGURAMENTE LO TENGA
+
+#  !!!
+#  !!!
+
 # dbRDA
-phenoDIST_mod5 <- capscale(
-  phenoDIST ~ simulation,
-  data = treatment,
+phenoDIST_mod6 <- capscale(
+  phenoDIST ~ maternal * simulation + Condition(PC1), # Condition(PC1),
+  data = treatment_pcs,
   add = FALSE
 )
 
+n_permut <- 9999
 # Significancia global
-Sig_phenoDIST_mod5 <- anova(phenoDIST_mod5, permutations = 9999)
-Sig_phenoDIST_mod5
+Sig_phenoDIST_mod6 <- anova(phenoDIST_mod6, permutations = n_permut)
+Sig_phenoDIST_mod6
 
-# Significancia por término (esto lo hacen en García-Seoane cuando el phenoDIST_mod5elo global sale significativo)
-anova(phenoDIST_mod5, by = "term", permutations = 9999)
+# Significancia por término (esto lo hacen en García-Seoane cuando el phenoDIST_mod6elo global sale significativo)
+anova(phenoDIST_mod6, by = "term", permutations = n_permut)
 
 # R² ajustado (En García-Seoane la reportan en el texto pero no en la tabla)
-# Boquete - "We also calculated individual adj. R2 for each predictorby phenoDIST_mod5eling the effect of each predictor while accounting for the others using partial constrained dbRDA"
-Rsq_phenoDIST_mod5 <- RsquareAdj(phenoDIST_mod5)
-Rsq_phenoDIST_mod5
+# Boquete - "We also calculated individual adj. R2 for each predictorby phenoDIST_mod6eling the effect of each predictor while accounting for the others using partial constrained dbRDA"
+Rsq_phenoDIST_mod6 <- RsquareAdj(phenoDIST_mod6)
+Rsq_phenoDIST_mod6
 
 # FDR
 
 
+```
+
+```{r phenoDIST dbRDA phenoDIST_mod7, include=FALSE}
+# dbRDA
+phenoDIST_mod7 <- capscale(
+  phenoDIST ~ maternal * simulation + Condition(PC1:PC3),
+  data = EPItreatment_pcs,
+  add = FALSE
+)
+
+# Significancia global
+Sig_phenoDIST_mod7 <- anova(phenoDIST_mod7, permutations = 9999)
+Sig_phenoDIST_mod7
+
+# Significancia por término (esto lo hacen en García-Seoane cuando el phenoDIST_mod7elo global sale significativo)
+anova(phenoDIST_mod7, by = "term", permutations = 9999)
+
+# R² ajustado (En García-Seoane la reportan en el texto pero no en la tabla)
+# Boquete - "We also calculated individual adj. R2 for each predictorby phenoDIST_mod7eling the effect of each predictor while accounting for the others using partial constrained dbRDA"
+Rsq_phenoDIST_mod7 <- RsquareAdj(phenoDIST_mod7)
+Rsq_phenoDIST_mod7
+
+# FDR
+```
+
+```{r phenoDIST dbRDA phenoDIST_mod8, include=FALSE}
+# dbRDA
+phenoDIST_mod8 <- capscale(
+  phenoDIST ~ maternal * simulation + Condition(GENPC1) + Condition(PC1:PC3),
+  data = GENEPItreatment_pcs,
+  add = FALSE
+)
+
+# Significancia global
+Sig_phenoDIST_mod8 <- anova(phenoDIST_mod8, permutations = 9999)
+Sig_phenoDIST_mod8
+
+# Significancia por término (esto lo hacen en García-Seoane cuando el phenoDIST_mod8elo global sale significativo)
+anova(phenoDIST_mod8, by = "term", permutations = 9999)
+
+# R² ajustado (En García-Seoane la reportan en el texto pero no en la tabla)
+# Boquete - "We also calculated individual adj. R2 for each predictorby phenoDIST_mod8eling the effect of each predictor while accounting for the others using partial constrained dbRDA"
+Rsq_phenoDIST_mod8 <- RsquareAdj(phenoDIST_mod8)
+Rsq_phenoDIST_mod8
+
+# FDR
 ```
 
 ```{r genDIST dbRDA genDIST_mod1, include=FALSE}
@@ -928,7 +1137,8 @@ Rsq_genDIST_mod1
 
 ```
 
-We conducted dbRDA using vegan::capscale with the epigenetic distance matrix as response and the herbivory treatments as predictors. To account for genetic variability, we summarized the SNP data (`r ncol(dos_filtered) ` SNPs) into principal components using PCA, and included the first PC (that explains `r var_txt`% of the genetic variability) as a condition in a constrained dbRDA. We tested the significance of the model using a permutation test with `r n_permut` permutations and obtained adjusted R2 values using the function RsquareAdj from the vegan package. We visualized the structure of the data in a 2-D space using the constrained ordination axes (RDA axes). We ran the following models for all contexts together and separately for each sequence context:
+
+We conducted dbRDA using vegan::capscale with the epigenetic distance matrix as response and the herbivory treatments as predictors. To account for genetic variability, we summarized the SNP data (`r ncol(dos_filtered) ` SNPs) into principal components using PCA, and included the first PC (that explains `r var_txt`% of the genetic variability) as a condition in a constrained dbRDA. For the phenotypic models we also included epigenetic variability as a condition in constrained dbRDAs after summarizing the SMP data (`r ncol(plantago_all_t) ` SMPs) into 7 PCs that explain `r EPIvar_txt`% of the epigenetic variability. We tested the significance of the model using a permutation test with `r n_permut` permutations and obtained adjusted R2 values using the function RsquareAdj from the vegan package. We visualized the structure of the data in a 2-D space using the constrained ordination axes (RDA axes). We ran the following models for all contexts together and separately for each sequence context:
 
 1.  Epigenetic distance \~ Maternal herbivory
 
@@ -1236,9 +1446,14 @@ get_term_stats_pheno <- function(term_obj, rsq_terms){
 
 # Modelos para phenoDIST
 models_pheno_list <- rbind(
-  get_model_stats_pheno(Sig_phenoDIST_mod1, Rsq_phenoDIST_mod1, "PhenoDist ~ Maternal"),
-  get_model_stats_pheno(Sig_phenoDIST_mod5, Rsq_phenoDIST_mod5, "PhenoDist ~ Simulation"),
-  get_model_stats_pheno(Sig_phenoDIST_mod2, Rsq_phenoDIST_mod2, "PhenoDist ~ M * S")
+    get_model_stats_pheno(Sig_phenoDIST_mod1, Rsq_phenoDIST_mod1, "PhenoDist ~ Maternal"),
+  get_model_stats_pheno(Sig_phenoDIST_mod2, Rsq_phenoDIST_mod2, "PhenoDist ~ Simulation"),
+   get_model_stats_pheno(Sig_phenoDIST_mod3, Rsq_phenoDIST_mod3, "PhenoDist ~ GenVar"),
+   get_model_stats_pheno(Sig_phenoDIST_mod4, Rsq_phenoDIST_mod4, "PhenoDist ~ EpiVar"),
+  get_model_stats_pheno(Sig_phenoDIST_mod5, Rsq_phenoDIST_mod5, "PhenoDist ~ M * S"),
+   get_model_stats_pheno(Sig_phenoDIST_mod6, Rsq_phenoDIST_mod6, "PhenoDist ~ M * S + Condition(GenVar)"),
+  get_model_stats_pheno(Sig_phenoDIST_mod7, Rsq_phenoDIST_mod7, "PhenoDist ~ M * S + Condition(EpiVar)"),
+  get_model_stats_pheno(Sig_phenoDIST_mod8, Rsq_phenoDIST_mod8, "PhenoDist ~ M * S + Condition(GenVar) + Condition(EpiVar)")
 )
 
 # Modelo para genDIST
@@ -1256,7 +1471,7 @@ rsq_terms <- c(
   get("R2_simulation_phenoDIST"),
   get("R2_interaction_phenoDIST")
 )
-terms_pheno <- get_term_stats_pheno(Sig_terms_phenoDIST_mod2, rsq_terms)
+terms_pheno <- get_term_stats_pheno(Sig_terms_phenoDIST_mod5, rsq_terms)
 
 #------------------------------------------------
 # PREPARAR TABLA 1 - Modelos globales
@@ -1267,9 +1482,14 @@ tab_sup_models <- bind_rows(models_pheno_list, models_gen_list)
 
 # Definir el orden deseado de los modelos
 orden_modelos <- c(
-  "PhenoDist ~ Maternal",
+   "PhenoDist ~ Maternal",
   "PhenoDist ~ Simulation", 
+  "PhenoDist ~ GenVar",
+  "PhenoDist ~ EpiVar",
   "PhenoDist ~ M * S",
+  "PhenoDist ~ M * S + Condition(GenVar)",
+  "PhenoDist ~ M * S + Condition(EpiVar)",
+  "PhenoDist ~ M * S + Condition(GenVar) + Condition(EpiVar)",
   "GenDist ~ Maternal"
 )
 
