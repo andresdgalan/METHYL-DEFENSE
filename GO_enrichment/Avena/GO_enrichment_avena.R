@@ -6,6 +6,7 @@
 #   install.packages("BiocManager")
 # 
 # BiocManager::install("clusterProfiler")
+# BiocManager::install("genomation")
 
 library(here) # reproducibility
 library(methylKit)
@@ -15,6 +16,7 @@ library(tidyr) # tidy
 library(purrr) # tidy
 library(genomation) # anotación de promotores y visualización de features
 library(rtracklayer) # importar gff
+library(ggplot2)
 
 
 #load data ----
@@ -145,6 +147,10 @@ background_Cs <- convert_genbank_to_chr(
 
 # Como lo hace McNew
 # Incluir promotores 2kb upstream del TSS
+
+# ESTOS PASOS LLEVAN BASTANTE TIEMPO POR ESO LOS HE DEJADO EN COMENTARIO Y HE CREADO OBJETOS
+# CON LOS QUE TRABAJAMOS DIRECTAMENTE
+
 gene.obj <- readTranscriptFeatures(here("GO_enrichment/Avena/gff3.bed"),remove.unusual=FALSE, # También probé con longest.bed
                                    up.flank=2000,down.flank=0,unique.prom=TRUE)
 
@@ -153,32 +159,17 @@ UUvsUC_annotation <- annotateWithGeneParts(as(avena_all_UUvsUC, "GRanges"), gene
 GUvsGC_annotation <- annotateWithGeneParts(as(avena_all_GUvsGC, "GRanges"), gene.obj)
 background_annotation <- annotateWithGeneParts(as(background_Cs, "GRanges"), gene.obj)
 
-# Corregimos feature.name para que sea el nombre del TRANSCRITO (TAMBIÉN LO HICE CON EL DEL GEN)
-# GUvsUU_annotation@dist.to.TSS$feature.name <- sub(
-#   "^AVBAR\\.10000a\\.r1\\..*G([0-9]+)\\.\\d+$",         # eSTA VERSIÓN SERÍA PARA QUITAR EL NÚMERO DE TRANSCRITO
-#   "AVBAR.10000a.r1.1AG\\1",
-#   GUvsUU_annotation@dist.to.TSS$feature.name
-# )
-GUvsUU_annotation@dist.to.TSS$feature.name <- sub(
-  "^AVBAR\\.10000a\\.r1\\..*G([0-9]+)(\\.\\d+)$",
-  "AVBAR.10000a.r1.1AG\\1\\2",
-  GUvsUU_annotation@dist.to.TSS$feature.name
-)
-UUvsUC_annotation@dist.to.TSS$feature.name <- sub(
-  "^AVBAR\\.10000a\\.r1\\..*G([0-9]+)(\\.\\d+)$",
-  "AVBAR.10000a.r1.1AG\\1\\2",
-  UUvsUC_annotation@dist.to.TSS$feature.name
-)
-GUvsGC_annotation@dist.to.TSS$feature.name <- sub(
-  "^AVBAR\\.10000a\\.r1\\..*G([0-9]+)(\\.\\d+)$",
-  "AVBAR.10000a.r1.1AG\\1\\2",
-  GUvsGC_annotation@dist.to.TSS$feature.name
-)
-background_annotation@dist.to.TSS$feature.name <- sub(
-  "^AVBAR\\.10000a\\.r1\\..*G([0-9]+)(\\.\\d+)$",
-  "AVBAR.10000a.r1.1AG\\1\\2",
-  background_annotation@dist.to.TSS$feature.name
-)
+saveRDS(GUvsUU_annotation, file = "GO_enrichment/Avena/GUvsUU_annotation.rds")
+saveRDS(UUvsUC_annotation, file = "GO_enrichment/Avena/UUvsUC_annotation.rds")
+saveRDS(GUvsGC_annotation, file = "GO_enrichment/Avena/GUvsGC_annotation.rds")
+saveRDS(background_annotation, file = "GO_enrichment/Avena/background_annotation.rds")
+
+GUvsUU_annotation <- readRDS(here("GO_enrichment/Avena", "GUvsUU_annotation.rds"))
+UUvsUC_annotation <- readRDS(here("GO_enrichment/Avena", "UUvsUC_annotation.rds"))
+GUvsGC_annotation <- readRDS(here("GO_enrichment/Avena", "GUvsGC_annotation.rds"))
+background_annotation <- readRDS(here("GO_enrichment/Avena", "background_annotation.rds"))
+
+
 
 # Function to create annotation table and calculate feature proportions
 summarise_annotation <- function(annotation, name) {
@@ -223,12 +214,84 @@ GUvsGC_anno <- summarise_annotation(GUvsGC_annotation, "GUvsGC")
 background_anno <- summarise_annotation(background_annotation, "background")
 
 
+# FIGURA DE ANOTACIÓN ----
+
+
+
+# 1. Construir el data frame con los porcentajes de cada categoría
+#    Intergenic = 100 - (Promoter + Exon + Intron)
+prop_df <- data.frame(
+  Condition = rep(c("GUvsUU", "UUvsUC", "GUvsGC", "background"), each = 4),
+  Feature   = rep(c("Promoter", "Exon", "Intron", "Intergenic"), times = 4),
+  Percentage = c(
+    # GUvsUU
+    3.101628, 49.406071, 4.377475, 100 - (3.101628 + 49.406071 + 4.377475),
+    # UUvsUC
+    2.803738, 49.532710, 1.869159, 100 - (2.803738 + 49.532710 + 1.869159),
+    # GUvsGC
+    3.370787, 40.449438, 1.872659, 100 - (3.370787 + 40.449438 + 1.872659),
+    # background
+    2.498747, 53.416979, 3.803564, 100 - (2.498747 + 53.416979 + 3.803564)
+  )
+)
+
+# 2. Fijar orden de condiciones y features
+prop_df$Condition <- factor(prop_df$Condition,
+                            levels = c("GUvsUU", "UUvsUC", "GUvsGC", "background"))
+prop_df$Feature <- factor(prop_df$Feature,
+                          levels = c("Promoter", "Exon", "Intron", "Intergenic"))
+
+# 3. Paleta de colores bonitos (paleta tipo Nature / pastel elegante)
+nice_colors <- c(
+  "Promoter"   = "#E64B35",  # rojo coral
+  "Exon"       = "#4DBBD5",  # azul cielo
+  "Intron"     = "#00A087",  # verde azulado
+  "Intergenic" = "#F39B7F"   # salmón suave
+)
+
+# Alternativa: paleta pastel
+# nice_colors <- c("Promoter"="#F28E8E", "Exon"="#7EB6E0",
+#                  "Intron"="#7DC9A9", "Intergenic"="#D3D3D3")
+
+# 4. Figura de barras apiladas al 100%
+p <- ggplot(prop_df, aes(x = Condition, y = Percentage, fill = Feature)) +
+  geom_col(width = 0.7, color = "white", linewidth = 0.4) +
+  geom_text(aes(label = sprintf("%.1f%%", Percentage)),
+            position = position_stack(vjust = 0.5),
+            size = 3.2, color = "white", fontface = "bold") +
+  scale_fill_manual(values = nice_colors) +
+  scale_y_continuous(expand = c(0, 0),
+                     labels = function(x) paste0(x, "%")) +
+  labs(
+    x = NULL,
+    y = "Percentage of cytosines (%)",
+    fill = "Feature",
+    title = "Distribution of cytosines across genomic features"
+  ) +
+  theme_minimal(base_size = 13) +
+  theme(
+    panel.grid.major.x = element_blank(),
+    panel.grid.minor   = element_blank(),
+    axis.text.x        = element_text(face = "bold", color = "grey20"),
+    legend.position    = "right",
+    plot.title         = element_text(face = "bold", hjust = 0.5)
+  )
+
+print(p)
+
+# 5. Guardar
+ggsave(
+  here::here("GO_enrichment", "Avena", "feature_proportions_barplot.pdf"),
+  plot = p, width = 8, height = 5, dpi = 300
+)
+
 
 # ENRICHMENT ----
 
+# Como lleva tiempo, hemos guardado los resultados en csv y los cargamos directamente
+# Para la figura
+
 # Creamos TERM2GENE seleccionando las columnas gID y GO
-library(dplyr)
-library(tidyr)
 
 TERM2GENE <- GOfeature %>%
   select(tID, GO) %>%                                 # sería gID para genes
@@ -237,17 +300,18 @@ TERM2GENE <- GOfeature %>%
   filter(grepl("^GO:\\d+$", GO)) %>%
   select(term = GO, gene = tID)                     # sería gID para genes
 
-# Overrepresented biological processes, molecular functions, and cellular 
-# components were identified with an FDR-adjusted threshold of alpha-value 
+# Overrepresented biological processes, molecular functions, and cellular
+# components were identified with an FDR-adjusted threshold of alpha-value
 # < 0.05 (Benjamini & Hochberg, 1995).
 
 run_go_enrichment <- function(gene_set) {
-  
+
   enricher(
     gene = unique(gene_set),
-    pvalueCutoff = 0.05,
+    pvalueCutoff = 1,
     pAdjustMethod = "BH",
     universe = background_anno$feature.name,
+    qvalueCutoff = 1,
     TERM2GENE = TERM2GENE
   )
 }
@@ -266,6 +330,360 @@ as.data.frame(GUvsUU_GO)
 as.data.frame(UUvsUC_GO)
 as.data.frame(GUvsGC_GO)
 
+write.table(GUvsUU_GO, file = "GO_enrichment/Avena/GUvsUU_GO.csv", sep = ";", row.names = T)
+write.table(UUvsUC_GO, file = "GO_enrichment/Avena/UUvsUC_GO.csv", sep = ";", row.names = T)
+write.table(GUvsGC_GO, file = "GO_enrichment/Avena/GUvsGC_GO.csv", sep = ";", row.names = T)
+
+
+# FIGURAS ----
+
+GUvsUU_GO <- read.table("GO_enrichment/Avena/GUvsUU_GO.csv", sep = ";", header = T)
+UUvsUC_GO <- read.table("GO_enrichment/Avena/UUvsUC_GO.csv", sep = ";", header = T)
+GUvsGC_GO <- read.table("GO_enrichment/Avena/GUvsGC_GO.csv", sep = ";", header = T)
+
+
+# Asociar cada GOid con una descripción
+
+library(GO.db)
+library(AnnotationDbi)
+
+# GO ID -> GO term and ontology
+GO_terms <- AnnotationDbi::select(
+  GO.db,
+  keys = unique(c(
+    UUvsUC_GO$ID,
+    GUvsGC_GO$ID,
+    GUvsUU_GO$ID
+  )),
+  keytype = "GOID",
+  columns = c("GOID", "TERM", "ONTOLOGY")
+) %>%
+  distinct(GOID, .keep_all = TRUE)
+
+
+# Function to prepare GO enrichment results
+prepare_GO_fig <- function(df, label) {
+  
+  df %>%
+    separate_wider_delim(
+      GeneRatio,
+      delim = "/",
+      names = c("Nr Test", "Total Test")
+    ) %>%
+    separate_wider_delim(
+      BgRatio,
+      delim = "/",
+      names = c("Nr Reference", "Total Reference")
+    ) %>%
+    mutate(
+      `Nr Test` = as.numeric(`Nr Test`),
+      `Total Test` = as.numeric(`Total Test`),
+      `Nr Reference` = as.numeric(`Nr Reference`),
+      `Total Reference` = as.numeric(`Total Reference`),
+      
+      `Not Annot Test` = `Total Test` - `Nr Test`,
+      `Not Annot Ref` = `Total Reference` - `Nr Reference`,
+      
+      Tag = "OVER",
+      `GO Term` = ID,
+      `Adj. P-value` = p.adjust,
+      `P-value` = pvalue
+    ) %>%
+    left_join(
+      GO_terms,
+      by = c("GO Term" = "GOID")
+    ) %>%
+    rename(
+      `GO Name` = TERM,
+      `GO Category` = ONTOLOGY
+    ) %>%
+    mutate(
+      logAdjP = -log10(`Adj. P-value`),
+      File = label
+    ) %>%
+    dplyr::select(
+      Tag,
+      `GO Term`,
+      `GO Name`,
+      `GO Category`,
+      `Adj. P-value`,
+      `P-value`,
+      `Nr Test`,
+      `Nr Reference`,
+      `Not Annot Test`,
+      `Not Annot Ref`,
+      logAdjP,
+      File
+    )
+}
+
+
+# Prepare the three comparisons
+UUvsUC_fig <- prepare_GO_fig(UUvsUC_GO, "UUvsUC")
+GUvsGC_fig <- prepare_GO_fig(GUvsGC_GO, "GUvsGC")
+GUvsUU_fig <- prepare_GO_fig(GUvsUU_GO, "GUvsUU")
 
 
 
+# -----------------------------
+# Prepare combined data
+# -----------------------------
+go_data <- list(
+  GUvsUU = GUvsUU_fig,
+  UUvsUC = UUvsUC_fig,
+  GUvsGC = GUvsGC_fig
+)
+
+
+# -----------------------------
+# Common X-axis limits
+# -----------------------------
+bar_x_max <- max(
+  c(
+    100 * GUvsUU_fig$`Nr Test` /
+      (GUvsUU_fig$`Nr Test` + GUvsUU_fig$`Not Annot Test`),
+    100 * UUvsUC_fig$`Nr Test` /
+      (UUvsUC_fig$`Nr Test` + UUvsUC_fig$`Not Annot Test`),
+    100 * GUvsGC_fig$`Nr Test` /
+      (GUvsGC_fig$`Nr Test` + GUvsGC_fig$`Not Annot Test`),
+    100 * GUvsUU_fig$`Nr Reference` /
+      (GUvsUU_fig$`Nr Reference` + GUvsUU_fig$`Not Annot Ref`),
+    100 * UUvsUC_fig$`Nr Reference` /
+      (UUvsUC_fig$`Nr Reference` + UUvsUC_fig$`Not Annot Ref`),
+    100 * GUvsGC_fig$`Nr Reference` /
+      (GUvsGC_fig$`Nr Reference` + GUvsGC_fig$`Not Annot Ref`)
+  ),
+  na.rm = TRUE
+)
+
+bar_x_max <- ceiling(bar_x_max / 5) * 5
+
+
+# -----------------------------
+# Two-bar percentage plot
+# -----------------------------
+plot_two_bar <- function(df, top_n_terms = 14) {
+  
+  # Keep only GO terms with valid names
+  # and select the most significant terms
+  top_terms <- df %>%
+    filter(
+      !is.na(`GO Name`),
+      `GO Name` != ""
+    ) %>%
+    arrange(desc(logAdjP)) %>%
+    slice_head(n = top_n_terms) %>%
+    mutate(
+      pct_Test = 100 * (
+        `Nr Test` /
+          (`Nr Test` + `Not Annot Test`)
+      ),
+      pct_Ref = 100 * (
+        `Nr Reference` /
+          (`Nr Reference` + `Not Annot Ref`)
+      ),
+      p_adjust = 10^(-logAdjP),
+      significance = case_when(
+        p_adjust < 0.001 ~ "***",
+        p_adjust < 0.01  ~ "**",
+        p_adjust < 0.05  ~ "*",
+        p_adjust < 0.1   ~ "·",
+        TRUE ~ "ns"
+      )
+    )
+  
+  
+  # Convert to long format for the two bars
+  long <- top_terms %>%
+    dplyr::select(
+      `GO Name`,
+      pct_Test,
+      pct_Ref
+    ) %>%
+    pivot_longer(
+      cols = c(pct_Ref, pct_Test),
+      names_to = "Series",
+      values_to = "% of sequences"
+    ) %>%
+    mutate(
+      Series = factor(
+        Series,
+        levels = c("pct_Ref", "pct_Test")
+      )
+    )
+  
+  
+  # Most significant term at the top
+  long$`GO Name` <- factor(
+    long$`GO Name`,
+    levels = rev(top_terms$`GO Name`)
+  )
+  
+  
+  # Data frame for significance symbols
+  significance_df <- top_terms %>%
+    mutate(
+      x = pmax(pct_Test, pct_Ref) + 2
+    )
+  
+  significance_df$`GO Name` <- factor(
+    significance_df$`GO Name`,
+    levels = rev(top_terms$`GO Name`)
+  )
+  
+  
+  # Plot
+  ggplot(
+    long,
+    aes(
+      x = `% of sequences`,
+      y = `GO Name`,
+      fill = Series
+    )
+  ) +
+    geom_col(
+      position = "dodge"
+    ) +
+    
+    geom_text(
+      data = significance_df,
+      aes(
+        x = x,
+        y = `GO Name`,
+        label = significance
+      ),
+      inherit.aes = FALSE,
+      hjust = 0,
+      size = 5
+    ) +
+    
+    scale_fill_manual(
+      values = c(
+        "pct_Ref" = "#008B45",
+        "pct_Test" = "#CD69C9"
+      ),
+      labels = c(
+        "Reference",
+        "Test"
+      )
+    ) +
+    
+    scale_x_continuous(
+      limits = c(0, bar_x_max + 8)
+    ) +
+    
+    theme_bw(
+      base_size = 14
+    ) +
+    
+    theme(
+      axis.title.y = element_blank(),
+      axis.text.y = element_text(size = 12)
+    ) +
+    
+    xlab("% of sequences")
+}
+
+
+
+# -----------------------------
+# Generate plots
+# -----------------------------
+plots_GUvsUU <- plot_two_bar(
+  GUvsUU_fig
+)
+
+plots_UUvsUC <- plot_two_bar(
+  UUvsUC_fig
+)
+
+plots_GUvsGC <- plot_two_bar(
+  GUvsGC_fig
+)
+
+
+# -----------------------------
+# Side labels
+# -----------------------------
+row_title_right <- function(text) {
+  
+  ggplot() +
+    annotate(
+      "text",
+      x = 0.5,
+      y = 0.5,
+      label = text,
+      angle = 270,
+      size = 6
+    ) +
+    theme_void()
+}
+
+
+GUvsUU_label <- row_title_right("GUvsUU")
+UUvsUC_label <- row_title_right("UUvsUC")
+GUvsGC_label <- row_title_right("GUvsGC")
+
+
+# -----------------------------
+# Build rows
+# -----------------------------
+row1 <- plots_GUvsUU +
+  GUvsUU_label +
+  plot_layout(
+    widths = c(1, 0.15)
+  ) &
+  theme(
+    axis.title.x = element_blank(),
+    axis.text.x = element_blank(),
+    axis.ticks.x = element_blank()
+  )
+
+
+row2 <- plots_UUvsUC +
+  UUvsUC_label +
+  plot_layout(
+    widths = c(1, 0.15)
+  ) &
+  theme(
+    axis.title.x = element_blank(),
+    axis.text.x = element_blank(),
+    axis.ticks.x = element_blank()
+  )
+
+
+row3 <- plots_GUvsGC +
+  GUvsGC_label +
+  plot_layout(
+    widths = c(1, 0.15)
+  )
+
+
+# -----------------------------
+# Combine rows
+# -----------------------------
+final_fig <- row1 / row2 / row3 +
+  plot_layout(
+    heights = c(1, 1, 1),
+    guides = "collect"
+  ) &
+  theme(
+    legend.position = "right"
+  )
+
+
+# -----------------------------
+# Show X-axis only in bottom row
+# -----------------------------
+final_fig[[3]][[1]] <- final_fig[[3]][[1]] +
+  theme(
+    axis.title.x = element_text(),
+    axis.text.x = element_text(),
+    axis.ticks.x = element_line()
+  )
+
+
+# -----------------------------
+# Display figure
+# -----------------------------
+final_fig
