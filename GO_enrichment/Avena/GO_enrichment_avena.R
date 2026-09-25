@@ -147,22 +147,65 @@ background_Cs <- convert_genbank_to_chr(
 
 # Como lo hace McNew
 # Incluir promotores 2kb upstream del TSS
+<<<<<<< HEAD
 
 # ESTOS PASOS LLEVAN BASTANTE TIEMPO POR ESO LOS HE DEJADO EN COMENTARIO Y HE CREADO OBJETOS
 # CON LOS QUE TRABAJAMOS DIRECTAMENTE
 
 gene.obj <- readTranscriptFeatures(here("GO_enrichment/Avena/gff3.bed"),remove.unusual=FALSE, # También probé con longest.bed
                                    up.flank=2000,down.flank=0,unique.prom=TRUE)
+=======
+>>>>>>> 24c812fa5f44b6ab2ab1aca934400a5cb5014910
 
-GUvsUU_annotation <- annotateWithGeneParts(as(avena_all_GUvsUU, "GRanges"), gene.obj)
-UUvsUC_annotation <- annotateWithGeneParts(as(avena_all_UUvsUC, "GRanges"), gene.obj)
-GUvsGC_annotation <- annotateWithGeneParts(as(avena_all_GUvsGC, "GRanges"), gene.obj)
-background_annotation <- annotateWithGeneParts(as(background_Cs, "GRanges"), gene.obj)
+# ESTOS PASOS LLEVAN BASTANTE TIEMPO POR ESO LOS HE DEJADO EN COMENTARIO Y HE CREADO OBJETOS
+# CON LOS QUE TRABAJAMOS DIRECTAMENTE
 
+<<<<<<< HEAD
 saveRDS(GUvsUU_annotation, file = "GO_enrichment/Avena/GUvsUU_annotation.rds")
 saveRDS(UUvsUC_annotation, file = "GO_enrichment/Avena/UUvsUC_annotation.rds")
 saveRDS(GUvsGC_annotation, file = "GO_enrichment/Avena/GUvsGC_annotation.rds")
 saveRDS(background_annotation, file = "GO_enrichment/Avena/background_annotation.rds")
+=======
+# gene.obj <- readTranscriptFeatures(here("GO_enrichment/Avena/gff3.bed"),remove.unusual=FALSE, # También probé con longest.bed
+#                                    up.flank=2000,down.flank=0,unique.prom=TRUE)
+# 
+# GUvsUU_annotation <- annotateWithGeneParts(as(avena_all_GUvsUU, "GRanges"), gene.obj)
+# UUvsUC_annotation <- annotateWithGeneParts(as(avena_all_UUvsUC, "GRanges"), gene.obj)
+# GUvsGC_annotation <- annotateWithGeneParts(as(avena_all_GUvsGC, "GRanges"), gene.obj)
+# background_annotation <- annotateWithGeneParts(as(background_Cs, "GRanges"), gene.obj)
+# 
+# # Corregimos feature.name para que sea el nombre del TRANSCRITO (TAMBIÉN LO HICE CON EL DEL GEN)
+# # GUvsUU_annotation@dist.to.TSS$feature.name <- sub(
+# #   "^AVBAR\\.10000a\\.r1\\..*G([0-9]+)\\.\\d+$",         # eSTA VERSIÓN SERÍA PARA QUITAR EL NÚMERO DE TRANSCRITO
+# #   "AVBAR.10000a.r1.1AG\\1",
+# #   GUvsUU_annotation@dist.to.TSS$feature.name
+# # )
+# GUvsUU_annotation@dist.to.TSS$feature.name <- sub(
+#   "^AVBAR\\.10000a\\.r1\\..*G([0-9]+)(\\.\\d+)$",
+#   "AVBAR.10000a.r1.1AG\\1\\2",
+#   GUvsUU_annotation@dist.to.TSS$feature.name
+# )
+# UUvsUC_annotation@dist.to.TSS$feature.name <- sub(
+#   "^AVBAR\\.10000a\\.r1\\..*G([0-9]+)(\\.\\d+)$",
+#   "AVBAR.10000a.r1.1AG\\1\\2",
+#   UUvsUC_annotation@dist.to.TSS$feature.name
+# )
+# GUvsGC_annotation@dist.to.TSS$feature.name <- sub(
+#   "^AVBAR\\.10000a\\.r1\\..*G([0-9]+)(\\.\\d+)$",
+#   "AVBAR.10000a.r1.1AG\\1\\2",
+#   GUvsGC_annotation@dist.to.TSS$feature.name
+# )
+# background_annotation@dist.to.TSS$feature.name <- sub(
+#   "^AVBAR\\.10000a\\.r1\\..*G([0-9]+)(\\.\\d+)$",
+#   "AVBAR.10000a.r1.1AG\\1\\2",
+#   background_annotation@dist.to.TSS$feature.name
+# )
+# 
+# saveRDS(GUvsUU_annotation, file = "GO_enrichment/Avena/GUvsUU_annotation.rds")
+# saveRDS(UUvsUC_annotation, file = "GO_enrichment/Avena/UUvsUC_annotation.rds")
+# saveRDS(GUvsGC_annotation, file = "GO_enrichment/Avena/GUvsGC_annotation.rds")
+# saveRDS(background_annotation, file = "GO_enrichment/Avena/background_annotation.rds")
+>>>>>>> 24c812fa5f44b6ab2ab1aca934400a5cb5014910
 
 GUvsUU_annotation <- readRDS(here("GO_enrichment/Avena", "GUvsUU_annotation.rds"))
 UUvsUC_annotation <- readRDS(here("GO_enrichment/Avena", "UUvsUC_annotation.rds"))
@@ -333,6 +376,7 @@ as.data.frame(GUvsGC_GO)
 write.table(GUvsUU_GO, file = "GO_enrichment/Avena/GUvsUU_GO.csv", sep = ";", row.names = T)
 write.table(UUvsUC_GO, file = "GO_enrichment/Avena/UUvsUC_GO.csv", sep = ";", row.names = T)
 write.table(GUvsGC_GO, file = "GO_enrichment/Avena/GUvsGC_GO.csv", sep = ";", row.names = T)
+<<<<<<< HEAD
 
 
 # FIGURAS ----
@@ -422,9 +466,102 @@ prepare_GO_fig <- function(df, label) {
 UUvsUC_fig <- prepare_GO_fig(UUvsUC_GO, "UUvsUC")
 GUvsGC_fig <- prepare_GO_fig(GUvsGC_GO, "GUvsGC")
 GUvsUU_fig <- prepare_GO_fig(GUvsUU_GO, "GUvsUU")
+=======
+>>>>>>> 24c812fa5f44b6ab2ab1aca934400a5cb5014910
 
 
+# FIGURAS ----
 
+<<<<<<< HEAD
+=======
+GUvsUU_GO <- read.table("GO_enrichment/Avena/GUvsUU_GO.csv", sep = ";", header = T)
+UUvsUC_GO <- read.table("GO_enrichment/Avena/UUvsUC_GO.csv", sep = ";", header = T)
+GUvsGC_GO <- read.table("GO_enrichment/Avena/GUvsGC_GO.csv", sep = ";", header = T)
+
+
+# Asociar cada GOid con una descripción
+
+library(GO.db)
+library(AnnotationDbi)
+
+# GO ID -> GO term and ontology
+GO_terms <- AnnotationDbi::select(
+  GO.db,
+  keys = unique(c(
+    UUvsUC_GO$ID,
+    GUvsGC_GO$ID,
+    GUvsUU_GO$ID
+  )),
+  keytype = "GOID",
+  columns = c("GOID", "TERM", "ONTOLOGY")
+) %>%
+  distinct(GOID, .keep_all = TRUE)
+
+
+# Function to prepare GO enrichment results
+prepare_GO_fig <- function(df, label) {
+  
+  df %>%
+    separate_wider_delim(
+      GeneRatio,
+      delim = "/",
+      names = c("Nr Test", "Total Test")
+    ) %>%
+    separate_wider_delim(
+      BgRatio,
+      delim = "/",
+      names = c("Nr Reference", "Total Reference")
+    ) %>%
+    mutate(
+      `Nr Test` = as.numeric(`Nr Test`),
+      `Total Test` = as.numeric(`Total Test`),
+      `Nr Reference` = as.numeric(`Nr Reference`),
+      `Total Reference` = as.numeric(`Total Reference`),
+      
+      `Not Annot Test` = `Total Test` - `Nr Test`,
+      `Not Annot Ref` = `Total Reference` - `Nr Reference`,
+      
+      Tag = "OVER",
+      `GO Term` = ID,
+      `Adj. P-value` = p.adjust,
+      `P-value` = pvalue
+    ) %>%
+    left_join(
+      GO_terms,
+      by = c("GO Term" = "GOID")
+    ) %>%
+    rename(
+      `GO Name` = TERM,
+      `GO Category` = ONTOLOGY
+    ) %>%
+    mutate(
+      logAdjP = -log10(`Adj. P-value`),
+      File = label
+    ) %>%
+    dplyr::select(
+      Tag,
+      `GO Term`,
+      `GO Name`,
+      `GO Category`,
+      `Adj. P-value`,
+      `P-value`,
+      `Nr Test`,
+      `Nr Reference`,
+      `Not Annot Test`,
+      `Not Annot Ref`,
+      logAdjP,
+      File
+    )
+}
+
+
+# Prepare the three comparisons
+UUvsUC_fig <- prepare_GO_fig(UUvsUC_GO, "UUvsUC")
+GUvsGC_fig <- prepare_GO_fig(GUvsGC_GO, "GUvsGC")
+GUvsUU_fig <- prepare_GO_fig(GUvsUU_GO, "GUvsUU")
+
+
+>>>>>>> 24c812fa5f44b6ab2ab1aca934400a5cb5014910
 # -----------------------------
 # Prepare combined data
 # -----------------------------
@@ -438,6 +575,21 @@ go_data <- list(
 # -----------------------------
 # Common X-axis limits
 # -----------------------------
+<<<<<<< HEAD
+=======
+bubble_x_max <- max(
+  c(
+    GUvsUU_fig$logAdjP,
+    UUvsUC_fig$logAdjP,
+    GUvsGC_fig$logAdjP
+  ),
+  na.rm = TRUE
+)
+
+bubble_x_max <- ceiling(bubble_x_max)
+
+
+>>>>>>> 24c812fa5f44b6ab2ab1aca934400a5cb5014910
 bar_x_max <- max(
   c(
     100 * GUvsUU_fig$`Nr Test` /
@@ -460,10 +612,66 @@ bar_x_max <- ceiling(bar_x_max / 5) * 5
 
 
 # -----------------------------
+<<<<<<< HEAD
+=======
+# Common size scale for Nr Test
+# Same scale as the original Plantago figure
+# -----------------------------
+size_limits <- c(0, 60)
+
+
+# -----------------------------
+# Bubble plot
+# -----------------------------
+plot_bubble <- function(df, top_n_terms = 14) {
+  
+  top_terms <- df %>%
+    arrange(desc(logAdjP)) %>%
+    slice_head(n = top_n_terms)
+  
+  top_terms$`GO Name` <- factor(
+    top_terms$`GO Name`,
+    levels = rev(unique(top_terms$`GO Name`))
+  )
+  
+  ggplot(
+    top_terms,
+    aes(
+      x = logAdjP,
+      y = `GO Name`,
+      size = `Nr Test`
+    )
+  ) +
+    geom_point(
+      alpha = 0.8,
+      color = "#CD69C9"
+    ) +
+    scale_size(
+      limits = size_limits,
+      range = c(2, 10),
+      breaks = c(0, 10, 20, 30, 40, 50, 60),
+      name = "Nr Test"
+    ) +
+    scale_x_continuous(
+      limits = c(0, bubble_x_max)
+    ) +
+    theme_bw(base_size = 14) +
+    theme(
+      axis.title.y = element_blank(),
+      axis.text.y = element_blank(),
+      axis.ticks.y = element_blank()
+    ) +
+    xlab(expression(-log[10](p)))
+}
+
+
+# -----------------------------
+>>>>>>> 24c812fa5f44b6ab2ab1aca934400a5cb5014910
 # Two-bar percentage plot
 # -----------------------------
 plot_two_bar <- function(df, top_n_terms = 14) {
   
+<<<<<<< HEAD
   # Keep only GO terms with valid names
   # and select the most significant terms
   top_terms <- df %>%
@@ -471,6 +679,9 @@ plot_two_bar <- function(df, top_n_terms = 14) {
       !is.na(`GO Name`),
       `GO Name` != ""
     ) %>%
+=======
+  top_terms <- df %>%
+>>>>>>> 24c812fa5f44b6ab2ab1aca934400a5cb5014910
     arrange(desc(logAdjP)) %>%
     slice_head(n = top_n_terms) %>%
     mutate(
@@ -481,6 +692,7 @@ plot_two_bar <- function(df, top_n_terms = 14) {
       pct_Ref = 100 * (
         `Nr Reference` /
           (`Nr Reference` + `Not Annot Ref`)
+<<<<<<< HEAD
       ),
       p_adjust = 10^(-logAdjP),
       significance = case_when(
@@ -494,6 +706,11 @@ plot_two_bar <- function(df, top_n_terms = 14) {
   
   
   # Convert to long format for the two bars
+=======
+      )
+    )
+  
+>>>>>>> 24c812fa5f44b6ab2ab1aca934400a5cb5014910
   long <- top_terms %>%
     dplyr::select(
       `GO Name`,
@@ -512,6 +729,7 @@ plot_two_bar <- function(df, top_n_terms = 14) {
       )
     )
   
+<<<<<<< HEAD
   
   # Most significant term at the top
   long$`GO Name` <- factor(
@@ -533,6 +751,13 @@ plot_two_bar <- function(df, top_n_terms = 14) {
   
   
   # Plot
+=======
+  long$`GO Name` <- factor(
+    long$`GO Name`,
+    levels = rev(unique(top_terms$`GO Name`))
+  )
+  
+>>>>>>> 24c812fa5f44b6ab2ab1aca934400a5cb5014910
   ggplot(
     long,
     aes(
@@ -541,6 +766,7 @@ plot_two_bar <- function(df, top_n_terms = 14) {
       fill = Series
     )
   ) +
+<<<<<<< HEAD
     geom_col(
       position = "dodge"
     ) +
@@ -557,6 +783,9 @@ plot_two_bar <- function(df, top_n_terms = 14) {
       size = 5
     ) +
     
+=======
+    geom_col(position = "dodge") +
+>>>>>>> 24c812fa5f44b6ab2ab1aca934400a5cb5014910
     scale_fill_manual(
       values = c(
         "pct_Ref" = "#008B45",
@@ -567,6 +796,7 @@ plot_two_bar <- function(df, top_n_terms = 14) {
         "Test"
       )
     ) +
+<<<<<<< HEAD
     
     scale_x_continuous(
       limits = c(0, bar_x_max + 8)
@@ -576,15 +806,25 @@ plot_two_bar <- function(df, top_n_terms = 14) {
       base_size = 14
     ) +
     
+=======
+    scale_x_continuous(
+      limits = c(0, bar_x_max)
+    ) +
+    theme_bw(base_size = 14) +
+>>>>>>> 24c812fa5f44b6ab2ab1aca934400a5cb5014910
     theme(
       axis.title.y = element_blank(),
       axis.text.y = element_text(size = 12)
     ) +
+<<<<<<< HEAD
     
+=======
+>>>>>>> 24c812fa5f44b6ab2ab1aca934400a5cb5014910
     xlab("% of sequences")
 }
 
 
+<<<<<<< HEAD
 
 # -----------------------------
 # Generate plots
@@ -599,6 +839,58 @@ plots_UUvsUC <- plot_two_bar(
 
 plots_GUvsGC <- plot_two_bar(
   GUvsGC_fig
+=======
+# -----------------------------
+# Generate plots
+# -----------------------------
+plots_GUvsUU <- list(
+  bubble = plot_bubble(GUvsUU_fig),
+  twobar = plot_two_bar(GUvsUU_fig)
+)
+
+plots_UUvsUC <- list(
+  bubble = plot_bubble(UUvsUC_fig),
+  twobar = plot_two_bar(UUvsUC_fig)
+)
+
+plots_GUvsGC <- list(
+  bubble = plot_bubble(GUvsGC_fig),
+  twobar = plot_two_bar(GUvsGC_fig)
+)
+
+
+# -----------------------------
+# Prepare plots for combination
+# -----------------------------
+prep_for_combination <- function(bar_plot, bubble_plot) {
+  
+  bubble_clean <- bubble_plot +
+    theme(
+      axis.text.y = element_blank(),
+      axis.ticks.y = element_blank()
+    )
+  
+  list(
+    bars = bar_plot,
+    bubble = bubble_clean
+  )
+}
+
+
+GUvsUU_clean <- prep_for_combination(
+  plots_GUvsUU$twobar,
+  plots_GUvsUU$bubble
+)
+
+UUvsUC_clean <- prep_for_combination(
+  plots_UUvsUC$twobar,
+  plots_UUvsUC$bubble
+)
+
+GUvsGC_clean <- prep_for_combination(
+  plots_GUvsGC$twobar,
+  plots_GUvsGC$bubble
+>>>>>>> 24c812fa5f44b6ab2ab1aca934400a5cb5014910
 )
 
 
@@ -628,10 +920,18 @@ GUvsGC_label <- row_title_right("GUvsGC")
 # -----------------------------
 # Build rows
 # -----------------------------
+<<<<<<< HEAD
 row1 <- plots_GUvsUU +
   GUvsUU_label +
   plot_layout(
     widths = c(1, 0.15)
+=======
+row1 <- GUvsUU_clean$bars +
+  GUvsUU_clean$bubble +
+  GUvsUU_label +
+  plot_layout(
+    widths = c(1, 1, 0.15)
+>>>>>>> 24c812fa5f44b6ab2ab1aca934400a5cb5014910
   ) &
   theme(
     axis.title.x = element_blank(),
@@ -640,10 +940,18 @@ row1 <- plots_GUvsUU +
   )
 
 
+<<<<<<< HEAD
 row2 <- plots_UUvsUC +
   UUvsUC_label +
   plot_layout(
     widths = c(1, 0.15)
+=======
+row2 <- UUvsUC_clean$bars +
+  UUvsUC_clean$bubble +
+  UUvsUC_label +
+  plot_layout(
+    widths = c(1, 1, 0.15)
+>>>>>>> 24c812fa5f44b6ab2ab1aca934400a5cb5014910
   ) &
   theme(
     axis.title.x = element_blank(),
@@ -652,10 +960,18 @@ row2 <- plots_UUvsUC +
   )
 
 
+<<<<<<< HEAD
 row3 <- plots_GUvsGC +
   GUvsGC_label +
   plot_layout(
     widths = c(1, 0.15)
+=======
+row3 <- GUvsGC_clean$bars +
+  GUvsGC_clean$bubble +
+  GUvsGC_label +
+  plot_layout(
+    widths = c(1, 1, 0.15)
+>>>>>>> 24c812fa5f44b6ab2ab1aca934400a5cb5014910
   )
 
 
@@ -682,8 +998,22 @@ final_fig[[3]][[1]] <- final_fig[[3]][[1]] +
     axis.ticks.x = element_line()
   )
 
+<<<<<<< HEAD
+=======
+final_fig[[3]][[2]] <- final_fig[[3]][[2]] +
+  theme(
+    axis.title.x = element_text(),
+    axis.text.x = element_text(),
+    axis.ticks.x = element_line()
+  )
+
+>>>>>>> 24c812fa5f44b6ab2ab1aca934400a5cb5014910
 
 # -----------------------------
 # Display figure
 # -----------------------------
+<<<<<<< HEAD
 final_fig
+=======
+final_fig
+>>>>>>> 24c812fa5f44b6ab2ab1aca934400a5cb5014910
