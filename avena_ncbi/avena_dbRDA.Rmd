@@ -423,6 +423,32 @@ Rsq_CpG_mod5
 
 ```
 
+```{r CpG dbRDA CpG_mod6, include=FALSE}
+# dbRDA
+CpG_mod6 <- capscale(
+  CpG_dist_matrix ~ maternal + Condition(PC1),
+  data = treatment_pcs,
+  add = FALSE
+)
+
+# Significancia global
+Sig_CpG_mod6 <- anova(CpG_mod6, permutations = 9999)
+Sig_CpG_mod6
+
+# Significancia por término (esto lo hacen en García-Seoane cuando el CpG_mod6elo global sale significativo)
+anova(CpG_mod6, by = "term", permutations = 9999)
+
+# R² ajustado (En García-Seoane la reportan en el texto pero no en la tabla)
+# Boquete - "We also calculated individual adj. R2 for each predictorby CpG_mod6eling the effect of each predictor while accounting for the others using partial constrained dbRDA"
+Rsq_CpG_mod6 <- RsquareAdj(CpG_mod6)
+Rsq_CpG_mod6
+
+# FDR
+
+
+```
+
+
 ```{r CHG dbRDA CHG_mod1, include=FALSE}
 # dbRDA
 CHG_mod1 <- capscale(
@@ -567,6 +593,31 @@ anova(CHG_mod5, by = "term", permutations = 9999)
 # Boquete - "We also calculated individual adj. R2 for each predictorby CHG_mod5eling the effect of each predictor while accounting for the others using partial constrained dbRDA"
 Rsq_CHG_mod5 <- RsquareAdj(CHG_mod5)
 Rsq_CHG_mod5
+
+# FDR
+
+
+```
+
+```{r CHG dbRDA CHG_mod6, include=FALSE}
+# dbRDA
+CHG_mod6 <- capscale(
+  CHG_dist_matrix ~ maternal + Condition(PC1),
+  data = treatment_pcs,
+  add = FALSE
+)
+
+# Significancia global
+Sig_CHG_mod6 <- anova(CHG_mod6, permutations = 9999)
+Sig_CHG_mod6
+
+# Significancia por término (esto lo hacen en García-Seoane cuando el CHG_mod6elo global sale significativo)
+anova(CHG_mod6, by = "term", permutations = 9999)
+
+# R² ajustado (En García-Seoane la reportan en el texto pero no en la tabla)
+# Boquete - "We also calculated individual adj. R2 for each predictorby CHG_mod6eling the effect of each predictor while accounting for the others using partial constrained dbRDA"
+Rsq_CHG_mod6 <- RsquareAdj(CHG_mod6)
+Rsq_CHG_mod6
 
 # FDR
 
@@ -723,6 +774,31 @@ Rsq_CHH_mod5
 
 ```
 
+```{r CHH dbRDA CHH_mod6, include=FALSE}
+# dbRDA
+CHH_mod6 <- capscale(
+  CHH_dist_matrix ~ maternal + Condition(PC1),
+  data = treatment_pcs,
+  add = FALSE
+)
+
+# Significancia global
+Sig_CHH_mod6 <- anova(CHH_mod6, permutations = 9999)
+Sig_CHH_mod6
+
+# Significancia por término (esto lo hacen en García-Seoane cuando el CHH_mod6elo global sale significativo)
+anova(CHH_mod6, by = "term", permutations = 9999)
+
+# R² ajustado (En García-Seoane la reportan en el texto pero no en la tabla)
+# Boquete - "We also calculated individual adj. R2 for each predictorby CHH_mod6eling the effect of each predictor while accounting for the others using partial constrained dbRDA"
+Rsq_CHH_mod6 <- RsquareAdj(CHH_mod6)
+Rsq_CHH_mod6
+
+# FDR
+
+
+```
+
 ```{r all_CTXT dbRDA all_CTXT_mod1, include=FALSE}
 # dbRDA
 all_CTXT_mod1 <- capscale(
@@ -866,6 +942,31 @@ anova(all_CTXT_mod5, by = "term", permutations = 9999)
 # Boquete - "We also calculated individual adj. R2 for each predictorby all_CTXT_mod5eling the effect of each predictor while accounting for the others using partial constrained dbRDA"
 Rsq_all_CTXT_mod5 <- RsquareAdj(all_CTXT_mod5)
 Rsq_all_CTXT_mod5
+
+# FDR
+
+
+```
+
+```{r all_CTXT dbRDA all_CTXT_mod6, include=FALSE}
+# dbRDA
+all_CTXT_mod6 <- capscale(
+  all_CTXT_dist_matrix ~ maternal + Condition(PC1),
+  data = treatment_pcs,
+  add = FALSE
+)
+
+# Significancia global
+Sig_all_CTXT_mod6 <- anova(all_CTXT_mod6, permutations = 9999)
+Sig_all_CTXT_mod6
+
+# Significancia por término (esto lo hacen en García-Seoane cuando el all_CTXT_mod6elo global sale significativo)
+anova(all_CTXT_mod6, by = "term", permutations = 9999)
+
+# R² ajustado (En García-Seoane la reportan en el texto pero no en la tabla)
+# Boquete - "We also calculated individual adj. R2 for each predictorby all_CTXT_mod6eling the effect of each predictor while accounting for the others using partial constrained dbRDA"
+Rsq_all_CTXT_mod6 <- RsquareAdj(all_CTXT_mod6)
+Rsq_all_CTXT_mod6
 
 # FDR
 
@@ -1119,6 +1220,106 @@ Rsq_phenoDIST_mod8
 # FDR
 ```
 
+```{r phenoDIST dbRDA phenoDIST_mod9, include=FALSE} 
+# dbRDA
+phenoDIST_mod9 <- capscale(
+  phenoDIST ~ simulation + Condition(PC1:PC3),
+  data = GENEPItreatment_pcs,
+  add = FALSE
+)
+# Significancia global
+Sig_phenoDIST_mod9 <- anova(phenoDIST_mod9, permutations = 9999)
+Sig_phenoDIST_mod9
+# Significancia por término (esto lo hacen en García-Seoane cuando el phenoDIST_mod9elo global sale significativo)
+anova(phenoDIST_mod9, by = "term", permutations = 9999)
+# R² ajustado (En García-Seoane la reportan en el texto pero no en la tabla)
+# Boquete - "We also calculated individual adj. R2 for each predictorby phenoDIST_mod9eling the effect of each predictor while accounting for the others using partial constrained dbRDA"
+Rsq_phenoDIST_mod9 <- RsquareAdj(phenoDIST_mod9)
+Rsq_phenoDIST_mod9
+# FDR
+
+```
+ 
+
+ 
+
+```{r phenoDIST dbRDA phenoDIST_mod10, include=FALSE}
+# dbRDA
+phenoDIST_mod10 <- capscale(
+  phenoDIST ~ maternal + Condition(PC1:PC3),
+  data = GENEPItreatment_pcs,
+  add = FALSE
+ 
+
+)
+# Significancia global
+Sig_phenoDIST_mod10 <- anova(phenoDIST_mod10, permutations = 9999)
+Sig_phenoDIST_mod10
+
+# Significancia por término (esto lo hacen en García-Seoane cuando el phenoDIST_mod10elo global sale significativo)
+
+anova(phenoDIST_mod10, by = "term", permutations = 9999)
+
+# R² ajustado (En García-Seoane la reportan en el texto pero no en la tabla)
+ 
+
+# Boquete - "We also calculated individual adj. R2 for each predictorby phenoDIST_mod10eling the effect of each predictor while accounting for the others using partial constrained dbRDA"
+ 
+
+Rsq_phenoDIST_mod10 <- RsquareAdj(phenoDIST_mod10)
+Rsq_phenoDIST_mod10
+
+# FDR
+ 
+```
+
+```{r phenoDIST dbRDA phenoDIST_mod11, include=FALSE}
+# dbRDA
+phenoDIST_mod11 <- capscale(
+phenoDIST ~ maternal + Condition(GENPC1),
+data = GENEPItreatment_pcs,
+add = FALSE
+)
+
+# Significancia global
+Sig_phenoDIST_mod11 <- anova(phenoDIST_mod11, permutations = 9999)
+Sig_phenoDIST_mod11
+
+# Significancia por término (esto lo hacen en García-Seoane cuando el phenoDIST_mod11elo global sale significativo)
+anova(phenoDIST_mod11, by = "term", permutations = 9999)
+
+# R² ajustado (En García-Seoane la reportan en el texto pero no en la tabla)
+# Boquete - "We also calculated individual adj. R2 for each predictorby phenoDIST_mod11eling the effect of each predictor while accounting for the others using partial constrained dbRDA"
+Rsq_phenoDIST_mod11 <- RsquareAdj(phenoDIST_mod11)
+Rsq_phenoDIST_mod11
+
+# FDR
+```
+
+```{r phenoDIST dbRDA phenoDIST_mod12, include=FALSE}
+# dbRDA
+phenoDIST_mod12 <- capscale(
+phenoDIST ~ maternal + Condition(GENPC1) + Condition(PC1:PC3),
+data = GENEPItreatment_pcs,
+add = FALSE
+)
+
+# Significancia global
+Sig_phenoDIST_mod12 <- anova(phenoDIST_mod12, permutations = 9999)
+Sig_phenoDIST_mod12
+
+# Significancia por término (esto lo hacen en García-Seoane cuando el phenoDIST_mod12elo global sale significativo)
+anova(phenoDIST_mod12, by = "term", permutations = 9999)
+
+# R² ajustado (En García-Seoane la reportan en el texto pero no en la tabla)
+# Boquete - "We also calculated individual adj. R2 for each predictorby phenoDIST_mod12eling the effect of each predictor while accounting for the others using partial constrained dbRDA"
+Rsq_phenoDIST_mod12 <- RsquareAdj(phenoDIST_mod12)
+Rsq_phenoDIST_mod12
+
+# FDR
+```
+
+
 ```{r genDIST dbRDA genDIST_mod1, include=FALSE}
 # dbRDA
 genDIST_mod1 <- capscale(
@@ -1206,15 +1407,15 @@ get_term_stats <- function(term_obj, rsq_terms, ctxt){
   tab <- as.data.frame(term_obj)[1:3,]
 
   predictors <- c(
-    "Maternal herbivory",
-    "Simulated herbivory",
-    "Maternal × Simulated"
+    "Parental grazing (PG)",
+    "Within-generation grazing (WG)",
+    "PG × WG"
   )
 
   p <- tab$`Pr(>F)`
 
   data.frame(
-    Model = "EpiDist ~ M * S",
+    Model = "EpiDist ~ PG * WG",
     Ctxt = ctxt,
     Predictor = predictors,
     df = tab$Df,
@@ -1241,19 +1442,22 @@ for(ctx in contextos){
   sig_mod3 <- get(paste0("Sig_", ctx, "_mod3"))
   sig_mod4 <- get(paste0("Sig_", ctx, "_mod4"))
   sig_mod5 <- get(paste0("Sig_", ctx, "_mod5"))
+  sig_mod6 <- get(paste0("Sig_", ctx, "_mod6"))
 
   rsq_mod1 <- get(paste0("Rsq_", ctx, "_mod1"))
   rsq_mod2 <- get(paste0("Rsq_", ctx, "_mod2"))
   rsq_mod3 <- get(paste0("Rsq_", ctx, "_mod3"))
   rsq_mod4 <- get(paste0("Rsq_", ctx, "_mod4"))
   rsq_mod5 <- get(paste0("Rsq_", ctx, "_mod5"))
+  rsq_mod6 <- get(paste0("Rsq_", ctx, "_mod6"))
 
   models_list[[ctx]] <- rbind(
-    get_model_stats(sig_mod1, rsq_mod1, "EpiDist ~ Maternal", ctx),
-    get_model_stats(sig_mod5, rsq_mod5, "EpiDist ~ Simulation", ctx),
+    get_model_stats(sig_mod1, rsq_mod1, "EpiDist ~ Parental grazing (PG)", ctx),
+    get_model_stats(sig_mod6, rsq_mod6, "EpiDist ~ PG + Condition(GenVar)", ctx),
+    get_model_stats(sig_mod5, rsq_mod5, "EpiDist ~ Within-generation grazing (WG)", ctx),
     get_model_stats(sig_mod4, rsq_mod4, "EpiDist ~ GenVar", ctx),
-    get_model_stats(sig_mod2, rsq_mod2, "EpiDist ~ M * S", ctx),
-    get_model_stats(sig_mod3, rsq_mod3, "EpiDist ~ M * S + Condition(GenVar)", ctx)
+    get_model_stats(sig_mod2, rsq_mod2, "EpiDist ~ PG * WG", ctx),
+    get_model_stats(sig_mod3, rsq_mod3, "EpiDist ~ PG * WG + Condition(GenVar)", ctx)
   )
 
   term_obj <- get(paste0("Sig_terms_", ctx, "_mod2"))
@@ -1274,11 +1478,12 @@ tbl_models <- bind_rows(models_list)
 
 # Definir el orden deseado de los modelos
 orden_modelos <- c(
-  "EpiDist ~ Maternal",
-  "EpiDist ~ Simulation", 
+  "EpiDist ~ Parental grazing (PG)",
+  "EpiDist ~ PG + Condition(GenVar)",
+  "EpiDist ~ Within-generation grazing (WG)", 
   "EpiDist ~ GenVar",
-  "EpiDist ~ M * S",
-  "EpiDist ~ M * S + Condition(GenVar)"
+  "EpiDist ~ PG * WG",
+  "EpiDist ~ PG * WG + Condition(GenVar)"
 )
 
 # Convertir Model a factor con el orden deseado
@@ -1329,7 +1534,7 @@ tab2 <- tbl_terms %>%
 #------------------------------------------------
 
 caption_text <- paste0(
-"Table 1. Results of the distance-based redundancy analysis (dbRDA) showing the percentage of epigenetic variance (EpiDist) explained by maternal environment (Maternal), Simulated herbivory simulation (Simulation), and/or their interaction (M*S) across different genomic contexts. ",
+"Table 1. Results of the distance-based redundancy analysis (dbRDA) showing the percentage of epigenetic variance (EpiDist) explained by Parental grazing, Within-generation grazing, and/or their interaction across different genomic contexts.  ",
 "The models include analyses with and without adjusting for genetic variability (GenVar). ",
 "GenVar: first principal component from genetic data explaining ", var_txt,
 "% of the variance in scaled allele frequencies. ",
@@ -1429,15 +1634,15 @@ get_term_stats_pheno <- function(term_obj, rsq_terms){
   tab <- as.data.frame(term_obj)[1:3,]
   
   predictors <- c(
-    "Maternal herbivory",
-    "Simulated herbivory",
-    "Maternal × Simulated"
+    "Parental grazing (PG)",
+    "Within-generation grazing (WG)",
+    "PG × WG"
   )
   
   p <- tab$`Pr(>F)`
   
   data.frame(
-    Model = "PhenoDist ~ M * S",
+    Model = "PhenoDist ~ PG * WG",
     Predictor = predictors,
     df = tab$Df,
     Variance = tab$Variance,
@@ -1453,19 +1658,23 @@ get_term_stats_pheno <- function(term_obj, rsq_terms){
 
 # Modelos para phenoDIST
 models_pheno_list <- rbind(
-  get_model_stats_pheno(Sig_phenoDIST_mod1, Rsq_phenoDIST_mod1, "PhenoDist ~ Maternal"),
-  get_model_stats_pheno(Sig_phenoDIST_mod2, Rsq_phenoDIST_mod2, "PhenoDist ~ Simulation"),
+  get_model_stats_pheno(Sig_phenoDIST_mod1, Rsq_phenoDIST_mod1, "PhenoDist ~ Parental grazing (PG)"),
+get_model_stats_pheno(Sig_phenoDIST_mod10, Rsq_phenoDIST_mod10, "PhenoDist ~ PG + Condition(EpiVar)"),
+get_model_stats_pheno(Sig_phenoDIST_mod11, Rsq_phenoDIST_mod11, "PhenoDist ~ PG + Condition(GenVar)"),
+get_model_stats_pheno(Sig_phenoDIST_mod12, Rsq_phenoDIST_mod12, "PhenoDist ~ PG + Condition(GenVar) + Condition(EpiVar)"),
+get_model_stats_pheno(Sig_phenoDIST_mod2, Rsq_phenoDIST_mod2, "PhenoDist ~ Within-generation grazing (WG)"),
+get_model_stats_pheno(Sig_phenoDIST_mod9, Rsq_phenoDIST_mod9, "PhenoDist ~ WG + Condition(EpiVar)"),
    get_model_stats_pheno(Sig_phenoDIST_mod3, Rsq_phenoDIST_mod3, "PhenoDist ~ GenVar"),
    get_model_stats_pheno(Sig_phenoDIST_mod4, Rsq_phenoDIST_mod4, "PhenoDist ~ EpiVar"),
-  get_model_stats_pheno(Sig_phenoDIST_mod5, Rsq_phenoDIST_mod5, "PhenoDist ~ M * S"),
-   get_model_stats_pheno(Sig_phenoDIST_mod6, Rsq_phenoDIST_mod6, "PhenoDist ~ M * S + Condition(GenVar)"),
-  get_model_stats_pheno(Sig_phenoDIST_mod7, Rsq_phenoDIST_mod7, "PhenoDist ~ M * S + Condition(EpiVar)"),
-  get_model_stats_pheno(Sig_phenoDIST_mod8, Rsq_phenoDIST_mod8, "PhenoDist ~ M * S + Condition(GenVar) + Condition(EpiVar)")
+  get_model_stats_pheno(Sig_phenoDIST_mod5, Rsq_phenoDIST_mod5, "PhenoDist ~ PG * WG"),
+   get_model_stats_pheno(Sig_phenoDIST_mod6, Rsq_phenoDIST_mod6, "PhenoDist ~ PG * WG + Condition(GenVar)"),
+  get_model_stats_pheno(Sig_phenoDIST_mod7, Rsq_phenoDIST_mod7, "PhenoDist ~ PG * WG + Condition(EpiVar)"),
+  get_model_stats_pheno(Sig_phenoDIST_mod8, Rsq_phenoDIST_mod8, "PhenoDist ~ PG * WG + Condition(GenVar) + Condition(EpiVar)")
 )
 
 # Modelo para genDIST
 models_gen_list <- rbind(
-  get_model_stats_gen(Sig_genDIST_mod1, Rsq_genDIST_mod1, "GenDist ~ Maternal")
+  get_model_stats_gen(Sig_genDIST_mod1, Rsq_genDIST_mod1, "GenDist ~ Parental grazing")
 )
 
 #------------------------------------------------
@@ -1489,14 +1698,18 @@ tab_sup_models <- bind_rows(models_pheno_list, models_gen_list)
 
 # Definir el orden deseado de los modelos
 orden_modelos <- c(
-  "PhenoDist ~ Maternal",
-  "PhenoDist ~ Simulation", 
+  "PhenoDist ~ Parental grazing (PG)",
+"PhenoDist ~ PG + Condition(EpiVar)",
+"PhenoDist ~ PG + Condition(GenVar)",
+"PhenoDist ~ PG + Condition(GenVar) + Condition(EpiVar)",
+"PhenoDist ~ Within-generation grazing (WG)",
+"PhenoDist ~ WG + Condition(EpiVar)",
   "PhenoDist ~ GenVar",
   "PhenoDist ~ EpiVar",
-  "PhenoDist ~ M * S",
-  "PhenoDist ~ M * S + Condition(GenVar)",
-  "PhenoDist ~ M * S + Condition(EpiVar)",
-  "PhenoDist ~ M * S + Condition(GenVar) + Condition(EpiVar)",
+  "PhenoDist ~ PG * WG",
+  "PhenoDist ~ PG * WG + Condition(GenVar)",
+  "PhenoDist ~ PG * WG + Condition(EpiVar)",
+  "PhenoDist ~ PG * WG + Condition(GenVar) + Condition(EpiVar)",
   "GenDist ~ Maternal"
 )
 
@@ -1523,7 +1736,7 @@ tab_sup_terms <- terms_pheno %>%
 kable(tab_sup_models,
       booktabs = TRUE,
       digits = 3,
-      caption = "Table 2. Results of distance-based redundancy analysis (dbRDA) showing the percentage of variance in phenotypic and genetic distance explained by maternal environment (Maternal) and Simulated herbivory simulation (Simulation). The results of the ANOVA by terms performed to test for the significance of each predictor in the model are also shown. Significance codes: *** p < 0.001, ** p < 0.01, * p < 0.05.",
+      caption = "Table 2. Results of distance-based redundancy analysis (dbRDA) showing the percentage of variance in phenotypic and genetic distance explained by parental grazing and within-generation grazing. The results of the ANOVA by terms performed to test for the significance of each predictor in the model are also shown. Significance codes: *** p < 0.001, ** p < 0.01, * p < 0.05.",
       col.names = c("Model", "df", "F", "p-value", "adj. R²")) %>%
   
   kable_styling(full_width = TRUE,
@@ -1613,7 +1826,7 @@ tab_sup_models_flex <- tab_sup_models %>%
   theme_booktabs() %>%
   fontsize(size = 10) %>%
   width(width = c(2, 0.8, 0.8, 1, 1)) %>%
-  set_caption("Table 2. Results of distance-based redundancy analysis (dbRDA) showing the percentage of variance in phenotypic and genetic distance explained by maternal environment (Maternal) and Simulated herbivory simulation (Simulation). The results of the ANOVA performed to test for the significance of each predictor in the model with the interaction term (ANOVA by terms) are also shown. Significance codes: *** p < 0.001, ** p < 0.01, * p < 0.05.")
+  set_caption("Table 2. Results of distance-based redundancy analysis (dbRDA) showing the percentage of variance in phenotypic and genetic distance explained by parental grazing and within-generation grazing. The results of the ANOVA performed to test for the significance of each predictor in the model with the interaction term (ANOVA by terms) are also shown. Significance codes: *** p < 0.001, ** p < 0.01, * p < 0.05.")
 
 # Para la tabla suplementaria 2
 tab_sup_terms_flex <- tab_sup_terms %>%
@@ -1718,7 +1931,7 @@ par(mar = c(0, 0, 0, 0))
 plot.new()
 legend("center", 
        legend = c("Grazed", "Ungrazed"),
-       title = "Maternal environment",
+       title = "Parental grazing",
        col = maternal_colors,
        pch = 19,
        pt.cex = 2,
@@ -1750,7 +1963,7 @@ par(mar = c(0, 0, 0, 0))
 plot.new()
 legend("center", 
        legend = c("Grazed + Clipped", "Grazed + Unclipped", "Ungrazed + Clipped", "Ungrazed + Unclipped"),
-       title = "Maternal + Simulated",
+       title = "Parental + Within-generation",
        col = c(
    "#FF69B4",
    "#8B3A62",
